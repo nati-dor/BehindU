@@ -37,7 +37,7 @@
             android:textColor="@color/colorPrimaryDark" />
 
         <EditText
-            android:id="@+id/new_first_nameED"
+            android:id="@+id/firstNameInput_register"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_margin="10dp"
@@ -48,7 +48,7 @@
             android:textAlignment="center"
             />
         <EditText
-            android:id="@+id/new_last_nameED"
+            android:id="@+id/lastNameInput_register"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_margin="10dp"
@@ -59,7 +59,7 @@
             android:textAlignment="center"
             />
         <EditText
-            android:id="@+id/new_mailED"
+            android:id="@+id/emailInput_register"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_margin="10dp"
@@ -70,7 +70,7 @@
             android:textAlignment="center"
             />
         <EditText
-            android:id="@+id/new_phoneED"
+            android:id="@+id/phoneNumberInput_register"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_margin="10dp"
@@ -81,7 +81,7 @@
             android:textAlignment="center"
             />
         <EditText
-            android:id="@+id/new_passwordED"
+            android:id="@+id/passwordInput_register"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_margin="10dp"
@@ -93,7 +93,7 @@
             />
 
         <EditText
-            android:id="@+id/new_repeat_passwordED"
+            android:id="@+id/rptPasswordInput_register"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_margin="10dp"
@@ -112,7 +112,7 @@
         android:layout_weight="2">
 
         <Button
-            android:id="@+id/CreateUserBtn"
+            android:id="@+id/createUserBtn"
             android:layout_width="match_parent"
             android:layout_height="42dp"
             android:layout_gravity="center"
