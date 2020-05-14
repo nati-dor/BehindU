@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "643813488150",
+    "firebase_url": "https://behindu-b9f11.firebaseio.com",
+    "project_id": "behindu-b9f11",
+    "storage_bucket": "behindu-b9f11.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:643813488150:android:12f0880b27a18b003b6737",
+        "android_client_info": {
+          "package_name": "com.example.behindu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "643813488150-bk1gom7mfdu6jn2ph7ohn5gcpq9krtth.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.behindu",
+            "certificate_hash": "6680684777d382b44576cfe21882a02b5c579a02"
+          }
+        },
+        {
+          "client_id": "643813488150-e392onla1b2rveivn15vh2r7pgq4vtdf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQ7JQ3qwRcSU-bDcKnoco2KH87gW6gYUk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "643813488150-e392onla1b2rveivn15vh2r7pgq4vtdf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
