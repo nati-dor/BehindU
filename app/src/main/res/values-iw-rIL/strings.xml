@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BehindU</string>
+    <string name="EnterYourMail">הכנס דואר אלקטרוני</string>
+    <string name="EnterYourPassword">הכנס סיסמה</string>
+    <string name="click_here_btn">לחץ כאן</string>
+    <string name="new_member">משתמש חדש?</string>
+    <string name="forgot_password">שכחת סיסמה?</string>
+    <string name="login">כניסה</string>
+    <string name="EnterYourFirstName">הכנס שם פרטי</string>
+    <string name="EnterYourLastName">הכנס שם משפחה</string>
+    <string name="CreateANewUser">תיצור משתמש חדש</string>
+    <string name="EnterAPhoneNumber">הכנס מספר טלפון</string>
+    <string name="RepeatThePassword">חזור על הסיסמה</string>
+    <string name="Finish">סיים</string>
+    <string name="ResetPassword">שיחזור סיסמה</string>
+    <string name="Following">עוקב</string>
+    <string name="Followed">נעקב</string>
+    <string name="register">הרשמה</string>
+    <string name="selecting_status">בחירת סטטוס</string>
+    <string name="view_real_time_location">צפייה במיקום בזמן אמת</string>
+    <string name="view_location_history">צפייה בהיסטורית המיקומים</string>
+    <string name="select_an_action">בחר פעולה</string>
+</resources>

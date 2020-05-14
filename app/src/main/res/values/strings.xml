@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">BehindU</string>
+    <string name="EnterYourMail">Enter your mail</string>
+    <string name="EnterYourPassword">Enter your password</string>
+    <string name="click_here_btn">Click here</string>
+    <string name="new_member">New member?</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="login">Login</string>
+    <string name="EnterYourFirstName">Enter your first name</string>
+    <string name="EnterYourLastName">Enter your last name</string>
+    <string name="CreateANewUser">Create a new user</string>
+    <string name="EnterAPhoneNumber">Enter a phone number</string>
+    <string name="RepeatThePassword">Repeat the password</string>
+    <string name="Finish">finish</string>
+    <string name="ResetPassword">Reset password</string>
+    <string name="Following">Following</string>
+    <string name="Followed">Followed</string>
+    <string name="register">Registrer</string>
+    <string name="selecting_status">Selecting status</string>
+    <string name="view_real_time_location">View real-time location</string>
+    <string name="view_location_history">View location history</string>
+    <string name="select_an_action">Select an action</string>
+</resources>
