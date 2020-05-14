@@ -1,5 +1,6 @@
-package com.example.behindu;
+package com.example.behindu.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -7,10 +8,13 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.behindu.R;
 import com.example.behindu.viewmodel.MainActivityViewModel;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 public class Registration extends AppCompatActivity {
-    MainActivityViewModel mainActivityViewModel = new MainActivityViewModel();
+    MainActivityViewModel viewModel = new MainActivityViewModel();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,17 +31,33 @@ public class Registration extends AppCompatActivity {
         Button registerBtn = findViewById(R.id.createUserBtn);
         registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 String firstName = firstNameEt.getText().toString().trim();
                 String lastName = lastNameEt.getText().toString().trim();
                 String email = emailEt.getText().toString().trim();
-                String phoneNumber = phoneNumEt.getText().toString().trim();
+                int phoneNumber = Integer.parseInt(phoneNumEt.getText().toString().trim());
                 String password = passwordEt.getText().toString().trim();
                 String rptPassword = rptPasswordEt.getText().toString().trim();
-                mainActivityViewModel.signUpUser(firstName,lastName,email,phoneNumber,password,rptPassword,v);
+                viewModel.signUpUser(firstName,lastName,email,phoneNumber,password,rptPassword, new registerActions() {
+                    @Override
+                    public void registerSucceed(boolean succeed) {
+                        if(succeed) {
+                            Intent intent = new Intent(Registration.this,StatusSelection.class);
+                            startActivity(intent);
+                        }
+                        else{
+                            Snackbar.make(v,"Registration Failed", BaseTransientBottomBar.LENGTH_LONG);
+                        }
+
+                    }
+                });
             }
         });
 
 
+    }
+
+    public interface registerActions{
+        void registerSucceed(boolean succeed);
     }
 }

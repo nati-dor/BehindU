@@ -1,14 +1,26 @@
 package com.example.behindu.database;
 
 
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+
+import com.example.behindu.util.User;
+import com.example.behindu.view.MainActivity;
+import com.example.behindu.view.Registration;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Database {
 
@@ -25,33 +37,56 @@ public class Database {
 
 
     //sign up users
-    public void createUser(final String username,final String password,final String firstName,final String lastName,final String phoneNum,final String rptPassword,final View v){
+    public void createUser(final String username,final String password,final String firstName,final String lastName,final int phoneNum,final String rptPassword,final Registration.registerActions registerActions){
         mAuth.createUserWithEmailAndPassword(username,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    Snackbar.make(v,"Registration succeed",Snackbar.LENGTH_LONG);
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    String userUid =  mAuth.getCurrentUser().getUid();
+                    User user = new User(firstName,lastName,username,phoneNum,false,userUid,password);
+                    // Create a new user with a first and last name
+                    Map<String, User> userFireStore = new HashMap<>();
+                    userFireStore.put("first", user);
 
+// Add a new document with a generated ID
+                    db.collection("users")
+                            .add(userFireStore)
+                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                @Override
+                                public void onSuccess(DocumentReference documentReference) {
+                                    Log.d("TAG", "DocumentSnapshot added with ID: " + documentReference.getId());
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w("TAG", "Error adding document", e);
+                                }
+                            });
+
+                    registerActions.registerSucceed(true);
                 }
                 else
                 {
-                    Snackbar.make(v,"Registration Failed",Snackbar.LENGTH_LONG);
+                    registerActions.registerSucceed(false);
                 }
             }
         });
     }
 
     //sign in the user
-    public void signInUser(final String username,final String password,final View v){
+    public void signInUser(final String username, final String password, final MainActivity.LogInActions logInActions){
         mAuth.signInWithEmailAndPassword(username,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    Snackbar.make(v,"Login Successful",Snackbar.LENGTH_LONG).show();
+                    //add details to DB
+                    logInActions.LogInSuccessfully(mAuth.getCurrentUser());
                 }
                 else
                 {
-                    Snackbar.make(v,"Wrong username or password",Snackbar.LENGTH_LONG).show();
+                    logInActions.LogInFailed();
 
                 }
             }
