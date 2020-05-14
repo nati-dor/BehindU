@@ -1,5 +1,6 @@
 package com.example.behindu.viewmodel;
 
+import android.util.Log;
 import android.view.View;
 
 import com.example.behindu.database.Database;
@@ -14,8 +15,16 @@ public class MainActivityViewModel {
         mDatabase.signInUser(username, password,logInActions);
     }
 
-    public void signUpUser(String firstName, String lastName, String email, int phoneNum, String password, String rptPassword, Registration.registerActions registerActions){
-        mDatabase.createUser(email,password,firstName,lastName,phoneNum,rptPassword,registerActions);
+    public void signUpUser(String firstName, String lastName, String email, int phoneNum, String password, Registration.registerActions registerActions){
+        Log.d("MainActivityViewModel","Arrive before");
+        mDatabase.createUser(email,password,firstName,lastName,phoneNum,registerActions);
+        Log.d("MainActivityViewModel","Arrive after");
     }
+
+    public void signOutUser(){
+        mDatabase.signOutUser();
+    }
+
+
 
 }

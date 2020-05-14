@@ -36,7 +36,9 @@ public class MainActivity extends AppCompatActivity {
                 viewModel.signInUser(username, password, new LogInActions() {
                     @Override
                     public void LogInSuccessfully(FirebaseUser user) {
-
+                        Intent intent = new Intent(MainActivity.this,SelectAnAction.class);
+                        startActivity(intent);
+                        finish();
                     }
 
                     @Override

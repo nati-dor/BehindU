@@ -6,7 +6,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
-import com.example.behindu.util.User;
 import com.example.behindu.view.MainActivity;
 import com.example.behindu.view.Registration;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -25,6 +24,8 @@ import java.util.Map;
 public class Database {
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseFirestore fStore = FirebaseFirestore.getInstance();
+    private String userID;
 
     private static Database instance = null;
     private Database(){}
@@ -37,34 +38,30 @@ public class Database {
 
 
     //sign up users
-    public void createUser(final String username,final String password,final String firstName,final String lastName,final int phoneNum,final String rptPassword,final Registration.registerActions registerActions){
+    public void createUser(final String username,final String password,final String firstName,final String lastName,final int phoneNum,final Registration.registerActions registerActions){
         mAuth.createUserWithEmailAndPassword(username,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    String userUid =  mAuth.getCurrentUser().getUid();
-                    User user = new User(firstName,lastName,username,phoneNum,false,userUid,password);
-                    // Create a new user with a first and last name
-                    Map<String, User> userFireStore = new HashMap<>();
-                    userFireStore.put("first", user);
-
-// Add a new document with a generated ID
-                    db.collection("users")
-                            .add(userFireStore)
-                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                @Override
-                                public void onSuccess(DocumentReference documentReference) {
-                                    Log.d("TAG", "DocumentSnapshot added with ID: " + documentReference.getId());
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w("TAG", "Error adding document", e);
-                                }
-                            });
-
+                    Log.d("onComplete","Arrive");
+                    userID = mAuth.getCurrentUser().getUid();
+                    Map<String,Object> user = new HashMap<>();
+                    user.put("first_name",firstName);
+                    user.put("last_name",lastName);
+                    user.put("phone_number",phoneNum);
+                    user.put("password",password);
+                    user.put("email",username);
+                    DocumentReference documentReference = fStore.collection("users").document(userID);
+                    documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d("OnFailure:",e.getMessage());
+                        }
+                    });
                     registerActions.registerSucceed(true);
                 }
                 else

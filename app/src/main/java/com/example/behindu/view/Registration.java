@@ -38,12 +38,13 @@ public class Registration extends AppCompatActivity {
                 int phoneNumber = Integer.parseInt(phoneNumEt.getText().toString().trim());
                 String password = passwordEt.getText().toString().trim();
                 String rptPassword = rptPasswordEt.getText().toString().trim();
-                viewModel.signUpUser(firstName,lastName,email,phoneNumber,password,rptPassword, new registerActions() {
+                viewModel.signUpUser(firstName,lastName,email,phoneNumber,password, new registerActions() {
                     @Override
                     public void registerSucceed(boolean succeed) {
                         if(succeed) {
                             Intent intent = new Intent(Registration.this,StatusSelection.class);
                             startActivity(intent);
+                            finish();
                         }
                         else{
                             Snackbar.make(v,"Registration Failed", BaseTransientBottomBar.LENGTH_LONG);
