@@ -21,6 +21,8 @@
             android:exported="true"/>
         <activity android:name=".SelectAnAction"
             android:exported="true"/>
+        <activity android:name=".ListUsers"
+            android:exported="true"/>
     </application>
 
 </manifest>

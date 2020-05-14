@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button forgotPassBtn = (Button) findViewById(R.id.forgot_pass_btn);
         Button newUserBtn = (Button) findViewById(R.id.new_user_btn);
+        Button loginBtn = (Button) findViewById(R.id.loginBtn);
 
         forgotPassBtn.setOnClickListener(new OnClickListener() {
             @Override
