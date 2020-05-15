@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.MainActivity">
+        <activity android:name="view.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -17,13 +17,16 @@
         </activity>
         <activity android:name=".view.ForgotPassword"
             android:exported="true"/>
-        <activity android:name=".view.Registration"
+        <activity android:name="view.Registration"
             android:exported="true"/>
-        <activity android:name=".view.SelectAnAction"
+        <activity android:name="view.SelectAnAction"
             android:exported="true"/>
         <activity android:name=".ListUsers"
             android:exported="true"/>
-        <activity android:name=".view.StatusSelection" />
+        <activity android:name=".Followed_page"
+            android:exported="true"/>
+        <activity android:name=".view.StatusSelection"
+            android:exported="true"/>
     </application>
 
 </manifest>

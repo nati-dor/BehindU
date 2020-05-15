@@ -1,16 +1,14 @@
-package com.example.behindu.view;
+package com.example.behindu;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.behindu.R;
-
-public class ForgotPassword extends AppCompatActivity {
+public class Followed_page extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.forgot_password);
+        setContentView(R.layout.followed_page);
     }
 }

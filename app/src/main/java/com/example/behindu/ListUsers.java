@@ -39,6 +39,7 @@ public class ListUsers extends Activity implements OnItemClickListener, AdapterV
         arrayList.add("Nati");
         arrayList.add("Maor");
         arrayList.add("Aviv");
+        arrayList.add("Aviv");
 
         adaptr = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, arrayList);
