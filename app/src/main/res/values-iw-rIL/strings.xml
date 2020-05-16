@@ -21,4 +21,7 @@
     <string name="view_real_time_location">צפייה במיקום בזמן אמת</string>
     <string name="view_location_history">צפייה בהיסטורית המיקומים</string>
     <string name="select_an_action">בחר פעולה</string>
+    <string name="sendAFollowerMessage">שליחת הודעה לעוקב</string>
+    <string name="callTheFollower">להתקשר לעוקב</string>
+    <string name="sos">S.O.S</string>
 </resources>
