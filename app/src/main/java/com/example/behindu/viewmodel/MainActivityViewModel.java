@@ -5,7 +5,7 @@ import android.view.View;
 
 import com.example.behindu.database.Database;
 import com.example.behindu.view.MainActivity;
-import com.example.behindu.view.Registration;
+
 
 public class MainActivityViewModel {
 
@@ -15,7 +15,7 @@ public class MainActivityViewModel {
         mDatabase.signInUser(username, password,logInActions);
     }
 
-    public void signUpUser(String firstName, String lastName, String email, int phoneNum, String password, Registration.registerActions registerActions){
+    public void signUpUser(String firstName, String lastName, String email, int phoneNum, String password, MainActivity.registerActions registerActions){
         Log.d("MainActivityViewModel","Arrive before");
         mDatabase.createUser(email,password,firstName,lastName,phoneNum,registerActions);
         Log.d("MainActivityViewModel","Arrive after");

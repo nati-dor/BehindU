@@ -7,7 +7,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import com.example.behindu.view.MainActivity;
-import com.example.behindu.view.Registration;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -20,6 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Database {
 
@@ -38,7 +38,7 @@ public class Database {
 
 
     //sign up users
-    public void createUser(final String username,final String password,final String firstName,final String lastName,final int phoneNum,final Registration.registerActions registerActions){
+    public void createUser(final String username,final String password,final String firstName,final String lastName,final int phoneNum,final MainActivity.registerActions registerActions){
         mAuth.createUserWithEmailAndPassword(username,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -59,7 +59,7 @@ public class Database {
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Log.d("OnFailure:",e.getMessage());
+                            Log.d("OnFailure:", Objects.requireNonNull(e.getMessage()));
                         }
                     });
                     registerActions.registerSucceed(true);
