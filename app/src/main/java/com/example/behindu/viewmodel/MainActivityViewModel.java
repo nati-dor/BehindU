@@ -24,7 +24,4 @@ public class MainActivityViewModel extends ViewModel {
     public void signOutUser(){
         mDatabase.signOutUser();
     }
-
-
-
 }

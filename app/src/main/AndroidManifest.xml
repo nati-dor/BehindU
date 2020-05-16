@@ -17,8 +17,6 @@
         </activity>
         <activity android:name=".view.ForgotPassword"
             android:exported="true"/>
-        <activity android:name=".view.Registration"
-            android:exported="true"/>
         <activity android:name=".view.SelectAnAction"
             android:exported="true"/>
         <activity android:name=".ListUsers"

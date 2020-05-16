@@ -10,9 +10,9 @@ public class Child extends User {
     private String followingId;
     private int emergencyPhoneNumber;
 
-
-    public Child(String firstName, String lastName, String email, int phoneNumber, boolean isFollower, String userId, String password,ArrayList<String> routes,String lastLocation,String followingId,int emergencyPhoneNumber) {
-        super(firstName, lastName, email, phoneNumber, isFollower, userId, password);
+    public Child(String firstName, String lastName, String email, int phoneNumber, boolean isFollower,
+                 String password,ArrayList<String> routes,String lastLocation,String followingId,int emergencyPhoneNumber) {
+        super(firstName, lastName, email, phoneNumber, isFollower, password);
         this.routes = routes;
         this.lastLocation = lastLocation;
         this.followingId = followingId;

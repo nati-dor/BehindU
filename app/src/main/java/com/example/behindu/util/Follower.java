@@ -7,8 +7,9 @@ public class Follower extends User {
     private List<String> followingId;
     private int childPhoneNumber;
 
-    public Follower(String firstName, String lastName, String email, int phoneNumber, boolean isFollower, String userId, String password,List<String> followingId,int childPhoneNumber) {
-        super(firstName, lastName, email, phoneNumber, isFollower, userId, password);
+    public Follower(String firstName, String lastName, String email, int phoneNumber, boolean isFollower,
+                    String password,List<String> followingId,int childPhoneNumber) {
+        super(firstName, lastName, email, phoneNumber, isFollower, password);
         this.followingId = followingId;
         this.childPhoneNumber = childPhoneNumber;
     }

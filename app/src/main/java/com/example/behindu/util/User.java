@@ -7,16 +7,14 @@ public class User {
     private String email;
     private int phoneNumber;
     private boolean isFollower;
-    private String userId;
     private String password;
 
-    public User(String firstName, String lastName, String email, int phoneNumber, boolean isFollower, String userId,String password) {
+    public User(String firstName, String lastName, String email, int phoneNumber, boolean isFollower, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.isFollower = isFollower;
-        this.userId = userId;
         this.password = password;
     }
 
@@ -58,14 +56,6 @@ public class User {
 
     public void setFollower(boolean follower) {
         isFollower = follower;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     public String getPassword() {

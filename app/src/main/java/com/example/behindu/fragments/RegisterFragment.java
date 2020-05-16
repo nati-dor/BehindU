@@ -27,7 +27,6 @@ public class RegisterFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.registration,container,false);
 
-
         final EditText firstNameEt = view.findViewById(R.id.firstNameInput_register);
         final EditText lastNameEt = view.findViewById(R.id.lastNameInput_register);
         final EditText emailEt = view.findViewById(R.id.emailInput_register);
@@ -45,6 +44,12 @@ public class RegisterFragment extends Fragment {
                 int phoneNumber = Integer.parseInt(phoneNumEt.getText().toString().trim());
                 String password = passwordEt.getText().toString().trim();
                 String rptPassword = rptPasswordEt.getText().toString().trim();
+
+                if(!rptPassword.equals(password)){
+                    rptPasswordEt.setError("Password is not match!");
+                }
+                
+
                 viewModel.signUpUser(firstName,lastName,email,phoneNumber,password, new MainActivity.registerActions() {
                     @Override
                     public void registerSucceed(boolean succeed) {
