@@ -24,4 +24,5 @@
     <string name="sendAFollowerMessage">שליחת הודעה לעוקב</string>
     <string name="callTheFollower">להתקשר לעוקב</string>
     <string name="sos">S.O.S</string>
+    <string name="sign_out">יציאה</string>
 </resources>

@@ -25,3 +25,6 @@ public class MainActivityViewModel extends ViewModel {
         mDatabase.signOutUser();
     }
 }
+
+
+///לשים הכל בתיקיות!!!!

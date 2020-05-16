@@ -33,14 +33,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/register"
-            android:layout_margin="10dp"
             android:textSize="35dp"
-            android:textColor="@color/colorPrimaryDark" />
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_marginStart="15dp"/>
 
         <EditText
             android:id="@+id/firstNameInput_register"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="40dp"
             android:layout_margin="10dp"
             android:background="@android:color/holo_blue_light"
             android:textColor="@android:color/black"
@@ -51,7 +51,7 @@
         <EditText
             android:id="@+id/lastNameInput_register"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="40dp"
             android:layout_margin="10dp"
             android:background="@android:color/holo_blue_light"
             android:textColor="@android:color/black"
@@ -62,7 +62,7 @@
         <EditText
             android:id="@+id/emailInput_register"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="40dp"
             android:layout_margin="10dp"
             android:background="@android:color/holo_blue_light"
             android:textColor="@android:color/black"
@@ -73,7 +73,7 @@
         <EditText
             android:id="@+id/phoneNumberInput_register"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="40dp"
             android:layout_margin="10dp"
             android:background="@android:color/holo_blue_light"
             android:textColor="@android:color/black"
@@ -84,7 +84,7 @@
         <EditText
             android:id="@+id/passwordInput_register"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="40dp"
             android:layout_margin="10dp"
             android:background="@android:color/holo_blue_light"
             android:textColor="@android:color/black"
@@ -96,7 +96,7 @@
         <EditText
             android:id="@+id/rptPasswordInput_register"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="40dp"
             android:layout_margin="10dp"
             android:background="@android:color/holo_blue_light"
             android:textColor="@android:color/black"
@@ -110,17 +110,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_weight="2">
+        android:layout_weight="5">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/Following"
+                android:layout_marginStart="60dp" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/Followed"/>
+        </LinearLayout>
 
         <Button
             android:id="@+id/createUserBtn"
             android:layout_width="match_parent"
             android:layout_height="42dp"
             android:layout_gravity="center"
-            android:layout_marginTop="13dp"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
             android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/back_ground"
             android:text="@string/CreateANewUser"
             android:textAllCaps="false"

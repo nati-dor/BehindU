@@ -17,11 +17,14 @@
         </activity>
         <activity android:name=".view.ForgotPassword"
             android:exported="true"/>
-        <activity android:name=".view.SelectAnAction"
+        <activity android:name="view.SelectAnAction"
             android:exported="true"/>
         <activity android:name=".ListUsers"
             android:exported="true"/>
-        <activity android:name=".view.StatusSelection" />
+        <activity android:name=".Followed_page"
+            android:exported="true"/>
+        <activity android:name=".view.StatusSelection"
+            android:exported="true"/>
     </application>
 
 </manifest>
