@@ -22,6 +22,8 @@ import com.example.behindu.viewmodel.MainActivityViewModel;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.UUID;
+
 public class MainActivity extends AppCompatActivity implements CallbackFragment {
 
     Fragment fragment;
@@ -32,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements CallbackFragment 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_fragment);
-
         addFragment();
     }
 
