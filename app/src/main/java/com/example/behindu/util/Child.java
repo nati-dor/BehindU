@@ -8,15 +8,13 @@ public class Child extends User {
     private ArrayList<String> routes;
     private String lastLocation;
     private String followingId;
-    private int emergencyPhoneNumber;
 
     public Child(String firstName, String lastName, String email, int phoneNumber, boolean isFollower,
-                 String password,ArrayList<String> routes,String lastLocation,String followingId,int emergencyPhoneNumber) {
+                 String password,ArrayList<String> routes,String lastLocation,String followingId) {
         super(firstName, lastName, email, phoneNumber, isFollower, password);
         this.routes = routes;
         this.lastLocation = lastLocation;
         this.followingId = followingId;
-        this.emergencyPhoneNumber = emergencyPhoneNumber;
     }
 
     public ArrayList<String> getRoutes() {
@@ -43,11 +41,4 @@ public class Child extends User {
         this.followingId = followingId;
     }
 
-    public int getEmergencyPhoneNumber() {
-        return emergencyPhoneNumber;
-    }
-
-    public void setEmergencyPhoneNumber(int emergencyPhoneNumber) {
-        this.emergencyPhoneNumber = emergencyPhoneNumber;
-    }
 }

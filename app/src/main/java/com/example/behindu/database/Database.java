@@ -6,6 +6,8 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import com.example.behindu.util.Follower;
+import com.example.behindu.util.User;
 import com.example.behindu.view.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -15,6 +17,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -38,31 +41,29 @@ public class Database {
 
 
     //sign up users
-    public void createUser(final String username,final String password,final String firstName,final String lastName,final int phoneNum,final MainActivity.registerActions registerActions){
-        mAuth.createUserWithEmailAndPassword(username,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+    public void createUser(final User user, final MainActivity.registerActions registerActions){
+        Log.d("Username:" ,user.getEmail());
+        mAuth.createUserWithEmailAndPassword(user.getEmail(),user.getPassword()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
                     Log.d("onComplete","Arrive");
                     userID = mAuth.getCurrentUser().getUid();
-                    Map<String,Object> user = new HashMap<>();
-                    user.put("first_name",firstName);
-                    user.put("last_name",lastName);
-                    user.put("phone_number",phoneNum);
-                    user.put("password",password);
-                    user.put("email",username);
                     DocumentReference documentReference = fStore.collection("users").document(userID);
                     documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
+                            registerActions.registerSucceed(true);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Log.d("OnFailure:", Objects.requireNonNull(e.getMessage()));
+                            Log.d("fail","d");
+                            registerActions.registerSucceed(false);
                         }
                     });
-                    registerActions.registerSucceed(true);
+
                 }
                 else
                 {
@@ -78,13 +79,19 @@ public class Database {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    //add details to DB
-                    logInActions.LogInSuccessfully(mAuth.getCurrentUser());
+                    mAuth = FirebaseAuth.getInstance();
+                    final DocumentReference mDocRef = fStore.document("users/" + mAuth.getUid());
+                    mDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        User user =documentSnapshot.toObject(User.class);
+                        logInActions.LogInSuccessfully(user);
+                        }
+                    });
                 }
                 else
                 {
                     logInActions.LogInFailed();
-
                 }
             }
         });

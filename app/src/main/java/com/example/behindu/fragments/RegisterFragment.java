@@ -1,12 +1,13 @@
 package com.example.behindu.fragments;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -14,14 +15,22 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.behindu.R;
+import com.example.behindu.util.Child;
+import com.example.behindu.util.Follower;
+import com.example.behindu.util.User;
+import com.example.behindu.view.ChildActivity;
+import com.example.behindu.view.FollowerActivity;
 import com.example.behindu.view.MainActivity;
-import com.example.behindu.view.StatusSelection;
 import com.example.behindu.viewmodel.MainActivityViewModel;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.UUID;
+
 public class RegisterFragment extends Fragment {
-    MainActivityViewModel viewModel = new MainActivityViewModel();
+
+    private MainActivityViewModel viewModel = new MainActivityViewModel();
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -32,45 +41,66 @@ public class RegisterFragment extends Fragment {
         final EditText emailEt = view.findViewById(R.id.emailInput_register);
         final EditText phoneNumEt = view.findViewById(R.id.phoneNumberInput_register);
         final EditText passwordEt = view.findViewById(R.id.passwordInput_register);
-        final EditText rptPasswordEt = view.findViewById(R.id.rptPasswordInput_register);
+        final EditText childPhoneNumEt = view.findViewById(R.id.child_phoneNum_Et);
+        final CheckBox followerCb = view.findViewById(R.id.follower_Cb);
+        final CheckBox childCb = view.findViewById(R.id.child_Cb);
+
 
         Button registerBtn = view.findViewById(R.id.createUserBtn);
         registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
+                Log.d("onClickRegisterBtn","Arrive");
                 String firstName = firstNameEt.getText().toString().trim();
                 String lastName = lastNameEt.getText().toString().trim();
                 String email = emailEt.getText().toString().trim();
                 int phoneNumber = Integer.parseInt(phoneNumEt.getText().toString().trim());
                 String password = passwordEt.getText().toString().trim();
-                String rptPassword = rptPasswordEt.getText().toString().trim();
+                int childPhoneNum = Integer.parseInt(childPhoneNumEt.getText().toString().trim());
 
-                if(!rptPassword.equals(password)){
-                    rptPasswordEt.setError("Password is not match!");
+                if(followerCb.isChecked()){
+                    Follower follower = new Follower(firstName,lastName,email,phoneNumber,true,password,null,childPhoneNum);
+                    signUpUser(follower);
                 }
-                
-
-                viewModel.signUpUser(firstName,lastName,email,phoneNumber,password, new MainActivity.registerActions() {
-                    @Override
-                    public void registerSucceed(boolean succeed) {
-                        if(succeed) {
-                           moveToNewActivity();
-                        }
-                        else{
-                            Snackbar.make(v,"Registration Failed", BaseTransientBottomBar.LENGTH_LONG);
-                        }
-                    }
-                });
+                else if(childCb.isChecked()){
+                    String followingId = UUID.randomUUID().toString();
+                    Child child = new Child(firstName,lastName,email,phoneNumber,false,password,null,null,followingId);
+                    signUpUser(child);
+                }
             }
         });
         return view;
     }
 
-    private void moveToNewActivity () {
-        Intent i = new Intent(getActivity(), StatusSelection.class);
+     private void signUpUser(final User user){
+         viewModel.signUpUser(user ,new MainActivity.registerActions() {
+             @Override
+             public void registerSucceed(boolean succeed) {
+                 if(succeed) {
+                     if(user.isFollower())
+                     moveToNewActivityFollower();
+                     else{
+                         moveToNewActivityChild();
+                     }
+                 }
+                 else{
+                     Snackbar.make(getView(),"Registration Failed", BaseTransientBottomBar.LENGTH_LONG);
+                 }
+             }
+         });
+     }
+
+    private void moveToNewActivityFollower () {
+        Intent i = new Intent(getActivity(), FollowerActivity.class);
         startActivity(i);
         getActivity().overridePendingTransition(0, 0);
         getActivity().finish();
+    }
 
+    private void moveToNewActivityChild () {
+        Intent i = new Intent(getActivity(), ChildActivity.class);
+        startActivity(i);
+        getActivity().overridePendingTransition(0, 0);
+        getActivity().finish();
     }
 }

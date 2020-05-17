@@ -1,11 +1,9 @@
 package com.example.behindu.viewmodel;
 
-import android.util.Log;
-import android.view.View;
-
 import androidx.lifecycle.ViewModel;
 
 import com.example.behindu.database.Database;
+import com.example.behindu.util.User;
 import com.example.behindu.view.MainActivity;
 
 
@@ -17,14 +15,11 @@ public class MainActivityViewModel extends ViewModel {
         mDatabase.signInUser(username, password,logInActions);
     }
 
-    public void signUpUser(String firstName, String lastName, String email, int phoneNum, String password, MainActivity.registerActions registerActions){
-        mDatabase.createUser(email,password,firstName,lastName,phoneNum,registerActions);
+    public void signUpUser(User user, MainActivity.registerActions registerActions){
+        mDatabase.createUser(user,registerActions);
     }
 
     public void signOutUser(){
         mDatabase.signOutUser();
     }
 }
-
-
-///לשים הכל בתיקיות!!!!

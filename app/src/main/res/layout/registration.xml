@@ -37,6 +37,28 @@
             android:textColor="@color/colorPrimaryDark"
             android:layout_marginStart="15dp"/>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/Following"
+                android:layout_marginStart="60dp"
+                android:id="@+id/follower_Cb"/>
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/Followed"
+                android:id="@+id/child_Cb"/>
+        </LinearLayout>
+
         <EditText
             android:id="@+id/firstNameInput_register"
             android:layout_width="match_parent"
@@ -81,6 +103,18 @@
             android:textStyle="bold"
             android:textAlignment="center"
             />
+
+        <EditText
+            android:id="@+id/child_phoneNum_Et"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:background="@android:color/holo_blue_light"
+            android:textColor="@android:color/black"
+            android:hint="הכנס מספר טלפון של הנעקב"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            />
         <EditText
             android:id="@+id/passwordInput_register"
             android:layout_width="match_parent"
@@ -93,17 +127,7 @@
             android:textAlignment="center"
             />
 
-        <EditText
-            android:id="@+id/rptPasswordInput_register"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_margin="10dp"
-            android:background="@android:color/holo_blue_light"
-            android:textColor="@android:color/black"
-            android:hint="@string/RepeatThePassword"
-            android:textStyle="bold"
-            android:textAlignment="center"
-            />
+
     </LinearLayout>
 
     <LinearLayout
@@ -112,25 +136,6 @@
         android:orientation="vertical"
         android:layout_weight="5">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/Following"
-                android:layout_marginStart="60dp" />
-
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/Followed"/>
-        </LinearLayout>
 
         <Button
             android:id="@+id/createUserBtn"

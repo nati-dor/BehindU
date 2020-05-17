@@ -9,6 +9,8 @@ public class User {
     private boolean isFollower;
     private String password;
 
+    public User() { }
+
     public User(String firstName, String lastName, String email, int phoneNumber, boolean isFollower, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
