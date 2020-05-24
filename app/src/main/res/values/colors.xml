@@ -8,5 +8,6 @@
     <color name="tabTextColor">#2d2d2d</color>
     <color name="tabIndecatorColor">#2d2d2d</color>
     <color name="tabBackgroundColor">#FFF2CC</color>
+    <color name="disableBtn">#F4F3F0</color>
 
 </resources>

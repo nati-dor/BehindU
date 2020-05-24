@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements CallbackFragment 
     /*Add a new fragment*/
 
     public void addFragment(){
+
         LoginFragment fragment = new LoginFragment();
         fragment.setCallbackFragment(this);
         fragmentManager = getSupportFragmentManager();

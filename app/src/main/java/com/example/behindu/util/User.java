@@ -8,16 +8,18 @@ public class User {
     private int phoneNumber;
     private boolean isFollower;
     private String password;
+    private String userId;
 
     public User() { }
 
-    public User(String firstName, String lastName, String email, int phoneNumber, boolean isFollower, String password) {
+    public User(String firstName, String lastName, String email, int phoneNumber, boolean isFollower, String password, String userId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.isFollower = isFollower;
         this.password = password;
+        this.userId = userId;
     }
 
     public String getFirstName() {
@@ -66,5 +68,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

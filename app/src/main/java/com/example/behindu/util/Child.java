@@ -4,24 +4,25 @@ import java.util.ArrayList;
 
 public class Child extends User {
 
-    //GeoJSON Object
-    private ArrayList<String> routes;
+    private ArrayList<UserLocation> routes;
     private String lastLocation;
-    private String followingId;
+    private String childId;
+
+    public Child() { }
 
     public Child(String firstName, String lastName, String email, int phoneNumber, boolean isFollower,
-                 String password,ArrayList<String> routes,String lastLocation,String followingId) {
-        super(firstName, lastName, email, phoneNumber, isFollower, password);
+                 String password,ArrayList<UserLocation> routes,String lastLocation,String childId) {
+        super(firstName, lastName, email, phoneNumber, isFollower, password,null);
         this.routes = routes;
         this.lastLocation = lastLocation;
-        this.followingId = followingId;
+        this.childId = childId;
     }
 
-    public ArrayList<String> getRoutes() {
+    public ArrayList<UserLocation> getRoutes() {
         return routes;
     }
 
-    public void setRoutes(ArrayList<String> routes) {
+    public void setRoutes(ArrayList<UserLocation> routes) {
         this.routes = routes;
     }
 
@@ -33,12 +34,20 @@ public class Child extends User {
         this.lastLocation = lastLocation;
     }
 
-    public String getFollowingId() {
-        return followingId;
+    public String getChildId() {
+        return childId;
     }
 
-    public void setFollowingId(String followingId) {
-        this.followingId = followingId;
+    public void setChildId(String childId) {
+        this.childId = childId;
     }
 
+    @Override
+    public String toString() {
+        return "Child{" +
+                "routes=" + routes +
+                ", lastLocation='" + lastLocation + '\'' +
+                ", childId='" + childId + '\'' +
+                '}';
+    }
 }

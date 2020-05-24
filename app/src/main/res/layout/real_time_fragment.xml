@@ -1,21 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+<RelativeLayout android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <FrameLayout
+    android:id="@+id/map_conatiner"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <com.google.android.gms.maps.MapView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/real_time_container">
+        android:id="@+id/map_view"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="50sp"
-            android:text="This is real time fragment" />
-    </FrameLayout>
 
-</LinearLayout>
+</RelativeLayout>

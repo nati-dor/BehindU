@@ -36,6 +36,9 @@ public class RegisterFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.registration,container,false);
 
+
+
+
         final EditText firstNameEt = view.findViewById(R.id.firstNameInput_register);
         final EditText lastNameEt = view.findViewById(R.id.lastNameInput_register);
         final EditText emailEt = view.findViewById(R.id.emailInput_register);
@@ -43,8 +46,6 @@ public class RegisterFragment extends Fragment {
         final EditText passwordEt = view.findViewById(R.id.passwordInput_register);
         final EditText childPhoneNumEt = view.findViewById(R.id.child_phoneNum_Et);
         final CheckBox followerCb = view.findViewById(R.id.follower_Cb);
-        final CheckBox childCb = view.findViewById(R.id.child_Cb);
-
 
         Button registerBtn = view.findViewById(R.id.createUserBtn);
         registerBtn.setOnClickListener(new View.OnClickListener() {
@@ -62,9 +63,8 @@ public class RegisterFragment extends Fragment {
                     Follower follower = new Follower(firstName,lastName,email,phoneNumber,true,password,null,childPhoneNum);
                     signUpUser(follower);
                 }
-                else if(childCb.isChecked()){
-                    String followingId = UUID.randomUUID().toString();
-                    Child child = new Child(firstName,lastName,email,phoneNumber,false,password,null,null,followingId);
+                else {
+                    Child child = new Child(firstName,lastName,email,phoneNumber,false,password,null,null,null);
                     signUpUser(child);
                 }
             }
@@ -78,9 +78,9 @@ public class RegisterFragment extends Fragment {
              public void registerSucceed(boolean succeed) {
                  if(succeed) {
                      if(user.isFollower())
-                     moveToNewActivityFollower();
+                     moveToNewActivity(FollowerActivity.class);
                      else{
-                         moveToNewActivityChild();
+                        moveToNewActivity(ChildActivity.class);
                      }
                  }
                  else{
@@ -90,17 +90,11 @@ public class RegisterFragment extends Fragment {
          });
      }
 
-    private void moveToNewActivityFollower () {
-        Intent i = new Intent(getActivity(), FollowerActivity.class);
+    private void moveToNewActivity (Class userClass) {
+        Intent i = new Intent(getActivity(), userClass);
         startActivity(i);
         getActivity().overridePendingTransition(0, 0);
         getActivity().finish();
     }
 
-    private void moveToNewActivityChild () {
-        Intent i = new Intent(getActivity(), ChildActivity.class);
-        startActivity(i);
-        getActivity().overridePendingTransition(0, 0);
-        getActivity().finish();
-    }
 }
