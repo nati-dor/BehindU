@@ -12,8 +12,7 @@ import com.example.behindu.R;
 import com.example.behindu.fragments.CallbackFragment;
 import com.example.behindu.fragments.LoginFragment;
 import com.example.behindu.fragments.RegisterFragment;
-import com.example.behindu.util.User;
-import com.google.firebase.auth.FirebaseUser;
+import com.example.behindu.model.User;
 
 public class MainActivity extends AppCompatActivity implements CallbackFragment {
 

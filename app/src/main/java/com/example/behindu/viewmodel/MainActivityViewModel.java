@@ -3,7 +3,7 @@ package com.example.behindu.viewmodel;
 import androidx.lifecycle.ViewModel;
 
 import com.example.behindu.database.Database;
-import com.example.behindu.util.User;
+import com.example.behindu.model.User;
 import com.example.behindu.view.MainActivity;
 
 

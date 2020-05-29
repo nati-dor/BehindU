@@ -1,4 +1,4 @@
-package com.example.behindu.util;
+package com.example.behindu.model;
 
 import java.util.List;
 

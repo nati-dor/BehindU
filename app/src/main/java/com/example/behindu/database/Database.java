@@ -6,11 +6,11 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
-import com.example.behindu.util.Child;
-import com.example.behindu.util.Follower;
-import com.example.behindu.util.LastLocation;
-import com.example.behindu.util.User;
-import com.example.behindu.util.UserLocation;
+import com.example.behindu.model.Child;
+import com.example.behindu.model.Follower;
+import com.example.behindu.model.LastLocation;
+import com.example.behindu.model.User;
+import com.example.behindu.model.UserLocation;
 import com.example.behindu.view.ChildActivity;
 import com.example.behindu.view.FollowerActivity;
 import com.example.behindu.view.MainActivity;
@@ -19,13 +19,14 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.api.LogDescriptor;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static android.content.ContentValues.TAG;
@@ -36,6 +37,7 @@ public class Database {
     private FirebaseFirestore fStore = FirebaseFirestore.getInstance();
     private String userID;
     private DocumentReference mDocRef;
+    private OnFirestoreTaskComplete onFirestoreTaskComplete;
 
     private static Database instance = null;
     private Database(){}
@@ -44,6 +46,10 @@ public class Database {
         if(instance == null)
             instance = new Database();
         return instance;
+    }
+
+    public Database(OnFirestoreTaskComplete onFirestoreTaskComplete){
+            this.onFirestoreTaskComplete = onFirestoreTaskComplete;
     }
 
     //sign up users
@@ -132,22 +138,24 @@ public class Database {
 
     // Save user location
 
-    public void saveUserLocation(final UserLocation mUserLocation){
+   /* Updating child location from service and from child activity therefor we should use synchronized
+    function that use multi-threading */
+    public synchronized void saveUserLocation(final UserLocation mUserLocation){
+
         if(mUserLocation != null){
             mDocRef = fStore.collection("User Locations").document(mAuth.getCurrentUser().getUid());
             mDocRef.set(mUserLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){
-                        Log.d(TAG, "saveUserLocation: \ninsert user location into DB."+
-                                "\n the size of list: "+ mUserLocation.getList().size()+
-                                "");
+                        Log.d(TAG, "onComplete: insert user location into DB succeed.");
+                        Log.d(TAG, "onComplete: ");
                     }
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Log.d(TAG, "onFailure: insert didnt succeed");
+                    Log.d(TAG, "onFailure: insert user location into DB not succeed.");
                 }
             });
         }
@@ -251,5 +259,35 @@ public class Database {
               }
             }
         });
+    }
+
+    public void getListData(){
+        Log.d(TAG, "getListData: Arrive");
+        mDocRef = fStore.collection("User Locations").document("CWXywLiTA6O5uxQ97hbEes7Gcem2");
+        mDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()) {
+                    if (task.getResult().toObject(UserLocation.class) != null) {
+                        Log.d(TAG, "onComplete: Arrive");
+                        UserLocation userLocations = task.getResult().toObject(UserLocation.class);
+                            onFirestoreTaskComplete.lastLocationDataAdded(userLocations.getList());
+                    }
+                    else
+                        onFirestoreTaskComplete.lastLocationDataAdded(null);
+                }
+                else
+                {
+                    Log.d(TAG, "onError: Arrive");
+                    onFirestoreTaskComplete.onError(task.getException());
+                }
+            }
+        });
+    }
+
+    public interface OnFirestoreTaskComplete{
+        void lastLocationDataAdded(List<LastLocation> lastLocationList);
+        void onError(Exception e);
+
     }
 }

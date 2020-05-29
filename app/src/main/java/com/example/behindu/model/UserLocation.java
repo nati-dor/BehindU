@@ -1,8 +1,9 @@
-package com.example.behindu.util;
+package com.example.behindu.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserLocation  implements Parcelable {
@@ -19,7 +20,13 @@ public class UserLocation  implements Parcelable {
     public UserLocation() { }
 
     private UserLocation(Parcel in) {
+        child = (Child) in.readValue(Child.class.getClassLoader());
+        list = new ArrayList<>();
+        in.readList(list,LastLocation.class.getClassLoader());
+
     }
+
+
 
     public static final Creator<UserLocation> CREATOR = new Creator<UserLocation>() {
         @Override
@@ -59,6 +66,16 @@ public class UserLocation  implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(child);
+        dest.writeList(list);
+    }
+
+    @Override
+    public String toString() {
+        return "UserLocation{" +
+                "list=" + list +
+                ", child=" + child +
+                '}';
     }
 }
 

@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.behindu.R;
-import com.example.behindu.util.User;
+import com.example.behindu.model.User;
 import com.example.behindu.view.ChildActivity;
 import com.example.behindu.view.FollowerActivity;
 import com.example.behindu.view.MainActivity;
@@ -85,7 +85,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     private void moveToNewActivity (Class userClass) {
         Intent i = new Intent(getActivity(), userClass);
         startActivity(i);
-       // getActivity().overridePendingTransition(0, 0);
         getActivity().finish();
     }
 

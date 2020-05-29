@@ -1,6 +1,9 @@
-package com.example.behindu.util;
+package com.example.behindu.model;
 
-public class User {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class User implements Parcelable {
 
     private String firstName;
     private String lastName;
@@ -21,6 +24,28 @@ public class User {
         this.password = password;
         this.userId = userId;
     }
+
+    protected User(Parcel in) {
+        firstName = in.readString();
+        lastName = in.readString();
+        email = in.readString();
+        phoneNumber = in.readInt();
+        isFollower = in.readByte() != 0;
+        password = in.readString();
+        userId = in.readString();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     public String getFirstName() {
         return firstName;
@@ -76,5 +101,21 @@ public class User {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(firstName);
+        dest.writeString(lastName);
+        dest.writeString(email);
+        dest.writeInt(phoneNumber);
+        dest.writeByte((byte) (isFollower ? 1 : 0));
+        dest.writeString(password);
+        dest.writeString(userId);
     }
 }

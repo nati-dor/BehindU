@@ -1,5 +1,6 @@
 package com.example.behindu.view;
 
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,10 +23,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.behindu.R;
-import com.example.behindu.util.Child;
-import com.example.behindu.util.LastLocation;
-import com.example.behindu.util.User;
-import com.example.behindu.util.UserLocation;
+import com.example.behindu.model.Child;
+import com.example.behindu.model.LastLocation;
+import com.example.behindu.model.UserLocation;
+import com.example.behindu.services.LocationService;
 import com.example.behindu.viewmodel.ChildViewModel;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -38,9 +40,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import static com.example.behindu.util.Constants.ERROR_DIALOG_REQUEST;
-import static com.example.behindu.util.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
-import static com.example.behindu.util.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
+import static com.example.behindu.model.Constants.ERROR_DIALOG_REQUEST;
+import static com.example.behindu.model.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
+import static com.example.behindu.model.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
 
 public class ChildActivity extends AppCompatActivity {
 
@@ -80,6 +82,7 @@ public class ChildActivity extends AppCompatActivity {
         viewModel.getUserDetails(new childLocationCallback() {
             @Override
             public void setLocation(Child child) {
+                Log.d(TAG, "setLocation: arrive from onstop");
                 mUserLocation.setChild(child);
                 getLastKnownLocation();
             }
@@ -89,10 +92,11 @@ public class ChildActivity extends AppCompatActivity {
 
 
     private void saveUserLocation(UserLocation mUserLocation){
+        Log.d(TAG, "saveUserLocation: arrive");
         viewModel.saveUserLocation(mUserLocation);
     }
 
-    /*Get the last known location of child*/
+    /* Get the last known location of child*/
 
     private void getLastKnownLocation(){
         Log.d(TAG,"getLastKnowLocation: called");
@@ -102,11 +106,6 @@ public class ChildActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Location> task) {
                 if (task.isSuccessful()) {
                     final Location location = task.getResult();
-
-
-
-                    //  Log.d(TAG, "onComplete: latitude:" + geoPoint.getLatitude());
-                    //Log.d(TAG, "onComplete: longitude:" + geoPoint.getLongitude());
                     viewModel.getLocationList(new locationList() {
 
                         GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
@@ -117,15 +116,13 @@ public class ChildActivity extends AppCompatActivity {
                                 lastLocationList = new ArrayList<>();
                                 lastLocationList.add(new LastLocation(geoPoint, Calendar.getInstance().getTime()));
                                 mUserLocation.setList(lastLocationList);
-                                //mUserLocation.setTimestamp(null);
                                 saveUserLocation(mUserLocation);
-                                Log.d(TAG, "mUserLocation == null:arrive");
+                                startLocationService(mUserLocation); // Starting the service after all the list has been load
                             } else {
                                 lastLocationList.add(new LastLocation(geoPoint,Calendar.getInstance().getTime()));
                                 mUserLocation.setList(lastLocationList);
-                                //mUserLocation.setTimestamp(null);
                                 saveUserLocation(mUserLocation);
-                                Log.d(TAG, "mUserLocation != null:arrive");
+                                startLocationService(mUserLocation); // Starting the service after all the list has been load
                             }
                         }
 
@@ -134,6 +131,40 @@ public class ChildActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+
+    private void startLocationService(UserLocation mUserLocation){
+        if(!isLocationServiceRunning()){
+            Intent serviceIntent = new Intent(this, LocationService.class);
+            Log.d(TAG, "startLocationService:service intent-- "+serviceIntent.putExtra("UserLocations",mUserLocation).toString());
+           // Log.d(TAG, "startLocationService: " +mUserLocation.toString());
+           // serviceIntent.putExtra("UserLocations", mUserLocation);
+
+//        this.startService(serviceIntent);
+
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                ChildActivity.this.startForegroundService(serviceIntent);
+                Log.d(TAG, "startLocationService: " +mUserLocation.toString());
+            }else{
+                startService(serviceIntent);
+                Log.d(TAG, "startLocationService: " +mUserLocation.toString());
+            }
+        }
+    }
+
+    // **************************** check the if statement *******************************
+
+    private boolean isLocationServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
+            if("com.codingwithmitch.googledirectionstest.services.LocationService".equals(service.service.getClassName())) {
+                Log.d(TAG, "isLocationServiceRunning: location service is already running.");
+                return true;
+            }
+        }
+        Log.d(TAG, "isLocationServiceRunning: location service is not running.");
+        return false;
     }
 
 
@@ -204,8 +235,7 @@ public class ChildActivity extends AppCompatActivity {
             return true;
         }
         else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
-            //an error occured but we can resolve it
-            Log.d(TAG, "isServicesOK: an error occured but we can fix it");
+            Log.d(TAG, "isServicesOK: an error occured");
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(ChildActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
         }else{
@@ -232,8 +262,6 @@ public class ChildActivity extends AppCompatActivity {
             }
         }
     }
-
-    /* Move to a new activity*/
 
     private void moveToMainActivity () {
         Intent i = new Intent(this, MainActivity.class);
@@ -266,6 +294,12 @@ public class ChildActivity extends AppCompatActivity {
         }
         else
             getUserDetails();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
     }
 
     public interface childLocationCallback{

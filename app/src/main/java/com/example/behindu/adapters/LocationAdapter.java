@@ -2,6 +2,7 @@ package com.example.behindu.adapters;
 
 import android.location.Address;
 import android.location.Geocoder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +12,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.behindu.R;
-import com.example.behindu.util.LastLocation;
-import com.google.firebase.firestore.GeoPoint;
+import com.example.behindu.model.LastLocation;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+
+import static android.content.ContentValues.TAG;
 
 public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocationViewHolder> {
 
@@ -55,7 +57,8 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         try {
             Geocoder gcd = new Geocoder(holder.itemView.getContext(), Locale.getDefault());
             addressesList = gcd.getFromLocation(location.getGeoPoint().getLatitude(),location.getGeoPoint().getLongitude(), 1);
-            String address = addressesList.get(0).getAdminArea()+"," + addressesList.get(0).getSubAdminArea()+ ",\n" + addressesList.get(0).getAddressLine(0);
+          //  "," + addressesList.get(0).getSubAdminArea()+
+            String address = addressesList.get(0).getAdminArea()+ ",\n" + addressesList.get(0).getAddressLine(0);
             holder.cityTv.setText(address);
             holder.streetTv.setText(location.getTimestamp().toString());
         } catch (IOException e) {
@@ -65,7 +68,18 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
 
     @Override
     public int getItemCount() {
+        if(lastLocation == null)
+            return 0;
+        else
         return lastLocation.size();
+    }
+
+    /* Update the list from the observer of Live Data */
+
+    public void setLastLocation(List<LastLocation> lastLocation){
+        Log.d(TAG, "setLastLocation: arrive");
+        this.lastLocation = lastLocation;
+        notifyDataSetChanged();
     }
 
 }

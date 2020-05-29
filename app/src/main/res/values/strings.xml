@@ -24,4 +24,6 @@
     <string name="callTheFollower">Call the follower</string>
     <string name="sos">S.O.S</string>
     <string name="sign_out">Sign out</string>
+    <string name="collection_user_location" translatable="false">User Locations</string>
+    <string name="collection_users" translatable="false">Users</string>
 </resources>

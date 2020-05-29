@@ -10,17 +10,13 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.example.behindu.R;
-import com.example.behindu.util.Child;
-import com.example.behindu.view.FollowerActivity;
-import com.example.behindu.viewmodel.FollowerViewModel;
 
 public class Fragment3 extends Fragment {
 
-    View view;
-    FollowerViewModel viewModel = new FollowerViewModel();
+    private View view;
+    //FollowerViewModel viewModel = new FollowerViewModel();
 
     public Fragment3() {
     }

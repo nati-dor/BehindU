@@ -13,9 +13,9 @@
 
 
     <ImageView
-        android:layout_width="110dp"
-        android:layout_height="110dp"
-        android:layout_gravity="end"
+        android:layout_width="85dp"
+        android:layout_height="85dp"
+        android:layout_gravity="end|center"
         android:src="@drawable/location_marker"
         android:id="@+id/location_image"/>
 
@@ -31,9 +31,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start|top"
             android:layout_marginTop="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="10dp"
             android:text="name"
-            android:textSize="20sp" />
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/street_location"
@@ -41,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start|bottom"
             android:layout_marginTop="40dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="10dp"
 
             android:text="Salary"
             android:textSize="15sp" />

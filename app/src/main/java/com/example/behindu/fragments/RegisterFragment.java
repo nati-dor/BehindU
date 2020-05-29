@@ -15,17 +15,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.behindu.R;
-import com.example.behindu.util.Child;
-import com.example.behindu.util.Follower;
-import com.example.behindu.util.User;
+import com.example.behindu.model.Child;
+import com.example.behindu.model.Follower;
+import com.example.behindu.model.User;
 import com.example.behindu.view.ChildActivity;
 import com.example.behindu.view.FollowerActivity;
 import com.example.behindu.view.MainActivity;
 import com.example.behindu.viewmodel.MainActivityViewModel;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
-
-import java.util.UUID;
 
 public class RegisterFragment extends Fragment {
 
