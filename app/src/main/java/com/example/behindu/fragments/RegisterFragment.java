@@ -58,7 +58,7 @@ public class RegisterFragment extends Fragment {
                 int childPhoneNum = Integer.parseInt(childPhoneNumEt.getText().toString().trim());
 
                 if(followerCb.isChecked()){
-                    Follower follower = new Follower(firstName,lastName,email,phoneNumber,true,password,null,childPhoneNum);
+                    Follower follower = new Follower(firstName,lastName,email,phoneNumber,true,password,null,childPhoneNum,"DDDDDD");
                     signUpUser(follower);
                 }
                 else {

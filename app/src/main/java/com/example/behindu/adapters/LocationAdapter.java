@@ -57,7 +57,6 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         try {
             Geocoder gcd = new Geocoder(holder.itemView.getContext(), Locale.getDefault());
             addressesList = gcd.getFromLocation(location.getGeoPoint().getLatitude(),location.getGeoPoint().getLongitude(), 1);
-          //  "," + addressesList.get(0).getSubAdminArea()+
             String address = addressesList.get(0).getAdminArea()+ ",\n" + addressesList.get(0).getAddressLine(0);
             holder.cityTv.setText(address);
             holder.streetTv.setText(location.getTimestamp().toString());

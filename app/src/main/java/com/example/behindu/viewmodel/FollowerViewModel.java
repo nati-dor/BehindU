@@ -7,10 +7,14 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.behindu.database.Database;
+import com.example.behindu.fragments.RealtimeLocationFragment;
 import com.example.behindu.model.Child;
+import com.example.behindu.model.ClusterMarker;
+import com.example.behindu.model.Follower;
 import com.example.behindu.model.LastLocation;
 import com.example.behindu.view.FollowerActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static android.content.ContentValues.TAG;
@@ -29,15 +33,14 @@ public class FollowerViewModel extends ViewModel implements Database.OnFirestore
 
     public FollowerViewModel(){
         Log.d(TAG, "FollowerViewModel: Arrive");
-        database.getListData();
+      //  database.getListData();
     }
 
 
     /********/
 
-    public void getChildLocation(Child child, FollowerActivity.getList list){
-        mDatabase.getChildLocation(child,list);
-        Log.d(TAG, "getChildLocation: " + list.toString());
+    public void getChildLocation(Child child, FollowerActivity.getChildDetails childDetails){
+        mDatabase.getChildLocation(child,childDetails);
     }
 
     public void getUser(FollowerActivity.getCurrentUser currentUser) {
@@ -47,8 +50,8 @@ public class FollowerViewModel extends ViewModel implements Database.OnFirestore
 
 
         /***********/
-    public void addChild(Child child) {
-        mDatabase.addChild(child);
+    public void addChildCode(Follower follower) {
+        mDatabase.addChildCode(follower);
     }
 
     @Override
@@ -60,5 +63,11 @@ public class FollowerViewModel extends ViewModel implements Database.OnFirestore
     @Override
     public void onError(Exception e) {
 
+    }
+
+
+    public void retrieveUserLocations(ArrayList<ClusterMarker> mClusterMarkers,
+                                      RealtimeLocationFragment.onCallbackRetrieveUserLocations onCallbackRetrieveUserLocations) {
+        mDatabase.retrieveUserLocations(mClusterMarkers,onCallbackRetrieveUserLocations);
     }
 }

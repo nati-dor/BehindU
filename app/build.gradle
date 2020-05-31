@@ -49,6 +49,9 @@ dependencies {
     // Google map utils for clustering
     implementation 'com.google.maps.android:android-maps-utils:0.5+'
 
+    // Google Directions
+    implementation 'com.google.maps:google-maps-services:0.2.11'
+    implementation 'org.slf4j:slf4j-nop:1.7.25'
 
     // Google Cardview
     implementation "androidx.cardview:cardview:1.0.0"

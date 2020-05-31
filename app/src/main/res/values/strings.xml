@@ -26,4 +26,5 @@
     <string name="sign_out">Sign out</string>
     <string name="collection_user_location" translatable="false">User Locations</string>
     <string name="collection_users" translatable="false">Users</string>
+    <string name="google_map_api_key" translatable="false">AIzaSyCuFvotxjgZh6NJSueQOmDgMe9IvF0hm4A</string>
 </resources>

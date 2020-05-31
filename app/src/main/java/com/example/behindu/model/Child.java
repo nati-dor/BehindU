@@ -5,19 +5,16 @@ import android.os.Parcelable;
 
 import com.google.firebase.firestore.GeoPoint;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Child extends User implements Parcelable {
 
-    private List<GeoPoint> routes;
+    private GeoPoint routes;
     private String lastLocation;
     private String childId;
 
     public Child() { }
 
     public Child(String firstName, String lastName, String email, int phoneNumber, boolean isFollower,
-                 String password,List<GeoPoint> routes,String lastLocation,String childId) {
+                 String password,GeoPoint routes,String lastLocation,String childId) {
         super(firstName, lastName, email, phoneNumber, isFollower, password,null);
         this.routes = routes;
         this.lastLocation = lastLocation;
@@ -25,8 +22,10 @@ public class Child extends User implements Parcelable {
     }
 
     protected Child(Parcel in) {
-        routes = new ArrayList<>();
-        in.readList(routes,GeoPoint.class.getClassLoader());
+        super(in);
+        double lat = in.readDouble();
+        double lng = in.readDouble();
+        routes = new GeoPoint(lat,lng);
         lastLocation = in.readString();
         childId = in.readString();
     }
@@ -35,6 +34,7 @@ public class Child extends User implements Parcelable {
         @Override
         public Child createFromParcel(Parcel in) {
             return new Child(in);
+
         }
 
         @Override
@@ -43,11 +43,11 @@ public class Child extends User implements Parcelable {
         }
     };
 
-    public List<GeoPoint> getRoutes() {
+    public GeoPoint getRoutes() {
         return routes;
     }
 
-    public void setRoutes(List<GeoPoint> routes) {
+    public void setRoutes(GeoPoint routes) {
         this.routes = routes;
     }
 
@@ -83,7 +83,9 @@ public class Child extends User implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeList(routes);
+        super.writeToParcel(dest,flags);
+        dest.writeDouble(routes.getLatitude());
+        dest.writeDouble(routes.getLongitude());
         dest.writeString(lastLocation);
         dest.writeString(childId);
     }

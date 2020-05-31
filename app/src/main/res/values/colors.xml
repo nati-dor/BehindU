@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#FFF2CC</color>
+    <color name="colorPrimaryDark">#cace</color>
     <color name="colorAccent">#05B0C3</color>
     <color name="colorblack">#050505</color>
     <color name="colorcace">#05C1C5</color>
@@ -9,5 +9,7 @@
     <color name="tabIndecatorColor">#2d2d2d</color>
     <color name="tabBackgroundColor">#FFF2CC</color>
     <color name="disableBtn">#F4F3F0</color>
+    <color name="polyLineSelected">#CC50E133</color>
+    <color name="polyLineUnSelected">#FF3D00</color>
 
 </resources>

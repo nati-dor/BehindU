@@ -6,16 +6,25 @@ public class Follower extends User {
 
     private List<Child> childList;
     private int childPhoneNumber;
+    private String followingId;
 
     public Follower(){}
 
     public Follower(String firstName, String lastName, String email, int phoneNumber, boolean isFollower,
-                    String password,List<Child> childList,int childPhoneNumber) {
+                    String password,List<Child> childList,int childPhoneNumber,String followingId) {
         super(firstName, lastName, email, phoneNumber, isFollower, password,null);
         this.childList = childList;
         this.childPhoneNumber = childPhoneNumber;
+        this.followingId = followingId;
     }
 
+    public String getFollowingId() {
+        return followingId;
+    }
+
+    public void setFollowingId(String followingId) {
+        this.followingId = followingId;
+    }
 
     public List<Child> getChildList() {
         return childList;

@@ -9,5 +9,15 @@
         android:layout_height="match_parent"
         android:id="@+id/map_view"/>
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="reset"
+            android:src="@drawable/reset_btn"
+            android:id="@+id/reset_map_btn"/>
+    </RelativeLayout>
 
 </RelativeLayout>

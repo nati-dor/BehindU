@@ -1,5 +1,4 @@
 package com.example.behindu.view;
-
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -14,6 +13,7 @@ import com.example.behindu.fragments.LoginFragment;
 import com.example.behindu.fragments.RegisterFragment;
 import com.example.behindu.model.User;
 
+
 public class MainActivity extends AppCompatActivity implements CallbackFragment {
 
     Fragment fragment;
@@ -25,7 +25,9 @@ public class MainActivity extends AppCompatActivity implements CallbackFragment 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_fragment);
 
-       addFragment();
+
+
+      addFragment();
     }
 
 

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,7 +25,9 @@ import androidx.core.content.ContextCompat;
 
 import com.example.behindu.R;
 import com.example.behindu.model.Child;
+import com.example.behindu.model.Follower;
 import com.example.behindu.model.LastLocation;
+import com.example.behindu.model.User;
 import com.example.behindu.model.UserLocation;
 import com.example.behindu.services.LocationService;
 import com.example.behindu.viewmodel.ChildViewModel;
@@ -36,9 +39,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.GeoPoint;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static com.example.behindu.model.Constants.ERROR_DIALOG_REQUEST;
 import static com.example.behindu.model.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
@@ -61,6 +67,33 @@ public class ChildActivity extends AppCompatActivity {
         getLocationPermission();
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        final EditText enterCodeEt = findViewById(R.id.enter_code_Et);
+
+        Button enterCodeBtn = findViewById(R.id.enter_code_btn);
+        enterCodeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String code = enterCodeEt.getText().toString().trim();
+                viewModel.getAllUsers(new followerList() {
+                    @Override
+                    public void onCallbackUsersList(ArrayList<Follower> follower) {
+                        for(Follower f : follower){
+                            if(f.getFollowingId().equals(code)){
+                                List<Child> childList = new ArrayList<>();
+                                childList.add(mUserLocation.getChild());
+                                f.setChildList(childList);
+                                viewModel.saveChildList(f);
+                                Toast.makeText(ChildActivity.this, "You have connected to your follower", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                });
+
+
+            }
+        });
+
 
         Button signOutBtn = findViewById(R.id.signOutChildBtn);
         signOutBtn.setOnClickListener(new View.OnClickListener() {
@@ -112,6 +145,7 @@ public class ChildActivity extends AppCompatActivity {
 
                         @Override
                         public void onCallbackLocationList(List<LastLocation> lastLocationList) {
+                            mUserLocation.getChild().setRoutes(geoPoint);
                             if (lastLocationList == null) {
                                 lastLocationList = new ArrayList<>();
                                 lastLocationList.add(new LastLocation(geoPoint, Calendar.getInstance().getTime()));
@@ -137,18 +171,13 @@ public class ChildActivity extends AppCompatActivity {
     private void startLocationService(UserLocation mUserLocation){
         if(!isLocationServiceRunning()){
             Intent serviceIntent = new Intent(this, LocationService.class);
-            Log.d(TAG, "startLocationService:service intent-- "+serviceIntent.putExtra("UserLocations",mUserLocation).toString());
-           // Log.d(TAG, "startLocationService: " +mUserLocation.toString());
-           // serviceIntent.putExtra("UserLocations", mUserLocation);
-
-//        this.startService(serviceIntent);
+            serviceIntent.putExtra("UserLocations",mUserLocation);
 
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
                 ChildActivity.this.startForegroundService(serviceIntent);
-                Log.d(TAG, "startLocationService: " +mUserLocation.toString());
+
             }else{
                 startService(serviceIntent);
-                Log.d(TAG, "startLocationService: " +mUserLocation.toString());
             }
         }
     }
@@ -308,6 +337,10 @@ public class ChildActivity extends AppCompatActivity {
 
     public interface locationList{
         void onCallbackLocationList(List<LastLocation> geoPointList);
+    }
+
+    public interface followerList{
+        void onCallbackUsersList(ArrayList<Follower> follower);
     }
 
 }

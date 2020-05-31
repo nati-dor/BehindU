@@ -118,4 +118,17 @@ public class User implements Parcelable {
         dest.writeString(password);
         dest.writeString(userId);
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", phoneNumber=" + phoneNumber +
+                ", isFollower=" + isFollower +
+                ", password='" + password + '\'' +
+                ", userId='" + userId + '\'' +
+                '}';
+    }
 }

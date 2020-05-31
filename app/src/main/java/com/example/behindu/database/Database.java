@@ -6,7 +6,9 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import com.example.behindu.fragments.RealtimeLocationFragment;
 import com.example.behindu.model.Child;
+import com.example.behindu.model.ClusterMarker;
 import com.example.behindu.model.Follower;
 import com.example.behindu.model.LastLocation;
 import com.example.behindu.model.User;
@@ -14,6 +16,7 @@ import com.example.behindu.model.UserLocation;
 import com.example.behindu.view.ChildActivity;
 import com.example.behindu.view.FollowerActivity;
 import com.example.behindu.view.MainActivity;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -25,7 +28,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,6 +43,9 @@ public class Database {
     private String userID;
     private DocumentReference mDocRef;
     private OnFirestoreTaskComplete onFirestoreTaskComplete;
+    private String childId;
+    private final String DEFAULT_USER_ID ="cp2iDImempZamCDq0gwvrHBzyNf1";
+
 
     private static Database instance = null;
     private Database(){}
@@ -54,7 +62,6 @@ public class Database {
 
     //sign up users
     public void createUser(final User user, final MainActivity.registerActions registerActions){
-        Log.d("Username:" ,user.getEmail());
         mAuth.createUserWithEmailAndPassword(user.getEmail(),user.getPassword()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -98,9 +105,9 @@ public class Database {
                     mAuth = FirebaseAuth.getInstance();
                     mDocRef = fStore.document("users/" + mAuth.getUid());
                     mDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        User user =documentSnapshot.toObject(User.class);
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    User user =documentSnapshot.toObject(User.class);
                         user.setUserId(mAuth.getUid());
                         logInActions.LogInSuccessfully(user);
                         }
@@ -178,21 +185,27 @@ public class Database {
         });
     }
 
-    public void getChildLocation(User child, final FollowerActivity.getList list){
-        mDocRef = fStore.collection("User Locations").document("CWXywLiTA6O5uxQ97hbEes7Gcem2");
+    public void getChildLocation(User child, final FollowerActivity.getChildDetails childDetails) {
+            if(child == null){
+                childId = DEFAULT_USER_ID; // When is the first time of login to the follower activity
+            }
+            else
+                childId = child.getUserId();
+            mDocRef = fStore.collection("User Locations").document(childId);
 
-        mDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
-                    if(task.getResult().toObject(UserLocation.class) != null){
-                        UserLocation userLocations= task.getResult().toObject(UserLocation.class);
-                        list.setList(userLocations.getList());
+            mDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        if (task.getResult().toObject(UserLocation.class) != null) {
+                            UserLocation userLocations = task.getResult().toObject(UserLocation.class);
+                            childDetails.setChildDetails(userLocations);
+                        }
                     }
                 }
-            }
-        });
-    }
+            });
+        }
+
 
     public void getUser(final FollowerActivity.getCurrentUser currentUser) {
         mDocRef = fStore.collection("users").document(mAuth.getCurrentUser().getUid());
@@ -210,10 +223,10 @@ public class Database {
         });
     }
 
-    public void addChild(Child child) {
+    public void addChildCode(Follower follower) {
         mDocRef = fStore.collection("users").document(mAuth.getCurrentUser().getUid());
         
-        mDocRef.set(child).addOnCompleteListener(new OnCompleteListener<Void>() {
+        mDocRef.set(follower).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()){
@@ -250,6 +263,7 @@ public class Database {
                       //Log.d(TAG, "onComplete:details "+userLocation.toString());
                       if (userLocation != null) {
                           Log.d(TAG, "onComplete: =!null");
+                        //  Log.d(TAG, "onComplete: " +userLocation.getChild().getRoutes().toString());
                           locationList.onCallbackLocationList(userLocation.getList());
                       } else {
                           Log.d(TAG, "onComplete: ==null");
@@ -261,9 +275,9 @@ public class Database {
         });
     }
 
-    public void getListData(){
+ /*   public void getListData(Child child){
         Log.d(TAG, "getListData: Arrive");
-        mDocRef = fStore.collection("User Locations").document("CWXywLiTA6O5uxQ97hbEes7Gcem2");
+        mDocRef = fStore.collection("User Locations").document(child.getUserId());
         mDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -281,6 +295,68 @@ public class Database {
                     Log.d(TAG, "onError: Arrive");
                     onFirestoreTaskComplete.onError(task.getException());
                 }
+            }
+        });
+    }*/
+
+    public void retrieveUserLocations(final ArrayList<ClusterMarker> mClusterMarkers, final RealtimeLocationFragment.onCallbackRetrieveUserLocations onCallbackRetrieveUserLocations) {
+        try{
+            for(ClusterMarker clusterMarker: mClusterMarkers){
+
+                DocumentReference userLocationRef = FirebaseFirestore.getInstance()
+                        .collection("User Locations")
+                        .document(clusterMarker.getUser().getUserId());
+
+                userLocationRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()){
+
+                            final UserLocation updatedUserLocation = task.getResult().toObject(UserLocation.class);
+                            onCallbackRetrieveUserLocations.setUserLocations(updatedUserLocation);
+
+                        }
+                    }
+                });
+            }
+        }catch (IllegalStateException e){
+            Log.e(TAG, "retrieveUserLocations: Fragment was destroyed during Firestore query. Ending query." + e.getMessage() );
+        }
+
+    }
+
+    public void getAllUsers(final ChildActivity.followerList usersList) {
+         fStore.collection("users")
+                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+             @Override
+             public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                 if(task.isSuccessful()){
+                     List<DocumentSnapshot> documentSnapshots = task.getResult().getDocuments();
+                     Log.d(TAG, "onComplete: size of document" + documentSnapshots.size());
+                     ArrayList<Follower> users = new ArrayList<>();
+                     for(int i = 0; i<documentSnapshots.size(); i++){
+                        User user = documentSnapshots.get(i).toObject(User.class);
+                        if(user.isFollower()){
+                            Follower follower = documentSnapshots.get(i).toObject(Follower.class);
+                            users.add(follower);
+                        }
+                     }
+                     usersList.onCallbackUsersList(users);
+                 }
+             }
+         });
+    }
+
+    public void saveChildList(Follower f) {
+        mDocRef = fStore.collection("users").document(f.getUserId());
+        mDocRef.set(f).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    Log.d(TAG, "onComplete: saved follower successfully");
+                }
+                else
+                    Log.d(TAG, "onComplete: task is failed");
             }
         });
     }

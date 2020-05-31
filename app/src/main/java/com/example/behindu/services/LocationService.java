@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
@@ -19,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
-import com.example.behindu.model.Child;
 import com.example.behindu.model.UserLocation;
 import com.example.behindu.viewmodel.ChildViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -29,9 +27,6 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.firestore.GeoPoint;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.example.behindu.model.Constants.FASTEST_INTERVAL;
 import static com.example.behindu.model.Constants.UPDATE_INTERVAL;
 
@@ -40,7 +35,6 @@ public class LocationService extends Service {
     private static final String TAG = "LocationService";
 
     private FusedLocationProviderClient mFusedLocationClient;
-    private List<GeoPoint> realtimeListCoordinate;
     private UserLocation mUserLocation;
     private ChildViewModel viewModel = new ChildViewModel();
 
@@ -80,7 +74,6 @@ public class LocationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mUserLocation = intent.getParcelableExtra("UserLocations");
-//        Log.d(TAG, "onStartCommand: last location: " + mUserLocation.getList().get(0).getTimestamp().toString());
        getLocation();
         return START_NOT_STICKY;
     }
@@ -112,20 +105,9 @@ public class LocationService extends Service {
 
                         if (location != null) {
                             GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-                            if(realtimeListCoordinate == null){
-                                realtimeListCoordinate = new ArrayList<>();
-                                realtimeListCoordinate.add(geoPoint);
-                                Log.d(TAG, "onLocationResult: " + mUserLocation.toString());
-                                Log.d(TAG, "onLocationResult: " + mUserLocation.getChild().toString());
-                                mUserLocation.getChild().setRoutes(realtimeListCoordinate);
+                                mUserLocation.getChild().setRoutes(geoPoint);
                                 saveUserLocation(mUserLocation);
                             }
-                            else {
-                                realtimeListCoordinate.add(geoPoint);
-                                mUserLocation.getChild().setRoutes(realtimeListCoordinate);
-                                saveUserLocation(mUserLocation);
-                            }
-                        }
                     }
                 },
                 Looper.myLooper()); // Looper.myLooper tells this to repeat forever until thread is destroyed
