@@ -22,7 +22,7 @@ import java.util.List;
 
 public class FollowerActivity extends AppCompatActivity  {
 
-    private FollowerViewModel viewModel = new FollowerViewModel();
+    private FollowerViewModel mViewModel = new FollowerViewModel();
     private Child mChild;
 
     @Override
@@ -33,7 +33,7 @@ public class FollowerActivity extends AppCompatActivity  {
     }
 
     private void getUser(){
-        viewModel.getUser(new getCurrentUser() {
+        mViewModel.getUser(new getCurrentUser() {
             @Override
             public void setCurrentUser(Follower follower) {
                 getChildLocation(follower);
@@ -49,7 +49,7 @@ public class FollowerActivity extends AppCompatActivity  {
             mChild = childList.get(0);
         }
 
-            viewModel.getChildLocation(mChild, new getChildDetails() {
+            mViewModel.getChildLocation(mChild, new getChildDetails() {
                 @Override
                 public void setChildDetails(UserLocation userLocations) {
                     initViewPager(userLocations, follower);

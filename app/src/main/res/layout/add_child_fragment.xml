@@ -37,7 +37,8 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="10dp"
-                android:text="1. Click on 'Add Child'\n\n2. Insert the code on your child   phone."
+                android:text="1. Click on 'Add Child'.\n\n2. Type the code on child phone."
+
                 android:textColor="#808080"
                 android:textSize="20sp"
                 android:textStyle="bold" />

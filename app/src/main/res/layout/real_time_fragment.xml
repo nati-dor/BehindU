@@ -13,10 +13,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:text="reset"
             android:src="@drawable/reset_btn"
+            android:layout_marginTop="1dp"
             android:id="@+id/reset_map_btn"/>
     </RelativeLayout>
 

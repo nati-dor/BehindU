@@ -27,8 +27,8 @@ public class ClusterManagerRenderer extends DefaultClusterRenderer<ClusterMarker
 
         iconGenerator = new IconGenerator(context.getApplicationContext());
         imageView = new ImageView(context.getApplicationContext());
-        markerWidth =200; //(int)context.getResources().getDimension(R.dimen.material_emphasis_disabled);
-        markerHeight = 200;//(int)context.getApplicationContext().getResources().getDimension(R.dimen.material_emphasis_high_type);
+        markerWidth =200;
+        markerHeight = 200;
         imageView.setLayoutParams(new ViewGroup.LayoutParams(markerWidth,markerHeight));
         int padding = 5;
         imageView.setPadding(padding,padding,padding,padding);

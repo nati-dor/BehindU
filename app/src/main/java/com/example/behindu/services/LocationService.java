@@ -36,7 +36,7 @@ public class LocationService extends Service {
 
     private FusedLocationProviderClient mFusedLocationClient;
     private UserLocation mUserLocation;
-    private ChildViewModel viewModel = new ChildViewModel();
+    private ChildViewModel mViewModel = new ChildViewModel();
 
 
     @Nullable
@@ -116,7 +116,7 @@ public class LocationService extends Service {
 
     private void saveUserLocation(final UserLocation userLocation) {
 
-        viewModel.saveUserLocation(userLocation);
+        mViewModel.saveUserLocation(userLocation);
     }
 
     @Override

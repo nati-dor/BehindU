@@ -27,7 +27,6 @@ import com.example.behindu.R;
 import com.example.behindu.model.Child;
 import com.example.behindu.model.Follower;
 import com.example.behindu.model.LastLocation;
-import com.example.behindu.model.User;
 import com.example.behindu.model.UserLocation;
 import com.example.behindu.services.LocationService;
 import com.example.behindu.viewmodel.ChildViewModel;
@@ -39,12 +38,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.GeoPoint;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import static com.example.behindu.model.Constants.ERROR_DIALOG_REQUEST;
 import static com.example.behindu.model.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
@@ -53,7 +49,7 @@ import static com.example.behindu.model.Constants.PERMISSIONS_REQUEST_ENABLE_GPS
 public class ChildActivity extends AppCompatActivity {
 
     private static final String TAG = "Child Activity" ;
-    private ChildViewModel viewModel = new ChildViewModel();
+    private ChildViewModel mViewModel = new ChildViewModel();
     private boolean mLocationPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationClient;
     private UserLocation mUserLocation;
@@ -75,7 +71,7 @@ public class ChildActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final String code = enterCodeEt.getText().toString().trim();
-                viewModel.getAllUsers(new followerList() {
+                mViewModel.getAllUsers(new followerList() {
                     @Override
                     public void onCallbackUsersList(ArrayList<Follower> follower) {
                         for(Follower f : follower){
@@ -83,7 +79,7 @@ public class ChildActivity extends AppCompatActivity {
                                 List<Child> childList = new ArrayList<>();
                                 childList.add(mUserLocation.getChild());
                                 f.setChildList(childList);
-                                viewModel.saveChildList(f);
+                                mViewModel.saveChildList(f);
                                 Toast.makeText(ChildActivity.this, "You have connected to your follower", Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -99,7 +95,7 @@ public class ChildActivity extends AppCompatActivity {
         signOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewModel.signOut();
+                mViewModel.signOut();
                 Intent i = new Intent(ChildActivity.this, MainActivity.class);
                 startActivity(i);
                 finish();
@@ -112,7 +108,7 @@ public class ChildActivity extends AppCompatActivity {
         if(mUserLocation == null){
             mUserLocation = new UserLocation();
         }
-        viewModel.getUserDetails(new childLocationCallback() {
+        mViewModel.getUserDetails(new childLocationCallback() {
             @Override
             public void setLocation(Child child) {
                 Log.d(TAG, "setLocation: arrive from onstop");
@@ -126,7 +122,7 @@ public class ChildActivity extends AppCompatActivity {
 
     private void saveUserLocation(UserLocation mUserLocation){
         Log.d(TAG, "saveUserLocation: arrive");
-        viewModel.saveUserLocation(mUserLocation);
+        mViewModel.saveUserLocation(mUserLocation);
     }
 
     /* Get the last known location of child*/
@@ -139,7 +135,7 @@ public class ChildActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Location> task) {
                 if (task.isSuccessful()) {
                     final Location location = task.getResult();
-                    viewModel.getLocationList(new locationList() {
+                    mViewModel.getLocationList(new locationList() {
 
                         GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
 

@@ -66,7 +66,6 @@ public class RealtimeLocationFragment extends Fragment  implements
         GoogleMap.OnPolylineClickListener
 {
 
-
     private static final String TAG = "RealtimeLoctionFragment";
     private MapView mMapView;
     private GoogleMap mGoogleMap;
