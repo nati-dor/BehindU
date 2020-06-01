@@ -46,7 +46,7 @@
         android:gravity="center">
 
         <Button
-            android:id="@+id/sos"
+            android:id="@+id/sos_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -63,7 +63,7 @@
 
 
         <Button
-            android:id="@+id/send_Follower_MessageBtn"
+            android:id="@+id/send_message_follower_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
@@ -80,7 +80,7 @@
 
 
         <Button
-            android:id="@+id/call_The_FollowerBtn"
+            android:id="@+id/call_the_follower_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
@@ -117,7 +117,7 @@
 
 
         <Button
-            android:id="@+id/enter_code_btn"
+            android:id="@+id/apply_code_btn"
             android:layout_width="match_parent"
             android:layout_height="42dp"
             android:layout_gravity="center"
@@ -125,7 +125,7 @@
             android:layout_marginRight="30dp"
             android:layout_marginBottom="10dp"
             android:background="@color/colorPrimaryDark"
-            android:text="enter code"
+            android:text="אישור"
             android:textAllCaps="false"
             android:textColor="@android:color/black"
             android:textStyle="bold"

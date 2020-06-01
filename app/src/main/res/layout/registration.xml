@@ -83,28 +83,17 @@
             android:textStyle="bold"
             android:textAlignment="center"
             />
-        <EditText
-            android:id="@+id/phoneNumberInput_register"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_margin="10dp"
-            android:layout_marginLeft="25dp"
-            android:layout_marginRight="25dp"
-            android:textColor="@android:color/black"
-            android:hint="@string/EnterAPhoneNumber"
-            android:textStyle="bold"
-            android:textAlignment="center"
-            />
+
 
         <EditText
-            android:id="@+id/child_phoneNum_Et"
+            android:id="@+id/follower_phoneNum_Et"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_margin="10dp"
             android:layout_marginLeft="25dp"
             android:layout_marginRight="25dp"
             android:textColor="@android:color/black"
-            android:hint="הכנס מספר טלפון של הנעקב"
+            android:hint="הכנס מספר טלפון של העוקב"
             android:textStyle="bold"
             android:textAlignment="center"
             />

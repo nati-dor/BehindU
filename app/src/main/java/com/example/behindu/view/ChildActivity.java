@@ -1,5 +1,6 @@
 package com.example.behindu.view;
 
+import android.Manifest;
 import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
@@ -8,8 +9,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -42,17 +45,23 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static com.example.behindu.model.Constants.EMERGENCY_NUMBER_POLICE;
 import static com.example.behindu.model.Constants.ERROR_DIALOG_REQUEST;
 import static com.example.behindu.model.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
+import static com.example.behindu.model.Constants.PERMISSIONS_REQUEST_ENABLE_CALL;
 import static com.example.behindu.model.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
+import static com.example.behindu.model.Constants.PERMISSIONS_REQUEST_ENABLE_SMS;
 
-public class ChildActivity extends AppCompatActivity {
+public class ChildActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final String TAG = "Child Activity" ;
+    private static final String TAG = "Child Activity";
     private ChildViewModel mViewModel = new ChildViewModel();
     private boolean mLocationPermissionGranted = false;
+    private boolean mCallPermissionGranted = false;
+    private boolean mSmsPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationClient;
     private UserLocation mUserLocation;
+    private EditText mEnterCodeEt;
 
 
     @Override
@@ -60,52 +69,31 @@ public class ChildActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.child_page);
 
-        getLocationPermission();
+       getPermissions();
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        final EditText enterCodeEt = findViewById(R.id.enter_code_Et);
+        mEnterCodeEt = findViewById(R.id.enter_code_Et);
 
-        Button enterCodeBtn = findViewById(R.id.enter_code_btn);
-        enterCodeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final String code = enterCodeEt.getText().toString().trim();
-                mViewModel.getAllUsers(new followerList() {
-                    @Override
-                    public void onCallbackUsersList(ArrayList<Follower> follower) {
-                        for(Follower f : follower){
-                            if(f.getFollowingId().equals(code)){
-                                List<Child> childList = new ArrayList<>();
-                                childList.add(mUserLocation.getChild());
-                                f.setChildList(childList);
-                                mViewModel.saveChildList(f);
-                                Toast.makeText(ChildActivity.this, "You have connected to your follower", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-                });
+        Button sosBtn = findViewById(R.id.sos_btn);
+        sosBtn.setOnClickListener(this);
 
+        Button sendMessageToFollower = findViewById(R.id.send_message_follower_btn);
+        sendMessageToFollower.setOnClickListener(this);
 
-            }
-        });
+        Button callToFollower = findViewById(R.id.call_the_follower_btn);
+        callToFollower.setOnClickListener(this);
+
+        Button enterCodeBtn = findViewById(R.id.apply_code_btn);
+        enterCodeBtn.setOnClickListener(this);
 
 
         Button signOutBtn = findViewById(R.id.signOutChildBtn);
-        signOutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mViewModel.signOut();
-                Intent i = new Intent(ChildActivity.this, MainActivity.class);
-                startActivity(i);
-                finish();
-            }
-        });
-
+        signOutBtn.setOnClickListener(this);
     }
 
-    private void getUserDetails(){
-        if(mUserLocation == null){
+    private void getUserDetails() {
+        if (mUserLocation == null) {
             mUserLocation = new UserLocation();
         }
         mViewModel.getUserDetails(new childLocationCallback() {
@@ -120,15 +108,21 @@ public class ChildActivity extends AppCompatActivity {
     }
 
 
-    private void saveUserLocation(UserLocation mUserLocation){
+    private void getPermissions(){
+        getLocationPermission();
+        getCallingPermission();
+        getSmsPermissions();
+    }
+
+    private void saveUserLocation(UserLocation mUserLocation) {
         Log.d(TAG, "saveUserLocation: arrive");
         mViewModel.saveUserLocation(mUserLocation);
     }
 
     /* Get the last known location of child*/
 
-    private void getLastKnownLocation(){
-        Log.d(TAG,"getLastKnowLocation: called");
+    private void getLastKnownLocation() {
+        Log.d(TAG, "getLastKnowLocation: called");
 
         mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
             @Override
@@ -149,7 +143,7 @@ public class ChildActivity extends AppCompatActivity {
                                 saveUserLocation(mUserLocation);
                                 startLocationService(mUserLocation); // Starting the service after all the list has been load
                             } else {
-                                lastLocationList.add(new LastLocation(geoPoint,Calendar.getInstance().getTime()));
+                                lastLocationList.add(new LastLocation(geoPoint, Calendar.getInstance().getTime()));
                                 mUserLocation.setList(lastLocationList);
                                 saveUserLocation(mUserLocation);
                                 startLocationService(mUserLocation); // Starting the service after all the list has been load
@@ -164,15 +158,15 @@ public class ChildActivity extends AppCompatActivity {
     }
 
 
-    private void startLocationService(UserLocation mUserLocation){
-        if(!isLocationServiceRunning()){
+    private void startLocationService(UserLocation mUserLocation) {
+        if (!isLocationServiceRunning()) {
             Intent serviceIntent = new Intent(this, LocationService.class);
-            serviceIntent.putExtra("UserLocations",mUserLocation);
+            serviceIntent.putExtra("UserLocations", mUserLocation);
 
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 ChildActivity.this.startForegroundService(serviceIntent);
 
-            }else{
+            } else {
                 startService(serviceIntent);
             }
         }
@@ -182,8 +176,8 @@ public class ChildActivity extends AppCompatActivity {
 
     private boolean isLocationServiceRunning() {
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
-            if("com.codingwithmitch.googledirectionstest.services.LocationService".equals(service.service.getClassName())) {
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if ("com.codingwithmitch.googledirectionstest.services.LocationService".equals(service.service.getClassName())) {
                 Log.d(TAG, "isLocationServiceRunning: location service is already running.");
                 return true;
             }
@@ -193,11 +187,9 @@ public class ChildActivity extends AppCompatActivity {
     }
 
 
-
-
-    private boolean checkMapServices(){
-        if(isServicesOK()){
-            if(isMapsEnabled()){
+    private boolean checkMapServices() {
+        if (isServicesOK()) {
+            if (isMapsEnabled()) {
                 return true;
             }
         }
@@ -223,10 +215,10 @@ public class ChildActivity extends AppCompatActivity {
         alert.show();
     }
 
-    public boolean isMapsEnabled(){
-        final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+    public boolean isMapsEnabled() {
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             buildAlertMessageNoGps();
             return false;
         }
@@ -249,21 +241,43 @@ public class ChildActivity extends AppCompatActivity {
         }
     }
 
-    public boolean isServicesOK(){
+    private void getCallingPermission(){
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                Manifest.permission.CALL_PHONE)
+                != PackageManager.PERMISSION_GRANTED) {
+            mCallPermissionGranted = false;
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CALL_PHONE},
+                    PERMISSIONS_REQUEST_ENABLE_CALL);
+        }
+
+    }
+
+    private void getSmsPermissions(){
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+            mSmsPermissionGranted = false;
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.SEND_SMS},
+                    PERMISSIONS_REQUEST_ENABLE_SMS);
+        }
+    }
+
+    public boolean isServicesOK() {
         Log.d(TAG, "isServicesOK: checking google services version");
 
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(ChildActivity.this);
 
-        if(available == ConnectionResult.SUCCESS){
+        if (available == ConnectionResult.SUCCESS) {
             //everything is fine and the user can make map requests
             Log.d(TAG, "isServicesOK: Google Play Services is working");
             return true;
-        }
-        else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
+        } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
             Log.d(TAG, "isServicesOK: an error occured");
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(ChildActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
-        }else{
+        } else {
             Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
         }
         return false;
@@ -280,11 +294,69 @@ public class ChildActivity extends AppCompatActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     mLocationPermissionGranted = true;
                     getUserDetails();
-                }
-                else{
+                } else {
                     buildAlertMessageNoGps();
                 }
             }
+            // If request is cancelled, the result arrays are empty.
+            case PERMISSIONS_REQUEST_ENABLE_CALL:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    mCallPermissionGranted = true;
+                }
+            case PERMISSIONS_REQUEST_ENABLE_SMS:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    mSmsPermissionGranted = true;
+                }
+        }
+    }
+
+    private void getAllUsers() {
+        final String code = mEnterCodeEt.getText().toString().trim();
+        mViewModel.getAllUsers(new followerList() {
+            @Override
+            public void onCallbackUsersList(ArrayList<Follower> follower) {
+                for (Follower f : follower) {
+                    if (f.getFollowingId().equals(code)) {
+                        List<Child> childList = new ArrayList<>();
+                        childList.add(mUserLocation.getChild());
+                        f.setChildList(childList);
+                        mViewModel.saveChildList(f);
+                        Toast.makeText(ChildActivity.this, "You have connected to your follower", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+    }
+
+    private void signOut() {
+        mViewModel.signOut();
+        Intent i = new Intent(ChildActivity.this, MainActivity.class);
+        startActivity(i);
+        finish();
+    }
+
+    private void callEmergency(int phoneNumber) {
+        if(mCallPermissionGranted) {
+            Intent callIntent = new Intent(Intent.ACTION_CALL);
+            callIntent.setData(Uri.parse("tel:" + phoneNumber));
+            startActivity(callIntent);
+        }
+        else{
+            getCallingPermission();
+        }
+
+    }
+
+    private void sendSms(String phoneNumber, String message) {
+        if (mSmsPermissionGranted) {
+            SmsManager sms = SmsManager.getDefault();
+            sms.sendTextMessage(phoneNumber, null, message, null, null);
+            Toast.makeText(this, getString(R.string.message_sent), Toast.LENGTH_SHORT).show();
+        }
+        else{
+            getSmsPermissions();
         }
     }
 
@@ -307,6 +379,14 @@ public class ChildActivity extends AppCompatActivity {
                 else
                     getUserDetails();
             }
+            case PERMISSIONS_REQUEST_ENABLE_CALL:
+                if(!mCallPermissionGranted) {
+                    getCallingPermission();
+                }
+            case PERMISSIONS_REQUEST_ENABLE_SMS:
+                if(!mSmsPermissionGranted){
+                    getSmsPermissions();
+                }
         }
 
     }
@@ -325,6 +405,28 @@ public class ChildActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        int followerPhoneNumber = mUserLocation.getChild().getPhoneNumber();
+        switch(v.getId()){
+            case R.id.sos_btn:
+                callEmergency(EMERGENCY_NUMBER_POLICE);
+                break;
+            case R.id.call_the_follower_btn:
+                callEmergency(followerPhoneNumber);
+                break;
+            case R.id.send_message_follower_btn:
+                sendSms(String.valueOf(followerPhoneNumber),getString(R.string.arrive_message_child));
+                break;
+            case R.id.apply_code_btn:
+                getAllUsers();
+                break;
+            case R.id.signOutChildBtn:
+                signOut();
+                break;
+        }
     }
 
     public interface childLocationCallback{

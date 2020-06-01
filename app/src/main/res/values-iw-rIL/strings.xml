@@ -25,4 +25,6 @@
     <string name="callTheFollower">להתקשר לעוקב</string>
     <string name="sos">S.O.S</string>
     <string name="sign_out">יציאה</string>
+    <string name="arrive_message_child">הגעתי,  הכל בסדר</string>
+    <string name="message_sent">ההודעה נשלחה לעוקב</string>
 </resources>

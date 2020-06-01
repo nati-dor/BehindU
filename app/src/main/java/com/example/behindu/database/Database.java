@@ -16,13 +16,11 @@ import com.example.behindu.model.UserLocation;
 import com.example.behindu.view.ChildActivity;
 import com.example.behindu.view.FollowerActivity;
 import com.example.behindu.view.MainActivity;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.api.LogDescriptor;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -35,6 +33,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static android.content.ContentValues.TAG;
+import static com.example.behindu.model.Constants.DEFAULT_USER_ID;
 
 public class Database {
 
@@ -44,7 +43,7 @@ public class Database {
     private DocumentReference mDocRef;
     private OnFirestoreTaskComplete onFirestoreTaskComplete;
     private String childId;
-    private final String DEFAULT_USER_ID ="cp2iDImempZamCDq0gwvrHBzyNf1";
+
 
 
     private static Database instance = null;
@@ -126,25 +125,7 @@ public class Database {
         mAuth.signOut();
     }
 
-    // recovery password to email
-    public void recoveryPassword(String email,final View v){
-        mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()){
-                    Snackbar.make(v,"Password has been sent to email",Snackbar.LENGTH_LONG).show();
-                }
-                else
-                {
-                    Snackbar.make(v,"Action failed",Snackbar.LENGTH_LONG).show();
-
-                }
-            }
-        });
-    }
-
     // Save user location
-
    /* Updating child location from service and from child activity therefor we should use synchronized
     function that use multi-threading */
     public synchronized void saveUserLocation(final UserLocation mUserLocation){

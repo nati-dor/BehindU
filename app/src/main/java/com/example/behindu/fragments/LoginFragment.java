@@ -22,7 +22,6 @@ import com.example.behindu.view.MainActivity;
 import com.example.behindu.viewmodel.MainActivityViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
-import static android.content.ContentValues.TAG;
 
 public class LoginFragment extends Fragment implements View.OnClickListener{
 
@@ -92,7 +91,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.loginBtn:
-                Log.d(TAG, "onClick: Arrive");
                 loginBtn();
                 break;
             case R.id.new_user_btn:

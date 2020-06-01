@@ -11,11 +11,12 @@ public class Child extends User implements Parcelable {
     private String lastLocation;
     private String childId;
 
+
     public Child() { }
 
-    public Child(String firstName, String lastName, String email, int phoneNumber, boolean isFollower,
+    public Child(String firstName, String lastName, String email, int followerNumber, boolean isFollower,
                  String password,GeoPoint routes,String lastLocation,String childId) {
-        super(firstName, lastName, email, phoneNumber, isFollower, password,null);
+        super(firstName, lastName, email, followerNumber, isFollower, password,null);
         this.routes = routes;
         this.lastLocation = lastLocation;
         this.childId = childId;

@@ -40,9 +40,8 @@ public class RegisterFragment extends Fragment {
         final EditText firstNameEt = view.findViewById(R.id.firstNameInput_register);
         final EditText lastNameEt = view.findViewById(R.id.lastNameInput_register);
         final EditText emailEt = view.findViewById(R.id.emailInput_register);
-        final EditText phoneNumEt = view.findViewById(R.id.phoneNumberInput_register);
         final EditText passwordEt = view.findViewById(R.id.passwordInput_register);
-        final EditText childPhoneNumEt = view.findViewById(R.id.child_phoneNum_Et);
+        final EditText followerPhoneNumEt = view.findViewById(R.id.follower_phoneNum_Et);
         final CheckBox followerCb = view.findViewById(R.id.follower_Cb);
 
         Button registerBtn = view.findViewById(R.id.createUserBtn);
@@ -53,16 +52,15 @@ public class RegisterFragment extends Fragment {
                 String firstName = firstNameEt.getText().toString().trim();
                 String lastName = lastNameEt.getText().toString().trim();
                 String email = emailEt.getText().toString().trim();
-                int phoneNumber = Integer.parseInt(phoneNumEt.getText().toString().trim());
                 String password = passwordEt.getText().toString().trim();
-                int childPhoneNum = Integer.parseInt(childPhoneNumEt.getText().toString().trim());
+                int followerPhoneNum = Integer.parseInt(followerPhoneNumEt.getText().toString().trim());
 
                 if(followerCb.isChecked()){
-                    Follower follower = new Follower(firstName,lastName,email,phoneNumber,true,password,null,childPhoneNum,"DDDDDD");
+                    Follower follower = new Follower(firstName,lastName,email,followerPhoneNum,true,password,null,"DDDDDD");
                     signUpUser(follower);
                 }
                 else {
-                    Child child = new Child(firstName,lastName,email,phoneNumber,false,password,null,null,null);
+                    Child child = new Child(firstName,lastName,email,followerPhoneNum,false,password,null,null,null);
                     signUpUser(child);
                 }
             }

@@ -8,18 +8,18 @@ public class User implements Parcelable {
     private String firstName;
     private String lastName;
     private String email;
-    private int phoneNumber;
+    private int followerPhoneNumber;
     private boolean isFollower;
     private String password;
     private String userId;
 
     public User() { }
 
-    public User(String firstName, String lastName, String email, int phoneNumber, boolean isFollower, String password, String userId) {
+    public User(String firstName, String lastName, String email, int followerPhoneNumber, boolean isFollower, String password, String userId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.phoneNumber = phoneNumber;
+        this.followerPhoneNumber = followerPhoneNumber;
         this.isFollower = isFollower;
         this.password = password;
         this.userId = userId;
@@ -29,7 +29,7 @@ public class User implements Parcelable {
         firstName = in.readString();
         lastName = in.readString();
         email = in.readString();
-        phoneNumber = in.readInt();
+        followerPhoneNumber = in.readInt();
         isFollower = in.readByte() != 0;
         password = in.readString();
         userId = in.readString();
@@ -72,11 +72,11 @@ public class User implements Parcelable {
     }
 
     public int getPhoneNumber() {
-        return phoneNumber;
+        return followerPhoneNumber;
     }
 
     public void setPhoneNumber(int phoneNumber) {
-        this.phoneNumber = phoneNumber;
+        this.followerPhoneNumber = phoneNumber;
     }
 
     public boolean isFollower() {
@@ -113,7 +113,7 @@ public class User implements Parcelable {
         dest.writeString(firstName);
         dest.writeString(lastName);
         dest.writeString(email);
-        dest.writeInt(phoneNumber);
+        dest.writeInt(followerPhoneNumber);
         dest.writeByte((byte) (isFollower ? 1 : 0));
         dest.writeString(password);
         dest.writeString(userId);
@@ -125,7 +125,7 @@ public class User implements Parcelable {
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
-                ", phoneNumber=" + phoneNumber +
+                ", phoneNumber=" + followerPhoneNumber +
                 ", isFollower=" + isFollower +
                 ", password='" + password + '\'' +
                 ", userId='" + userId + '\'' +
