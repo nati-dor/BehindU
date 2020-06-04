@@ -24,20 +24,31 @@ import com.example.behindu.view.MainActivity;
 import com.example.behindu.viewmodel.MainActivityViewModel;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class RegisterFragment extends Fragment {
 
     private MainActivityViewModel viewModel = new MainActivityViewModel();
+    private TextInputLayout firstNameError;
+    private TextInputLayout lastNameError;
+    private TextInputLayout emailError;
+    private TextInputLayout passwordError;
+    private TextInputLayout phoneNumberError;
+    private int followerPhoneNum;
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.registration,container,false);
 
+        firstNameError = view.findViewById(R.id.first_name_layout_registration);
+        lastNameError = view.findViewById(R.id.last_name_layout_registration);
+        emailError = view.findViewById(R.id.email_layout_registration);
+        passwordError = view.findViewById(R.id.password_layout_registration);
+        phoneNumberError = view.findViewById(R.id.phone_number_layout_registration);
 
-        TextInputLayout til = view.findViewById(R.id.text_input_layout);
-        til.setError("You need to enter a name");
 
         final EditText firstNameEt = view.findViewById(R.id.firstNameInput_register);
         final EditText lastNameEt = view.findViewById(R.id.lastNameInput_register);
@@ -45,6 +56,7 @@ public class RegisterFragment extends Fragment {
         final EditText passwordEt = view.findViewById(R.id.passwordInput_register);
         final EditText followerPhoneNumEt = view.findViewById(R.id.follower_phoneNum_Et);
         final CheckBox followerCb = view.findViewById(R.id.follower_Cb);
+
 
         Button registerBtn = view.findViewById(R.id.createUserBtn);
         registerBtn.setOnClickListener(new View.OnClickListener() {
@@ -55,7 +67,36 @@ public class RegisterFragment extends Fragment {
                 String lastName = lastNameEt.getText().toString().trim();
                 String email = emailEt.getText().toString().trim();
                 String password = passwordEt.getText().toString().trim();
-                int followerPhoneNum = Integer.parseInt(followerPhoneNumEt.getText().toString().trim());
+
+
+                if(firstName.isEmpty()) {
+                    firstNameError.setError(getString(R.string.first_name_error));
+                    return;
+                }
+
+                if(lastName.isEmpty()) {
+                    lastNameError.setError(getString(R.string.last_name_error));
+                    return;
+                }
+
+                if(email.isEmpty() || !email.contains("@")) {
+                    emailError.setError(getString(R.string.email_login_error));
+                    return;
+                }
+
+
+                if(password.isEmpty() ||  password.length() < 6) {
+                    passwordError.setError(getString(R.string.enter_password_error) + "\n" + getString(R.string.password_instructions));
+                    return;
+                }
+
+                if(followerPhoneNumEt.getText().toString().isEmpty() ) {
+                    phoneNumberError.setError(getString(R.string.phone_number_error));
+                    return;
+                }
+                else{
+                    followerPhoneNum = Integer.parseInt(followerPhoneNumEt.getText().toString().trim());
+                }
 
                 if(followerCb.isChecked()){
                     Follower follower = new Follower(firstName,lastName,email,followerPhoneNum,true,password,null,"DDDDDD");

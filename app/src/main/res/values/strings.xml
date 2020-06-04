@@ -60,4 +60,7 @@
     <string name="connection_failed_instructions">Try to re-enter the code or talk with your follower</string>
     <string name="loading_progressbar">Loading...</string>
     <string name="google_map_instructions">The route will open in google maps app</string>
+    <string name="first_name_error">Enter first name</string>
+    <string name="last_name_error">Enter last name</string>
+    <string name="phone_number_error">PLease enter phone number of the follower</string>
 </resources>

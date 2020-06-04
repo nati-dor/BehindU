@@ -57,4 +57,7 @@
     <string name="connection_failed_instructions">הקוד שגוי. נסה להזין שנית את הקוד או צור קשר עם העוקב שלך.</string>
     <string name="loading_progressbar">טוען...</string>
     <string name="google_map_instructions">המסלול יפתח לניווט בגוגל מפות</string>
+    <string name="first_name_error">*אנא הכנס שם משתמש</string>
+    <string name="last_name_error">*אנא הכנס שם משפחה</string>
+    <string name="phone_number_error">*הכנס מספר פלאפון של העוקב</string>
 </resources>

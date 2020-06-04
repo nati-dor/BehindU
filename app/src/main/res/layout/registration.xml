@@ -8,136 +8,158 @@
     android:orientation="vertical">
 
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="visible"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            app:cardUseCompatPadding="true"
-            android:layout_marginTop="50dp"
-            app:contentPadding="10dp"
-            app:cardElevation="5dp"
-            app:cardBackgroundColor="#F5F5F5"
-            app:cardCornerRadius="10dp">
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        app:cardUseCompatPadding="true"
+        android:layout_marginTop="50dp"
+        app:contentPadding="10dp"
+        app:cardElevation="5dp"
+        app:cardBackgroundColor="#F5F5F5"
+        app:cardCornerRadius="10dp">
 
-            <LinearLayout
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:text="@string/register"
+                android:gravity="center"
+                android:textSize="35dp"
+                android:layout_marginBottom="30dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_marginStart="15dp"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/register"
-            android:gravity="center"
-            android:textSize="35dp"
-            android:layout_marginBottom="50dp"
-            android:textColor="@color/colorPrimaryDark"
-            android:layout_marginStart="15dp"/>
-
-
-
-
-<com.google.android.material.textfield.TextInputLayout
-           android:id="@+id/text_input_layout"
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           app:errorEnabled="true">
-           <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/firstNameInput_register"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_margin="10dp"
-            android:layout_marginLeft="25dp"
-            android:layout_marginRight="25dp"
-            android:textColor="@android:color/black"
-            android:hint="@string/EnterYourFirstName"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:textAlignment="center" />
-</com.google.android.material.textfield.TextInputLayout>
-        <EditText
-            android:id="@+id/lastNameInput_register"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_margin="10dp"
-            android:layout_marginLeft="25dp"
-            android:layout_marginRight="25dp"
-            android:textColor="@android:color/black"
-            android:hint="@string/EnterYourLastName"
-            android:textStyle="bold"
-            android:textAlignment="center"
-            />
-        <EditText
-            android:id="@+id/emailInput_register"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_margin="10dp"
-            android:layout_marginLeft="25dp"
-            android:layout_marginRight="25dp"
-            android:textColor="@android:color/black"
-            android:hint="@string/EnterYourMail"
-            android:textStyle="bold"
-            android:textAlignment="center"
-            />
-
-
-        <EditText
-            android:id="@+id/follower_phoneNum_Et"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_margin="10dp"
-            android:layout_marginLeft="25dp"
-            android:layout_marginRight="25dp"
-            android:textColor="@android:color/black"
-            android:hint="הכנס מספר טלפון של העוקב"
-            android:textStyle="bold"
-            android:textAlignment="center"
-            />
-        <EditText
-            android:id="@+id/passwordInput_register"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_margin="10dp"
-            android:layout_marginLeft="25dp"
-            android:layout_marginRight="25dp"
-            android:textColor="@android:color/black"
-            android:hint="@string/EnterYourPassword"
-            android:textStyle="bold"
-            android:textAlignment="center"
-            />
-
-
-                <CheckBox
-                    android:id="@+id/follower_Cb"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/first_name_layout_registration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                
+                app:errorEnabled="true">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/firstNameInput_register"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:textColor="@android:color/black"
+                    android:hint="@string/EnterYourFirstName"
+                    android:textStyle="bold"
                     android:gravity="center"
-                    android:layout_marginTop="20dp"
-                    android:layout_gravity="center"
-                    android:text="@string/Following" />
+                    android:textAlignment="center" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/createUserBtn"
-            android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:layout_gravity="center"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            android:layout_marginBottom="30dp"
-            android:layout_marginTop="30dp"
-            android:background="@color/colorPrimaryDark"
-            android:text="@string/CreateANewUser"
-            android:textAllCaps="false"
-            android:textColor="@android:color/black"
-            android:textStyle="bold"
-            />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/last_name_layout_registration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:errorEnabled="true">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/lastNameInput_register"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:textColor="@android:color/black"
+                    android:hint="@string/EnterYourLastName"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textAlignment="center"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/email_layout_registration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:errorEnabled="true">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/emailInput_register"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:textColor="@android:color/black"
+                    android:hint="@string/EnterYourMail"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textAlignment="center"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
 
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/phone_number_layout_registration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:errorEnabled="true">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/follower_phoneNum_Et"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:textColor="@android:color/black"
+                    android:hint="הכנס מספר טלפון של העוקב"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:inputType="phone"
+                    android:textAlignment="center"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
 
-</LinearLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/password_layout_registration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:errorEnabled="true">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/passwordInput_register"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:textColor="@android:color/black"
+                    android:hint="@string/EnterYourPassword"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textAlignment="center"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <CheckBox
+                android:id="@+id/follower_Cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center"
+                android:text="@string/Following" />
+
+            <Button
+                android:id="@+id/createUserBtn"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:layout_marginBottom="30dp"
+                android:layout_marginTop="30dp"
+                android:background="@color/colorPrimaryDark"
+                android:text="@string/CreateANewUser"
+                android:textAllCaps="false"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                />
+
+        </LinearLayout>
 
     </androidx.cardview.widget.CardView>
 

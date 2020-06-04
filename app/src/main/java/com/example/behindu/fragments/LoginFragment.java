@@ -32,6 +32,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     private MainActivityViewModel viewModel = new MainActivityViewModel();
     private CallbackFragment callbackFragment;
     private ProgressBar progressBar;
+    private TextInputLayout userError;
+    private TextInputLayout pass;
 
     @Nullable
     @Override
@@ -39,8 +41,14 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         View view = inflater.inflate(R.layout.activity_main, container, false);
 
         progressBar = view.findViewById(R.id.login_progressbar);
+
+        userError = view.findViewById(R.id.user_input_login_layout);
+
+        pass = view.findViewById(R.id.password_input_login_layout);
+
         Button signIn = view.findViewById(R.id.loginBtn);
         signIn.setOnClickListener(this);
+
         Button registerBtn = view.findViewById(R.id.new_user_btn);
         registerBtn.setOnClickListener(this);
 
@@ -95,14 +103,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         String password = userPassEt.getText().toString().trim();
 
         if(username.isEmpty() || !username.contains("@")) {
-            TextInputLayout userError = getView().findViewById(R.id.user_input_login_layout);
             userError.setError(getString(R.string.email_login_error));
             progressBar.setVisibility(View.GONE);
             return;
         }
 
         if(password.isEmpty() ||  password.length() < 6) {
-             TextInputLayout pass = getView().findViewById(R.id.password_input_login_layout);
              pass.setError(getString(R.string.enter_password_error) + "\n" + getString(R.string.password_instructions));
              progressBar.setVisibility(View.GONE);
              return;
