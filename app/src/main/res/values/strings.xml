@@ -29,4 +29,35 @@
     <string name="google_map_api_key" translatable="false">AIzaSyCuFvotxjgZh6NJSueQOmDgMe9IvF0hm4A</string>
     <string name="arrive_message_child">Arrive</string>
     <string name="message_sent">The message sent</string>
+    <string name="real_time_lcoation">Realtime location</string>
+    <string name="last_locations">Last locations</string>
+    <string name="add_child">Add child</string>
+    <string name="generate_code">Generate</string>
+    <string name="instructions_add_child_1">1. Click on \'Generate\'.</string>
+    <string name="instructions_add_child_2">2. Type the code on child phone.</string>
+    <string name="apply_code_child">Apply</string>
+    <string name="enter_code">Enter code</string>
+    <string name="not_connected">Not connected to follower</string>
+    <string name="connected_to_follower">Connected to follower</string>
+    <string name="statues_connection">Statues:</string>
+    <string name="last_location_of_child">The last location of your child</string>
+    <string name="determine_root">Determine route to</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="duration">Duration:</string>
+    <string name="distance">Distance:</string>
+    <string name="trip">Trip #</string>
+    <string name="open_google_map">OpenGoogle Maps?</string>
+    <string name="you_are_connected_to_follower">You are connected to the follower</string>
+    <string name="enter_password_error"> Password is less than 6 characters or incorrect</string>
+    <string name="password_instructions">Password should contain at list 6 characters</string>
+    <string name="email_login_error">Please enter a valid email</string>
+    <string name="email_login_instructions">Email should contain \'@\' on the address</string>
+    <string name="code_error_child">The code should contatin 6 chararcters</string>
+    <string name="code_error_invalid">The code is invalid</string>
+    <string name="connection_succeed">Connection to follower succeed</string>
+    <string name="connection_failed">Connection to follower failed</string>
+    <string name="connection_failed_instructions">Try to re-enter the code or talk with your follower</string>
+    <string name="loading_progressbar">Loading...</string>
+    <string name="google_map_instructions">The route will open in google maps app</string>
 </resources>

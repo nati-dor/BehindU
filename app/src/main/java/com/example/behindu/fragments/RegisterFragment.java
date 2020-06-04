@@ -24,6 +24,7 @@ import com.example.behindu.view.MainActivity;
 import com.example.behindu.viewmodel.MainActivityViewModel;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class RegisterFragment extends Fragment {
 
@@ -35,7 +36,8 @@ public class RegisterFragment extends Fragment {
         View view = inflater.inflate(R.layout.registration,container,false);
 
 
-
+        TextInputLayout til = view.findViewById(R.id.text_input_layout);
+        til.setError("You need to enter a name");
 
         final EditText firstNameEt = view.findViewById(R.id.firstNameInput_register);
         final EditText lastNameEt = view.findViewById(R.id.lastNameInput_register);
@@ -60,7 +62,7 @@ public class RegisterFragment extends Fragment {
                     signUpUser(follower);
                 }
                 else {
-                    Child child = new Child(firstName,lastName,email,followerPhoneNum,false,password,null,null,null);
+                    Child child = new Child(firstName,lastName,email,followerPhoneNum,false,password,null,null,null,false);
                     signUpUser(child);
                 }
             }

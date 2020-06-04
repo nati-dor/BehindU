@@ -10,12 +10,13 @@ public class Child extends User implements Parcelable {
     private GeoPoint routes;
     private String lastLocation;
     private String childId;
+    private boolean connected;
 
 
     public Child() { }
 
     public Child(String firstName, String lastName, String email, int followerNumber, boolean isFollower,
-                 String password,GeoPoint routes,String lastLocation,String childId) {
+                 String password,GeoPoint routes,String lastLocation,String childId,boolean connected) {
         super(firstName, lastName, email, followerNumber, isFollower, password,null);
         this.routes = routes;
         this.lastLocation = lastLocation;
@@ -43,6 +44,15 @@ public class Child extends User implements Parcelable {
             return new Child[size];
         }
     };
+
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
+    }
 
     public GeoPoint getRoutes() {
         return routes;
@@ -74,6 +84,7 @@ public class Child extends User implements Parcelable {
                 "routes=" + routes +
                 ", lastLocation='" + lastLocation + '\'' +
                 ", childId='" + childId + '\'' +
+                ", connected=" + connected +
                 '}';
     }
 

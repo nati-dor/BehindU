@@ -16,16 +16,14 @@ import com.example.behindu.model.User;
 
 public class MainActivity extends AppCompatActivity implements CallbackFragment {
 
-    Fragment fragment;
-    FragmentManager fragmentManager;
-    FragmentTransaction transaction;
+    private Fragment mFragment;
+    private FragmentManager mFragmentManager;
+    private FragmentTransaction mTransaction;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_fragment);
-
-
 
       addFragment();
     }
@@ -37,21 +35,21 @@ public class MainActivity extends AppCompatActivity implements CallbackFragment 
 
         LoginFragment fragment = new LoginFragment();
         fragment.setCallbackFragment(this);
-        fragmentManager = getSupportFragmentManager();
-        transaction = fragmentManager.beginTransaction();
-        transaction.add(R.id.fragmentContainer,fragment);
-        transaction.commit();
+        mFragmentManager = getSupportFragmentManager();
+        mTransaction = mFragmentManager.beginTransaction();
+        mTransaction.add(R.id.fragmentContainer,fragment);
+        mTransaction.commit();
     }
 
     /*Replace between fragments*/
 
     public void replaceFragment(){
-        fragment = new RegisterFragment();
-        fragmentManager = getSupportFragmentManager();
-        transaction = fragmentManager.beginTransaction();
-        transaction.addToBackStack(null);
-        transaction.replace(R.id.fragmentContainer,fragment);
-        transaction.commit();
+        mFragment = new RegisterFragment();
+        mFragmentManager = getSupportFragmentManager();
+        mTransaction = mFragmentManager.beginTransaction();
+        mTransaction.addToBackStack(null);
+        mTransaction.replace(R.id.fragmentContainer,mFragment);
+        mTransaction.commit();
     }
 
     @Override

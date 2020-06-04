@@ -11,7 +11,7 @@ import java.util.Date;
 public class LastLocation implements Parcelable {
 
     private GeoPoint geoPoint;
-    private  Date timestamp;
+    private Date timestamp;
 
     public LastLocation() { }
 

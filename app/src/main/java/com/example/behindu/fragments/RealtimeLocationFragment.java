@@ -1,17 +1,23 @@
 package com.example.behindu.fragments;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,6 +26,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.developer.kalert.KAlertDialog;
 import com.example.behindu.R;
 import com.example.behindu.model.Child;
 import com.example.behindu.model.ClusterMarker;
@@ -39,6 +46,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -219,7 +227,7 @@ public class RealtimeLocationFragment extends Fragment  implements
                         getActivity(),mGoogleMap,mClusterManager);
             }
             mClusterManager.setRenderer(mClusterManagerRender);
-            String snippet  = "The last location of your child";
+            String snippet  = getString(R.string.last_location_of_child);
             String name = mChild.getFirstName() + " " + mChild.getLastName();
             int defaultImage = R.drawable.aviv;
 
@@ -290,7 +298,7 @@ public class RealtimeLocationFragment extends Fragment  implements
         for (LatLng latLngPoint : lstLatLngRoute)
             boundsBuilder.include(latLngPoint);
 
-        int routePadding = 120;
+        int routePadding = 200;
         LatLngBounds latLngBounds = boundsBuilder.build();
 
         mGoogleMap.animateCamera(
@@ -319,6 +327,65 @@ public class RealtimeLocationFragment extends Fragment  implements
                 mPolylinesData = new ArrayList<>();
             }
         }
+    }
+
+    private void initCircleZoom(){
+        mGoogleMap.addPolygon(createPolygonWithCircle(getContext(),
+                new LatLng(mChild.getRoutes().getLatitude(),
+                        mChild.getRoutes().getLongitude()), 30));
+
+    }
+
+    // Create a polygon the covers all the map
+    private static List<LatLng> createOuterBounds() {
+        final float delta = 0.01f;
+
+        return new ArrayList<LatLng>() {{
+            add(new LatLng(90 - delta, -180 + delta));
+            add(new LatLng(0, -180 + delta));
+            add(new LatLng(-90 + delta, -180 + delta));
+            add(new LatLng(-90 + delta, 0));
+            add(new LatLng(-90 + delta, 180 - delta));
+            add(new LatLng(0, 180 - delta));
+            add(new LatLng(90 - delta, 180 - delta));
+            add(new LatLng(90 - delta, 0));
+            add(new LatLng(90 - delta, -180 + delta));
+        }};
+    }
+
+
+
+
+    // Calculate the LatLng of circle
+    private static Iterable<LatLng> createHole(LatLng center, int radius) {
+        int points = 50; // number of corners of inscribed polygon
+
+        double radiusLatitude = Math.toDegrees(radius / (float) 6000); //radius checj
+        double radiusLongitude = radiusLatitude / Math.cos(Math.toRadians(center.latitude));
+
+        List<LatLng> result = new ArrayList<>(points);
+
+        double anglePerCircleRegion = 2 * Math.PI / points;
+
+        for (int i = 0; i < points; i++) {
+            double theta = i * anglePerCircleRegion;
+            double latitude = center.latitude + (radiusLatitude * Math.sin(theta));
+            double longitude = center.longitude + (radiusLongitude * Math.cos(theta));
+
+            result.add(new LatLng(latitude, longitude));
+        }
+
+        return result;
+    }
+
+
+    // Create the Polygon
+    private static PolygonOptions createPolygonWithCircle(Context context, LatLng center, int radius) {
+        return new PolygonOptions()
+                .fillColor(ContextCompat.getColor(context, R.color.greyMapCircle))
+                .addAll(createOuterBounds())
+                .addHole(createHole(center, radius))
+                .strokeWidth(0);
     }
 
 
@@ -414,20 +481,28 @@ public class RealtimeLocationFragment extends Fragment  implements
         mGoogleMap = googleMap;
         setCameraView();
         addMapMarker();
+        initCircleZoom();
         mGoogleMap.setOnPolylineClickListener(this);
         mGoogleMap.setOnInfoWindowClickListener(this);
         mGoogleMap.setMyLocationEnabled(true);
+
     }
 
     @Override
     public void onInfoWindowClick(final Marker marker) {
             // Open a new intent with the directions of google map to the child
-        if(marker.getTitle().contains("Trip #")){
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage("Open Google Maps?")
-                    .setCancelable(true)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+        if(marker.getTitle().contains(getString(R.string.trip))){
+            new KAlertDialog(getContext(), KAlertDialog.WARNING_TYPE)
+                    .setTitleText(getString(R.string.open_google_map))
+                    .setContentText(getString(R.string.google_map_instructions))
+                    .setCancelText(getString(R.string.no))
+                    .setConfirmText(getString(R.string.yes))
+                    .showCancelButton(true)
+                    .confirmButtonColor(R.color.acceptButton)
+                    .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+                        @Override
+                        public void onClick(KAlertDialog kAlertDialog) {
+                            kAlertDialog.cancel();
                             String latitude = String.valueOf(marker.getPosition().latitude);
                             String longitude = String.valueOf(marker.getPosition().longitude);
                             Uri gmmIntentUri = Uri.parse("google.navigation:q=" + latitude + "," + longitude);
@@ -444,24 +519,29 @@ public class RealtimeLocationFragment extends Fragment  implements
                             }
 
                         }
-                    })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                            dialog.cancel();
-                        }
-                    });
-            final AlertDialog alert = builder.create();
-            alert.show();
+                    }).setCancelClickListener(new KAlertDialog.KAlertClickListener() {
+                @Override
+                public void onClick(KAlertDialog kAlertDialog) {
+                   kAlertDialog.cancel();
+                }
+            })
+                    .show();
         }
-        else {
-            // Showing the routes to the child
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage("Determine route to " + mChild.getFirstName() + "?")
-                    .setIcon(R.drawable.map_marker_real_time)
-                    .setCancelable(true)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                            dialog.dismiss();
+
+
+        else
+        {
+            new KAlertDialog(getContext(), KAlertDialog.WARNING_TYPE)
+                    .setTitleText(getString(R.string.determine_root) + mChild.getFirstName() + "?")
+                    .setContentText(" ")
+                    .setCancelText(getString(R.string.no))
+                    .setConfirmText(getString(R.string.yes))
+                    .showCancelButton(true)
+                    .confirmButtonColor(R.color.acceptButton)
+                    .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+                        @Override
+                        public void onClick(KAlertDialog kAlertDialog) {
+                            kAlertDialog.cancel();
                             mSelectedMarker = marker;
                             getFollowerLocation(new onCallbackFollowerLocation() {
                                 @Override
@@ -470,19 +550,15 @@ public class RealtimeLocationFragment extends Fragment  implements
                                     calculateDirections(marker);
                                 }
                             });
-
-
                         }
-                    })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                            dialog.cancel();
-                        }
-                    });
-            final AlertDialog alert = builder.create();
-            alert.show();
+                    }).setCancelClickListener(new KAlertDialog.KAlertClickListener() {
+                @Override
+                public void onClick(KAlertDialog kAlertDialog) {
+                    kAlertDialog.cancel();
+                }
+            })
+                    .show();
         }
-
     }
 
     @Override
@@ -500,12 +576,12 @@ public class RealtimeLocationFragment extends Fragment  implements
                         polylineData.getLeg().endLocation.lat,
                         polylineData.getLeg().endLocation.lng
                 );
-                String info = "Duration: " + polylineData.getLeg().duration
-                        +", Distance: "+ polylineData.getLeg().distance;
+                String info = getString(R.string.duration) + " " + polylineData.getLeg().duration
+                        +", "  + getString(R.string.distance)+ " "+  polylineData.getLeg().distance;
 
                 Marker marker = mGoogleMap.addMarker(new MarkerOptions()
                         .position(endLocation)
-                        .title("Trip #" + index)
+                        .title(getString(R.string.trip) + index)
                         .snippet(info)
                 );
 
@@ -516,7 +592,10 @@ public class RealtimeLocationFragment extends Fragment  implements
                 polylineData.getPolyline().setZIndex(0);
             }
         }
+
     }
+
+
 
 
     public interface onCallbackRetrieveUserLocations{

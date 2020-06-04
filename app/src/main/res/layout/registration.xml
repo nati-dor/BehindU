@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/registration_activity"
     android:orientation="vertical">
@@ -12,14 +14,12 @@
             android:visibility="visible"
             android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
             app:cardUseCompatPadding="true"
             android:layout_marginTop="50dp"
             app:contentPadding="10dp"
             app:cardElevation="5dp"
             app:cardBackgroundColor="#F5F5F5"
-            app:cardCornerRadius="10dp"
-            xmlns:android="http://schemas.android.com/apk/res/android">
+            app:cardCornerRadius="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -37,17 +37,14 @@
             android:layout_marginStart="15dp"/>
 
 
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/Following"
-                android:layout_marginStart="60dp"
-                android:id="@+id/follower_Cb"/>
 
 
-
-        <EditText
+<com.google.android.material.textfield.TextInputLayout
+           android:id="@+id/text_input_layout"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           app:errorEnabled="true">
+           <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/firstNameInput_register"
             android:layout_width="match_parent"
             android:layout_height="40dp"
@@ -57,8 +54,9 @@
             android:textColor="@android:color/black"
             android:hint="@string/EnterYourFirstName"
             android:textStyle="bold"
-            android:textAlignment="center"
-            />
+            android:gravity="center"
+            android:textAlignment="center" />
+</com.google.android.material.textfield.TextInputLayout>
         <EditText
             android:id="@+id/lastNameInput_register"
             android:layout_width="match_parent"
@@ -109,6 +107,17 @@
             android:textStyle="bold"
             android:textAlignment="center"
             />
+
+
+                <CheckBox
+                    android:id="@+id/follower_Cb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:layout_gravity="center"
+                    android:text="@string/Following" />
 
         <Button
             android:id="@+id/createUserBtn"

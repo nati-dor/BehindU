@@ -33,6 +33,10 @@ public class AddChildFragment extends Fragment {
         mView = inflater.inflate(R.layout.add_child_fragment,container,false);
 
         final TextView uniqueKeyTv = mView.findViewById(R.id.uniqueKey_tv);
+        final TextView instructionsTv = mView.findViewById(R.id.instructions_tv);
+
+        instructionsTv.setText(getString(R.string.instructions_add_child_1) +
+                "\n\n" + getString(R.string.instructions_add_child_2));
 
         Button addNewChild = mView.findViewById(R.id.addChildBtn);
         addNewChild.setOnClickListener(new View.OnClickListener() {

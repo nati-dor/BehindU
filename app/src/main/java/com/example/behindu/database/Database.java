@@ -342,6 +342,15 @@ public class Database {
         });
     }
 
+    public void updateChild(Child mChild) {
+        fStore.collection("users").document(mAuth.getUid()).set(mChild).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "onSuccess: Child successfully updated");
+            }
+        });
+    }
+
     public interface OnFirestoreTaskComplete{
         void lastLocationDataAdded(List<LastLocation> lastLocationList);
         void onError(Exception e);

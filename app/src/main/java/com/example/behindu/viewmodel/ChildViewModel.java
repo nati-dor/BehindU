@@ -3,6 +3,7 @@ package com.example.behindu.viewmodel;
 import androidx.lifecycle.ViewModel;
 
 import com.example.behindu.database.Database;
+import com.example.behindu.model.Child;
 import com.example.behindu.model.Follower;
 import com.example.behindu.model.UserLocation;
 import com.example.behindu.view.ChildActivity;
@@ -33,5 +34,9 @@ public class ChildViewModel extends ViewModel {
 
     public void saveChildList(Follower f) {
         mDatabase.saveChildList(f);
+    }
+
+    public void updateChild(Child mChild) {
+        mDatabase.updateChild(mChild);
     }
 }

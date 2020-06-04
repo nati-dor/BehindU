@@ -1,7 +1,6 @@
 package com.example.behindu.view;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -65,9 +64,9 @@ public class FollowerActivity extends AppCompatActivity  {
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(),0);
 
-        adapter.addFragment(new RealtimeLocationFragment(userLocations),"Realtime Location");
-        adapter.addFragment(new LocationHistoryFragment(userLocations.getList()),"Location History");
-        adapter.addFragment(new AddChildFragment(follower),"Add new child");
+        adapter.addFragment(new RealtimeLocationFragment(userLocations),getString(R.string.real_time_lcoation));
+        adapter.addFragment(new LocationHistoryFragment(userLocations.getList()),getString(R.string.last_locations));
+        adapter.addFragment(new AddChildFragment(follower),getString(R.string.add_child));
 
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);

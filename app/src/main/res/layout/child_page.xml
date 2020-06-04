@@ -48,7 +48,7 @@
         <Button
             android:id="@+id/sos_btn"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="42dp"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
             android:layout_marginLeft="30dp"
@@ -65,7 +65,7 @@
         <Button
             android:id="@+id/send_message_follower_btn"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="42dp"
             android:layout_marginTop="50dp"
             android:layout_gravity="center"
             android:layout_marginLeft="30dp"
@@ -82,7 +82,7 @@
         <Button
             android:id="@+id/call_the_follower_btn"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="42dp"
             android:layout_marginTop="50dp"
             android:layout_gravity="center"
             android:layout_marginLeft="30dp"
@@ -105,15 +105,26 @@
     android:orientation="vertical"
     android:layout_gravity="bottom">
 
-        <EditText
-            android:layout_marginTop="100dp"
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/enter_code_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:errorEnabled="true"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="20dp">
+    <com.google.android.material.textfield.TextInputEditText
+            android:layout_marginTop="30dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter code"
+            android:hint="@string/enter_code"
             android:layout_marginLeft="25dp"
             android:layout_marginRight="25dp"
             android:gravity="center"
             android:id="@+id/enter_code_Et"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
 
         <Button
@@ -125,13 +136,23 @@
             android:layout_marginRight="30dp"
             android:layout_marginBottom="10dp"
             android:background="@color/colorPrimaryDark"
-            android:text="אישור"
+            android:text="@string/apply_code_child"
             android:textAllCaps="false"
             android:textColor="@android:color/black"
             android:textStyle="bold"
             android:layout_marginTop="40dp"
             android:textSize="20dp"
             />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:textSize="15sp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:gravity="center"
+        android:id="@+id/connect_status_tv"/>
 
 </LinearLayout>
 </LinearLayout>
