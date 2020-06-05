@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.developer.kalert.KAlertDialog;
 import com.example.behindu.R;
 import com.example.behindu.model.Child;
 import com.example.behindu.model.Follower;
@@ -36,6 +37,7 @@ public class RegisterFragment extends Fragment {
     private TextInputLayout passwordError;
     private TextInputLayout phoneNumberError;
     private int followerPhoneNum;
+    private KAlertDialog pDialog;
 
 
     @Nullable
@@ -62,6 +64,7 @@ public class RegisterFragment extends Fragment {
         registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
+                setProgressBar();
                 Log.d("onClickRegisterBtn","Arrive");
                 String firstName = firstNameEt.getText().toString().trim();
                 String lastName = lastNameEt.getText().toString().trim();
@@ -71,27 +74,32 @@ public class RegisterFragment extends Fragment {
 
                 if(firstName.isEmpty()) {
                     firstNameError.setError(getString(R.string.first_name_error));
+                    pDialog.cancel();
                     return;
                 }
 
                 if(lastName.isEmpty()) {
                     lastNameError.setError(getString(R.string.last_name_error));
+                    pDialog.cancel();
                     return;
                 }
 
                 if(email.isEmpty() || !email.contains("@")) {
                     emailError.setError(getString(R.string.email_login_error));
+                    pDialog.cancel();
                     return;
                 }
 
 
                 if(password.isEmpty() ||  password.length() < 6) {
                     passwordError.setError(getString(R.string.enter_password_error) + "\n" + getString(R.string.password_instructions));
+                    pDialog.cancel();
                     return;
                 }
 
                 if(followerPhoneNumEt.getText().toString().isEmpty() ) {
                     phoneNumberError.setError(getString(R.string.phone_number_error));
+                    pDialog.cancel();
                     return;
                 }
                 else{
@@ -99,10 +107,12 @@ public class RegisterFragment extends Fragment {
                 }
 
                 if(followerCb.isChecked()){
+                    pDialog.show();
                     Follower follower = new Follower(firstName,lastName,email,followerPhoneNum,true,password,null,"DDDDDD");
                     signUpUser(follower);
                 }
                 else {
+                    pDialog.show();
                     Child child = new Child(firstName,lastName,email,followerPhoneNum,false,password,null,null,null,false);
                     signUpUser(child);
                 }
@@ -111,22 +121,46 @@ public class RegisterFragment extends Fragment {
         return view;
     }
 
+
      private void signUpUser(final User user){
+
          viewModel.signUpUser(user ,new MainActivity.registerActions() {
              @Override
              public void registerSucceed(boolean succeed) {
                  if(succeed) {
-                     if(user.isFollower())
-                     moveToNewActivity(FollowerActivity.class);
-                     else{
-                        moveToNewActivity(ChildActivity.class);
-                     }
+                     pDialog.cancel();
+                     registrationsSucceed(user);
                  }
                  else{
                      Snackbar.make(getView(),"Registration Failed", BaseTransientBottomBar.LENGTH_LONG);
                  }
              }
          });
+     }
+
+     public void setProgressBar(){
+         pDialog = new KAlertDialog(getContext(), KAlertDialog.PROGRESS_TYPE);
+         pDialog.getProgressHelper().setSpinSpeed(150);
+         pDialog.setCancelable(false);
+         pDialog.show();
+     }
+
+     public void registrationsSucceed(final User user){
+         new KAlertDialog(getContext(), KAlertDialog.SUCCESS_TYPE)
+                 .setTitleText(getString(R.string.registration_succeed))
+                 .setConfirmText(getString(R.string.ok_confirmation))
+                 .confirmButtonColor(R.color.colorPrimaryDark)
+                 .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+                     @Override
+                     public void onClick(KAlertDialog kAlertDialog) {
+                         if(user.isFollower())
+                             moveToNewActivity(FollowerActivity.class);
+                         else{
+                             moveToNewActivity(ChildActivity.class);
+                         }
+                     }
+                 })
+                 .show();
      }
 
     private void moveToNewActivity (Class userClass) {

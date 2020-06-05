@@ -18,7 +18,7 @@
             android:background="@color/colorPrimaryDark"
             android:text="@string/sign_out"
             android:textAllCaps="false"
-            android:textColor="@android:color/black" />
+            android:textColor="#fff" />
 
 
 
@@ -73,7 +73,7 @@
             android:background="@color/colorPrimaryDark"
             android:text="@string/sendAFollowerMessage"
             android:textAllCaps="false"
-            android:textColor="@android:color/black"
+            android:textColor="#fff"
             android:textStyle="bold"
             android:textSize="20dp"
             />
@@ -91,7 +91,7 @@
             android:background="@color/colorPrimaryDark"
             android:text="@string/callTheFollower"
             android:textAllCaps="false"
-            android:textColor="@android:color/black"
+            android:textColor="#fff"
             android:textStyle="bold"
 
             android:textSize="20dp"
@@ -138,7 +138,7 @@
             android:background="@color/colorPrimaryDark"
             android:text="@string/apply_code_child"
             android:textAllCaps="false"
-            android:textColor="@android:color/black"
+            android:textColor="#fff"
             android:textStyle="bold"
             android:layout_marginTop="40dp"
             android:textSize="20dp"

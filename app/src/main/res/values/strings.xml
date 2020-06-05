@@ -63,4 +63,9 @@
     <string name="first_name_error">Enter first name</string>
     <string name="last_name_error">Enter last name</string>
     <string name="phone_number_error">PLease enter phone number of the follower</string>
+    <string name="registration_succeed">Registration successfulled</string>
+    <string name="ok_confirmation">ok</string>
+    <string name="your_child">Your Child:</string>
+    <string name="location_child_view">Location:</string>
+    <string name="name_child_view">Name:</string>
 </resources>

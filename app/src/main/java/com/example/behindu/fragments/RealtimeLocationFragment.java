@@ -274,7 +274,7 @@ public class RealtimeLocationFragment extends Fragment  implements
                                 latLng.lng
                         ));
                     }
-                    Polyline polyline = mGoogleMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
+                    Polyline polyline = mGoogleMap.addPolyline(new PolylineOptions().width(15).addAll(newDecodedPath));
                     polyline.setColor(ContextCompat.getColor(getActivity(), R.color.polyLineUnSelected));
                     polyline.setClickable(true);
                     mPolylinesData.add(new PolylineData(polyline,route.legs[0]));
@@ -441,7 +441,6 @@ public class RealtimeLocationFragment extends Fragment  implements
     public void onResume() {
         super.onResume();
         mMapView.onResume();
-        addMapMarker();
         startUserLocationsRunnable();
     }
 
@@ -485,8 +484,9 @@ public class RealtimeLocationFragment extends Fragment  implements
         mGoogleMap.setOnPolylineClickListener(this);
         mGoogleMap.setOnInfoWindowClickListener(this);
         mGoogleMap.setMyLocationEnabled(true);
-
     }
+
+
 
     @Override
     public void onInfoWindowClick(final Marker marker) {

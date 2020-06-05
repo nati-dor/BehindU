@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.developer.kalert.KAlertDialog;
 import com.example.behindu.R;
 import com.example.behindu.fragments.CallbackFragment;
 import com.example.behindu.fragments.LoginFragment;
@@ -25,9 +26,8 @@ public class MainActivity extends AppCompatActivity implements CallbackFragment 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_fragment);
 
-      addFragment();
+        addFragment();
     }
-
 
     /*Add a new fragment*/
 
@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements CallbackFragment 
         mTransaction = mFragmentManager.beginTransaction();
         mTransaction.add(R.id.fragmentContainer,fragment);
         mTransaction.commit();
+
     }
 
     /*Replace between fragments*/

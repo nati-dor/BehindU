@@ -71,6 +71,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     private Child mChild;
     private TextInputLayout mCodeError;
     private List<Child> mChildList;
+    private int mFollowerPhoneNumber;
 
 
 
@@ -78,13 +79,6 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.child_page);
-
-       /* KAlertDialog pDialog = new KAlertDialog(this, KAlertDialog.PROGRESS_TYPE);
-        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-        pDialog.setTitleText("Loading");
-        pDialog.setCancelable(false);
-        pDialog.show();*/
-
 
        getPermissions();
 
@@ -278,26 +272,31 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void getCallingPermission(){
+        Log.d(TAG, "getCallingPermission: Arrive");
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                Manifest.permission.CALL_PHONE)
+                android.Manifest.permission.CALL_PHONE)
                 != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "getCallingPermission: Arrive");
             mCallPermissionGranted = false;
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CALL_PHONE},
+                    new String[]{android.Manifest.permission.CALL_PHONE},
                     PERMISSIONS_REQUEST_ENABLE_CALL);
         }
+
 
     }
 
     private void getSmsPermissions(){
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                Manifest.permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
+                android.Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED)
+            Log.d(TAG, "getSmsPermissions: Arrive");{
             mSmsPermissionGranted = false;
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.SEND_SMS},
+                    new String[]{android.Manifest.permission.SEND_SMS},
                     PERMISSIONS_REQUEST_ENABLE_SMS);
         }
+
     }
 
     public boolean isServicesOK() {
@@ -323,6 +322,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult: " + grantResults.toString());
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
@@ -336,14 +336,19 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
             }
             // If request is cancelled, the result arrays are empty.
             case PERMISSIONS_REQUEST_ENABLE_CALL:
+                Log.d(TAG, "onRequestPermissionsResult: Arrive");
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Log.d(TAG, "onRequestPermissionsResult: Arrive");
                     mCallPermissionGranted = true;
+
                 }
                 // If request is cancelled, the result arrays are empty.
             case PERMISSIONS_REQUEST_ENABLE_SMS:
+                Log.d(TAG, "onRequestPermissionsResult: Arrive");
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Log.d(TAG, "onRequestPermissionsResult: if stat Arrive");
                     mSmsPermissionGranted = true;
                 }
         }
@@ -351,7 +356,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
 
     private void getAllUsers() {
         final String code = mEnterCodeEt.getText().toString().trim();
-        if(code.length() != 6 || code == null){
+        if(code.length() != 6){
             mCodeError.setError(getString(R.string.code_error_child));
                 return;
         }
@@ -431,6 +436,8 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         new KAlertDialog(this, KAlertDialog.SUCCESS_TYPE)
                 .setTitleText(getString(R.string.connection_succeed))
                 .setContentText(getString(R.string.you_are_connected_to_follower))
+                .setConfirmText(getString(R.string.ok_confirmation))
+                .confirmButtonColor(R.color.colorPrimaryDark)
                 .show();
     }
 
@@ -438,6 +445,8 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         new KAlertDialog(this, KAlertDialog.ERROR_TYPE)
                 .setTitleText(getString(R.string.connection_failed))
                 .setContentText(getString(R.string.connection_failed_instructions))
+                .setConfirmText(getString(R.string.ok_confirmation))
+                .confirmButtonColor(R.color.colorPrimaryDark)
                 .show();
     }
 
@@ -457,10 +466,13 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                 if(!mCallPermissionGranted) {
                     getCallingPermission();
                 }
+
+
             case PERMISSIONS_REQUEST_ENABLE_SMS:
                 if(!mSmsPermissionGranted){
                     getSmsPermissions();
                 }
+
         }
 
     }
@@ -483,19 +495,16 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        int followerPhoneNumber = mUserLocation.getChild().getPhoneNumber();
+        mFollowerPhoneNumber = mUserLocation.getChild().getPhoneNumber();
         switch(v.getId()){
             case R.id.sos_btn:
-                Log.d(TAG, "onClick: sos pressed");
                 callEmergency(EMERGENCY_NUMBER_POLICE);
                 break;
             case R.id.call_the_follower_btn:
-                Log.d(TAG, "onClick: call follower pressed");
-                callEmergency(followerPhoneNumber);
+                callEmergency(mFollowerPhoneNumber);
                 break;
             case R.id.send_message_follower_btn:
-                Log.d(TAG, "onClick: send message pressed");
-                sendSms(String.valueOf(followerPhoneNumber),getString(R.string.arrive_message_child));
+                sendSms(String.valueOf(mFollowerPhoneNumber),getString(R.string.arrive_message_child));
                 break;
             case R.id.apply_code_btn:
                 getAllUsers();

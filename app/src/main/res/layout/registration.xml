@@ -40,7 +40,7 @@
                 android:id="@+id/first_name_layout_registration"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                
+
                 app:errorEnabled="true">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/firstNameInput_register"
@@ -155,7 +155,7 @@
                 android:background="@color/colorPrimaryDark"
                 android:text="@string/CreateANewUser"
                 android:textAllCaps="false"
-                android:textColor="@android:color/black"
+                android:textColor="#fff"
                 android:textStyle="bold"
                 />
 

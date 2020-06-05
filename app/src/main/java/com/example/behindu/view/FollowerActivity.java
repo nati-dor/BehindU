@@ -62,6 +62,8 @@ public class FollowerActivity extends AppCompatActivity  {
         TabLayout tabLayout = findViewById(R.id.tab_layout_follower);
         ViewPager viewPager = findViewById(R.id.view_pager_follower);
 
+        viewPager.setOffscreenPageLimit(3);
+
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(),0);
 
         adapter.addFragment(new RealtimeLocationFragment(userLocations),getString(R.string.real_time_lcoation));
