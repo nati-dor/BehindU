@@ -44,9 +44,6 @@ public class AddChildFragment extends Fragment  {
     private TextView mLastLocation;
     private UserLocation mUserLocation;
     private  WaveLoadingView mWaveLoadingView;
-    private Handler handler = new Handler();
-    private int progressStatus = 0;
-
 
     public AddChildFragment(Follower follower, UserLocation userLocation) {
         this.mFollower = follower;
@@ -145,17 +142,13 @@ public class AddChildFragment extends Fragment  {
             mWaveLoadingView.setCenterTitleColor(Color.BLACK);
         }
 
-        mWaveLoadingView.setTopTitleSize(13);
         mWaveLoadingView.setCenterTitle(battery + "%");
         mWaveLoadingView.setCenterTitleSize(15);
-        mWaveLoadingView.setBottomTitleSize(18);
-        mWaveLoadingView.setProgressValue(0);
+        mWaveLoadingView.setProgressValue(battery);
         mWaveLoadingView.setBorderWidth(5);
-        mWaveLoadingView.setAmplitudeRatio(100);
+        mWaveLoadingView.setAmplitudeRatio(1);
         mWaveLoadingView.setWaveColor(waveAnimColor);
         mWaveLoadingView.setBorderColor(lowBatteryColor);
-        mWaveLoadingView.setTopTitleStrokeWidth(3);
-        mWaveLoadingView.setWaterLevelRatio(0.2f);
         mWaveLoadingView.setAnimDuration(3000);
         mWaveLoadingView.pauseAnimation();
         mWaveLoadingView.resumeAnimation();
@@ -181,6 +174,6 @@ public class AddChildFragment extends Fragment  {
     }
 
     public interface OnCallbackBatteryStatus{
-        public void setBatteryStatus(int battery);
+         void setBatteryStatus(int battery);
     }
 }
