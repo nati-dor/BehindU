@@ -23,7 +23,6 @@ import com.example.behindu.util.SaveSharedPreference;
 
 public class MainActivity extends AppCompatActivity implements CallbackFragment {
 
-    private static final String TAG = "";
     private Fragment mFragment;
     private FragmentManager mFragmentManager;
     private FragmentTransaction mTransaction;

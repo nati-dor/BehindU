@@ -13,14 +13,6 @@ public class User implements Parcelable {
     private String password;
     private String userId;
 
-    public int getFollowerPhoneNumber() {
-        return followerPhoneNumber;
-    }
-
-    public void setFollowerPhoneNumber(int followerPhoneNumber) {
-        this.followerPhoneNumber = followerPhoneNumber;
-    }
-
     public User() { }
 
     public User(String firstName, String lastName, String email, int followerPhoneNumber, boolean isFollower, String password, String userId) {
@@ -42,6 +34,9 @@ public class User implements Parcelable {
         password = in.readString();
         userId = in.readString();
     }
+
+
+
 
     public static final Creator<User> CREATOR = new Creator<User>() {
         @Override
@@ -109,6 +104,14 @@ public class User implements Parcelable {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public int getFollowerPhoneNumber() {
+        return followerPhoneNumber;
+    }
+
+    public void setFollowerPhoneNumber(int followerPhoneNumber) {
+        this.followerPhoneNumber = followerPhoneNumber;
     }
 
     @Override

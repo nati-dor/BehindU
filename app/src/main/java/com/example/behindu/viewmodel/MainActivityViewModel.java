@@ -18,8 +18,4 @@ public class MainActivityViewModel extends ViewModel {
     public void signUpUser(User user, MainActivity.registerActions registerActions){
         mDatabase.createUser(user,registerActions);
     }
-
-    public void signOutUser(){
-        mDatabase.signOutUser();
-    }
 }

@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
@@ -33,13 +32,11 @@ import androidx.core.content.ContextCompat;
 
 import com.developer.kalert.KAlertDialog;
 import com.example.behindu.R;
-import com.example.behindu.fragments.AddChildFragment;
 import com.example.behindu.model.Child;
 import com.example.behindu.model.Follower;
 import com.example.behindu.model.LastLocation;
 import com.example.behindu.model.UserLocation;
 import com.example.behindu.services.LocationService;
-
 import com.example.behindu.util.SaveSharedPreference;
 import com.example.behindu.viewmodel.ChildViewModel;
 import com.google.android.gms.common.ConnectionResult;
@@ -78,7 +75,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     private TextInputLayout mCodeError;
     private List<Child> mChildList;
     private int mFollowerPhoneNumber;
-    private  Intent mServiceIntent;
+    private Intent mServiceIntent;
     private AlarmReceiverTest mBatteryLevelReceiver;
 
 
@@ -117,7 +114,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void getAlarmReceiver() {
-         mBatteryLevelReceiver = new  AlarmReceiverTest();
+        mBatteryLevelReceiver = new  AlarmReceiverTest();
         registerReceiver(mBatteryLevelReceiver, new IntentFilter(
                 Intent.ACTION_BATTERY_CHANGED));
 
@@ -150,7 +147,6 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                         getLastKnownLocation();
                     }
                 });
-
     }
 
 
@@ -174,9 +170,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                 if (task.isSuccessful()) {
                     final Location location = task.getResult();
                     mViewModel.getLocationList(new locationList() {
-
                         GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-
                         @Override
                         public void onCallbackLocationList(List<LastLocation> lastLocationList) {
                             mUserLocation.getChild().setRoutes(geoPoint);
@@ -408,8 +402,8 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void signOut() {
-        stopService(mServiceIntent);
-        unregisterReceiver(mBatteryLevelReceiver);
+        stopService(mServiceIntent); // stopping the location service
+        unregisterReceiver(mBatteryLevelReceiver); // unregister the battery receiver
         mViewModel.signOut();
         SaveSharedPreference.clearUserName(this);
         Intent i = new Intent(ChildActivity.this, MainActivity.class);

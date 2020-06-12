@@ -22,11 +22,11 @@ import static android.content.ContentValues.TAG;
 
 public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocationViewHolder> {
 
-    private List<LastLocation> lastLocation;
+    private List<LastLocation> mLastLocation;
 
 
-    public LocationAdapter(List<LastLocation> lastLocation) {
-        this.lastLocation = lastLocation;
+    public LocationAdapter(List<LastLocation> mLastLocation) {
+        this.mLastLocation = mLastLocation;
     }
 
     public class LocationViewHolder extends RecyclerView.ViewHolder{
@@ -52,7 +52,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
 
     @Override
     public void onBindViewHolder(@NonNull LocationViewHolder holder, int position) {
-        LastLocation location = lastLocation.get(position);
+        LastLocation location = mLastLocation.get(position);
         List<Address> addressesList;
         try {
             Geocoder gcd = new Geocoder(holder.itemView.getContext(), Locale.getDefault());
@@ -67,17 +67,17 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
 
     @Override
     public int getItemCount() {
-        if(lastLocation == null)
+        if(mLastLocation == null)
             return 0;
         else
-        return lastLocation.size();
+        return mLastLocation.size();
     }
 
     /* Update the list from the observer of Live Data */
 
-    public void setLastLocation(List<LastLocation> lastLocation){
+    public void setLastLocation(List<LastLocation> mLastLocation){
         Log.d(TAG, "setLastLocation: arrive");
-        this.lastLocation = lastLocation;
+        this.mLastLocation = mLastLocation;
         notifyDataSetChanged();
     }
 

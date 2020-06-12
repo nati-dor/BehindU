@@ -1,15 +1,11 @@
 package com.example.behindu.fragments;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
-import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +23,6 @@ import com.example.behindu.model.Follower;
 import com.example.behindu.model.UserLocation;
 import com.example.behindu.util.RandomUniqueKey;
 import com.example.behindu.util.SaveSharedPreference;
-import com.example.behindu.view.ChildActivity;
 import com.example.behindu.view.MainActivity;
 import com.example.behindu.viewmodel.FollowerViewModel;
 import com.google.firebase.firestore.GeoPoint;
@@ -36,10 +31,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import static android.content.Context.BATTERY_SERVICE;
-import static androidx.constraintlayout.widget.Constraints.TAG;
-import static androidx.core.content.ContextCompat.getSystemService;
-import static com.example.behindu.model.Constants.LOCATION_UPDATE_INTERVAL;
+import me.itangqi.waveloadingview.WaveLoadingView;
 
 public class AddChildFragment extends Fragment  {
 
@@ -51,6 +43,10 @@ public class AddChildFragment extends Fragment  {
     public TextView mBatteryStatuesTv;
     private TextView mLastLocation;
     private UserLocation mUserLocation;
+    private  WaveLoadingView mWaveLoadingView;
+    private Handler handler = new Handler();
+    private int progressStatus = 0;
+
 
     public AddChildFragment(Follower follower, UserLocation userLocation) {
         this.mFollower = follower;
@@ -104,6 +100,8 @@ public class AddChildFragment extends Fragment  {
             mNameTv = mView.findViewById(R.id.name_child_details);
             mBatteryStatuesTv = mView.findViewById(R.id.battery_child_details);
             mLastLocation = mView.findViewById(R.id.location_child_details);
+            mWaveLoadingView = mView.findViewById(R.id.waveLoadingView);
+            mWaveLoadingView.setShapeType(WaveLoadingView.ShapeType.CIRCLE);
 
 
             Button signOutBtn = mView.findViewById(R.id.signOutFollowerBtn);
@@ -118,24 +116,51 @@ public class AddChildFragment extends Fragment  {
 
 
             mNameTv.setText(getString(R.string.name_child_view) + " " +mChild.getFirstName()+ " " + mChild.getLastName());
-            mBatteryStatuesTv.setText(getString(R.string.battery) +(mUserLocation.getChild().getBatteryPercent())+"%");
+            setBatteryLevel(mUserLocation.getChild().getBatteryPercent());
             mLastLocation.setText(getString(R.string.location_child_view) +" " + getAddress(mChild.getRoutes()));
 
             mViewModel.getBatteryPercent(new OnCallbackBatteryStatus() {
                 @Override
                 public void setBatteryStatus(int battery) {
-                    mBatteryStatuesTv.setText(getString(R.string.battery) + battery + "%");
-                    if (battery <= 20) {
-                        mBatteryStatuesTv.setTextColor(getResources().getColor(R.color.polyLineUnSelected));
-                    } else {
-                        mBatteryStatuesTv.setTextColor(getResources().getColor(R.color.textColor));
-                    }
+                    setBatteryLevel(battery);
                 }
             });
 
         }
 
         return mView;
+    }
+
+    private void setBatteryLevel(final int battery) {
+
+        int lowBatteryColor = Color.parseColor("#4CAF50");
+        int waveAnimColor = Color.parseColor("#B2DFDB");
+
+        if (battery <= 20) {
+            lowBatteryColor = getResources().getColor(R.color.polyLineUnSelected);
+            waveAnimColor = getResources().getColor(R.color.polyLineUnSelected);
+            mWaveLoadingView.setCenterTitleColor(lowBatteryColor);
+
+        } else {
+            mWaveLoadingView.setCenterTitleColor(Color.BLACK);
+        }
+
+        mWaveLoadingView.setTopTitleSize(13);
+        mWaveLoadingView.setCenterTitle(battery + "%");
+        mWaveLoadingView.setCenterTitleSize(15);
+        mWaveLoadingView.setBottomTitleSize(18);
+        mWaveLoadingView.setProgressValue(0);
+        mWaveLoadingView.setBorderWidth(5);
+        mWaveLoadingView.setAmplitudeRatio(100);
+        mWaveLoadingView.setWaveColor(waveAnimColor);
+        mWaveLoadingView.setBorderColor(lowBatteryColor);
+        mWaveLoadingView.setTopTitleStrokeWidth(3);
+        mWaveLoadingView.setWaterLevelRatio(0.2f);
+        mWaveLoadingView.setAnimDuration(3000);
+        mWaveLoadingView.pauseAnimation();
+        mWaveLoadingView.resumeAnimation();
+        mWaveLoadingView.cancelAnimation();
+        mWaveLoadingView.startAnimation();
     }
 
     private void moveToNewActivity(Class login) {

@@ -10,6 +10,7 @@ public class UserLocation  implements Parcelable {
     private List<LastLocation> list;
     private Child child;
 
+
     public UserLocation() { }
 
     private UserLocation(Parcel in) {

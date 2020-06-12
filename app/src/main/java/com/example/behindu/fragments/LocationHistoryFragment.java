@@ -26,15 +26,15 @@ public class LocationHistoryFragment extends Fragment {
 
 
     final String TAG = "LocationHistoryFragment";
-    private List<LastLocation> userLocations;
-    private FollowerViewModel followerViewModel;
-    private LocationAdapter locationAdapter;
+    private List<LastLocation> mUserLocations;
+    private FollowerViewModel mViewModel;
+    private LocationAdapter mLocationAdapter;
 
     public LocationHistoryFragment() {
     }
 
-    public LocationHistoryFragment(List<LastLocation> userLocations) {
-        this.userLocations = userLocations;
+    public LocationHistoryFragment(List<LastLocation> mUserLocations) {
+        this.mUserLocations = mUserLocations;
     }
 
 
@@ -56,8 +56,8 @@ public class LocationHistoryFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
 
-        locationAdapter = new LocationAdapter(userLocations);
-        recyclerView.setAdapter(locationAdapter);
+        mLocationAdapter = new LocationAdapter(mUserLocations);
+        recyclerView.setAdapter(mLocationAdapter);
     }
 
 
@@ -66,13 +66,13 @@ public class LocationHistoryFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         Log.d(TAG, "onActivityCreated: arrive");
 
-        followerViewModel = new ViewModelProvider(getActivity()).get(FollowerViewModel.class);
-        followerViewModel.getLastLocationData().observe(getViewLifecycleOwner(), new Observer<List<LastLocation>>() {
+        mViewModel = new ViewModelProvider(getActivity()).get(FollowerViewModel.class);
+        mViewModel.getLastLocationData().observe(getViewLifecycleOwner(), new Observer<List<LastLocation>>() {
             @Override
             public void onChanged(List<LastLocation> lastLocationList) {
                 //   new LocationAdapter(lastLocationList);
-                locationAdapter.setLastLocation(lastLocationList);
-                locationAdapter.notifyDataSetChanged();
+                mLocationAdapter.setLastLocation(lastLocationList);
+                mLocationAdapter.notifyDataSetChanged();
                 Toast.makeText(getView().getContext(), "Data has been changed", Toast.LENGTH_SHORT).show();
                 //Log.d(TAG, "onChanged: "+lastLocationList.get(lastLocationList.size()-1).getTimestamp().toString());
                 Log.d(TAG, "onChanged: observer arrive");

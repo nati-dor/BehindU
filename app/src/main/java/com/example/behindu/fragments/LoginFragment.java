@@ -1,9 +1,7 @@
 package com.example.behindu.fragments;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.developer.kalert.KAlertDialog;
 import com.example.behindu.R;
 import com.example.behindu.model.User;
 import com.example.behindu.util.SaveSharedPreference;
@@ -24,28 +21,27 @@ import com.example.behindu.view.ChildActivity;
 import com.example.behindu.view.FollowerActivity;
 import com.example.behindu.view.MainActivity;
 import com.example.behindu.viewmodel.MainActivityViewModel;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 
 public class LoginFragment extends Fragment implements View.OnClickListener{
 
-    private MainActivityViewModel viewModel = new MainActivityViewModel();
-    private CallbackFragment callbackFragment;
-    private ProgressBar progressBar;
-    private TextInputLayout userError;
-    private TextInputLayout pass;
+    private MainActivityViewModel mViewModel = new MainActivityViewModel();
+    private CallbackFragment mCallbackFragment;
+    private ProgressBar mProgressBar;
+    private TextInputLayout mUserError;
+    private TextInputLayout mPass;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_main, container, false);
 
-        progressBar = view.findViewById(R.id.login_progressbar);
+        mProgressBar = view.findViewById(R.id.login_progressbar);
 
-        userError = view.findViewById(R.id.user_input_login_layout);
+        mUserError = view.findViewById(R.id.user_input_login_layout);
 
-        pass = view.findViewById(R.id.password_input_login_layout);
+        mPass = view.findViewById(R.id.password_input_login_layout);
 
         Button signIn = view.findViewById(R.id.loginBtn);
         signIn.setOnClickListener(this);
@@ -59,8 +55,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
 
     }
 
-    public void setCallbackFragment(CallbackFragment callbackFragment){
-        this.callbackFragment = callbackFragment;
+    public void setCallbackFragment(CallbackFragment mCallbackFragment){
+        this.mCallbackFragment = mCallbackFragment;
     }
 
     private void loginBtn(){
@@ -68,32 +64,32 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         EditText userPassEt = getView().findViewById(R.id.passwordInput_login);
 
         String username = userEmailEt.getText().toString().trim();
-        String password = userPassEt.getText().toString().trim();
+        String mPassword = userPassEt.getText().toString().trim();
 
         if(username.isEmpty() || !username.contains("@")) {
-            userError.setError(getString(R.string.email_login_error));
-            progressBar.setVisibility(View.GONE);
+            mUserError.setError(getString(R.string.email_login_error));
+            mProgressBar.setVisibility(View.GONE);
             return;
         }
 
-        if(password.isEmpty() ||  password.length() < 6) {
-             pass.setError(getString(R.string.enter_password_error) + "\n" + getString(R.string.password_instructions));
-             progressBar.setVisibility(View.GONE);
+        if(mPassword.isEmpty() ||  mPassword.length() < 6) {
+             mPass.setError(getString(R.string.enter_password_error) + "\n" + getString(R.string.password_instructions));
+             mProgressBar.setVisibility(View.GONE);
              return;
         }
 
-        progressBar.setVisibility(View.VISIBLE);
-        viewModel.signInUser(username, password, new MainActivity.LogInActions() {
+        mProgressBar.setVisibility(View.VISIBLE);
+        mViewModel.signInUser(username, mPassword, new MainActivity.LogInActions() {
             @Override
             public void LogInSuccessfully(User user) {
                 if(user.isFollower()) {
-                    progressBar.setVisibility(View.GONE);
+                    mProgressBar.setVisibility(View.GONE);
                     // save the user name on local storage
                     SaveSharedPreference.setUserName(getContext(),user.getEmail(),"true");
                     moveToNewActivity(FollowerActivity.class);
                 }
                 else{
-                    progressBar.setVisibility(View.GONE);
+                    mProgressBar.setVisibility(View.GONE);
                     // save the user name on local storage
                     SaveSharedPreference.setUserName(getContext(),user.getEmail(),"false");
                     moveToNewActivity(ChildActivity.class);
@@ -101,15 +97,15 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
             }
             @Override
             public void LogInFailed() {
-                progressBar.setVisibility(View.GONE);
+                mProgressBar.setVisibility(View.GONE);
                 Toast.makeText(getContext(), "login failed", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void newUser(){
-        if(callbackFragment!= null){
-            callbackFragment.changeFragment();
+        if(mCallbackFragment!= null){
+            mCallbackFragment.changeFragment();
         }
     }
 
