@@ -9,18 +9,20 @@ public class Child extends User implements Parcelable {
 
     private GeoPoint routes;
     private String lastLocation;
-    private String childId;
+    private String followerId;
     private boolean connected;
+    private int batteryPercent;
 
 
     public Child() { }
 
     public Child(String firstName, String lastName, String email, int followerNumber, boolean isFollower,
-                 String password,GeoPoint routes,String lastLocation,String childId,boolean connected) {
+                 String password,GeoPoint routes,String lastLocation,String followerId,boolean connected,int batteryPercent) {
         super(firstName, lastName, email, followerNumber, isFollower, password,null);
         this.routes = routes;
         this.lastLocation = lastLocation;
-        this.childId = childId;
+        this.followerId = followerId;
+        this.batteryPercent = batteryPercent;
     }
 
     protected Child(Parcel in) {
@@ -29,7 +31,8 @@ public class Child extends User implements Parcelable {
         double lng = in.readDouble();
         routes = new GeoPoint(lat,lng);
         lastLocation = in.readString();
-        childId = in.readString();
+        followerId = in.readString();
+        batteryPercent = in.readInt();
     }
 
     public static final Creator<Child> CREATOR = new Creator<Child>() {
@@ -70,12 +73,19 @@ public class Child extends User implements Parcelable {
         this.lastLocation = lastLocation;
     }
 
-    public String getChildId() {
-        return childId;
+    public String getFollowerId() {
+        return followerId;
     }
 
-    public void setChildId(String childId) {
-        this.childId = childId;
+    public void setFollowerId(String followerId) {
+        this.followerId = followerId;
+    }
+
+    public int getBatteryPercent(){
+        return batteryPercent;
+    }
+    public void setBatteryPercent(int batteryPercent) {
+        this.batteryPercent = batteryPercent;
     }
 
     @Override
@@ -83,8 +93,9 @@ public class Child extends User implements Parcelable {
         return "Child{" +
                 "routes=" + routes +
                 ", lastLocation='" + lastLocation + '\'' +
-                ", childId='" + childId + '\'' +
+                ", childId='" + followerId + '\'' +
                 ", connected=" + connected +
+                ", batteryPercent=" + batteryPercent +
                 '}';
     }
 
@@ -99,6 +110,7 @@ public class Child extends User implements Parcelable {
         dest.writeDouble(routes.getLatitude());
         dest.writeDouble(routes.getLongitude());
         dest.writeString(lastLocation);
-        dest.writeString(childId);
+        dest.writeString(followerId);
+        dest.writeInt(batteryPercent);
     }
 }

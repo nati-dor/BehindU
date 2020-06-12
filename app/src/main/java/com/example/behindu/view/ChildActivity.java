@@ -3,16 +3,19 @@ package com.example.behindu.view;
 import android.Manifest;
 import android.app.ActivityManager;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
@@ -30,11 +33,14 @@ import androidx.core.content.ContextCompat;
 
 import com.developer.kalert.KAlertDialog;
 import com.example.behindu.R;
+import com.example.behindu.fragments.AddChildFragment;
 import com.example.behindu.model.Child;
 import com.example.behindu.model.Follower;
 import com.example.behindu.model.LastLocation;
 import com.example.behindu.model.UserLocation;
 import com.example.behindu.services.LocationService;
+
+import com.example.behindu.util.SaveSharedPreference;
 import com.example.behindu.viewmodel.ChildViewModel;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -72,7 +78,8 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     private TextInputLayout mCodeError;
     private List<Child> mChildList;
     private int mFollowerPhoneNumber;
-
+    private  Intent mServiceIntent;
+    private AlarmReceiverTest mBatteryLevelReceiver;
 
 
     @Override
@@ -80,7 +87,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.child_page);
 
-       getPermissions();
+        getPermissions();
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -106,42 +113,49 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
 
         Button signOutBtn = findViewById(R.id.signOutChildBtn);
         signOutBtn.setOnClickListener(this);
+
+    }
+
+    private void getAlarmReceiver() {
+         mBatteryLevelReceiver = new  AlarmReceiverTest();
+        registerReceiver(mBatteryLevelReceiver, new IntentFilter(
+                Intent.ACTION_BATTERY_CHANGED));
+
     }
 
     private void getUserDetails() {
         if (mUserLocation == null) {
             mUserLocation = new UserLocation();
         }
+
+
         mViewModel.getUserDetails(
                 new childLocationCallback() {
-            @Override
-            public void setLocation(Child child) {
-                mChild = child;
-                Log.d(TAG, "setLocation: child is" +child.toString());
-                mUserLocation.setChild(child);
-                if(child.isConnected()){
-                    mEnterCodeEt.setVisibility(View.GONE);
-                    mEnterCodeBtn.setVisibility(View.GONE);
-                    mConnectedStatues.setText(getString(R.string.connected_to_follower));
-                    mConnectedStatues.setTextColor(getResources().getColor(R.color.connectedToFollower));
-                }
-                else{
-                    mConnectedStatues.setText(getString(R.string.not_connected));
-                    mConnectedStatues.setTextColor(getResources().getColor(R.color.notConnectedToFollower));
-                }
-                getLastKnownLocation();
-            }
-        });
+                    @Override
+                    public void setLocation(Child child) {
+                        mChild = child;
+                        getAlarmReceiver();
+                        Log.d(TAG, "setLocation: child is" + child.toString());
+                        mUserLocation.setChild(child);
+                        if (child.isConnected()) {
+                            mEnterCodeEt.setVisibility(View.GONE);
+                            mEnterCodeBtn.setVisibility(View.GONE);
+                            mCodeError.setVisibility(View.GONE);
+                            mConnectedStatues.setText(getString(R.string.connected_to_follower));
+                            mConnectedStatues.setTextColor(getResources().getColor(R.color.connectedToFollower));
+                        } else {
+                            mConnectedStatues.setText(getString(R.string.not_connected));
+                            mConnectedStatues.setTextColor(getResources().getColor(R.color.notConnectedToFollower));
+                        }
+                        getLastKnownLocation();
+                    }
+                });
 
     }
 
 
-    private void getPermissions(){
+    private void getPermissions() {
         getLocationPermission();
-        getCallingPermission();
-        getSmsPermissions();
-
-
     }
 
     private void saveUserLocation(UserLocation mUserLocation) {
@@ -190,19 +204,17 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
 
     private void startLocationService(UserLocation mUserLocation) {
         if (!isLocationServiceRunning()) {
-            Intent serviceIntent = new Intent(this, LocationService.class);
-            serviceIntent.putExtra("UserLocations", mUserLocation);
+            mServiceIntent = new Intent(this, LocationService.class);
+            mServiceIntent.putExtra("UserLocations", mUserLocation);
 
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                ChildActivity.this.startForegroundService(serviceIntent);
+                ChildActivity.this.startForegroundService(mServiceIntent);
 
             } else {
-                startService(serviceIntent);
+                startService(mServiceIntent);
             }
         }
     }
-
-    // **************************** check the if statement *******************************
 
     private boolean isLocationServiceRunning() {
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
@@ -271,7 +283,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void getCallingPermission(){
+    private void getCallingPermission() {
         Log.d(TAG, "getCallingPermission: Arrive");
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 android.Manifest.permission.CALL_PHONE)
@@ -286,11 +298,12 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    private void getSmsPermissions(){
+    private void getSmsPermissions() {
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 android.Manifest.permission.SEND_SMS)
                 != PackageManager.PERMISSION_GRANTED)
-            Log.d(TAG, "getSmsPermissions: Arrive");{
+            Log.d(TAG, "getSmsPermissions: Arrive");
+        {
             mSmsPermissionGranted = false;
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.SEND_SMS},
@@ -338,7 +351,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
             case PERMISSIONS_REQUEST_ENABLE_CALL:
                 Log.d(TAG, "onRequestPermissionsResult: Arrive");
                 if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d(TAG, "onRequestPermissionsResult: Arrive");
                     mCallPermissionGranted = true;
 
@@ -347,7 +360,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
             case PERMISSIONS_REQUEST_ENABLE_SMS:
                 Log.d(TAG, "onRequestPermissionsResult: Arrive");
                 if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d(TAG, "onRequestPermissionsResult: if stat Arrive");
                     mSmsPermissionGranted = true;
                 }
@@ -356,9 +369,9 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
 
     private void getAllUsers() {
         final String code = mEnterCodeEt.getText().toString().trim();
-        if(code.length() != 6){
+        if (code.length() != 6) {
             mCodeError.setError(getString(R.string.code_error_child));
-                return;
+            return;
         }
         mViewModel.getAllUsers(new followerList() {
             @Override
@@ -366,39 +379,52 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                 mChildList = new ArrayList<>();
                 for (Follower f : follower) {
                     if (f.getFollowingId().equals(code)) {
-                        mChild.setConnected(true);
-                        mChildList.add(mChild);
-                        f.setChildList(mChildList);
-                        mViewModel.updateChild(mChild);
-                        mViewModel.saveChildList(f);
-                        mChildList.get(0).setConnected(true);
-                        mEnterCodeBtn.setVisibility(View.GONE);
-                        mEnterCodeEt.setVisibility(View.GONE);
-                        mCodeError.setVisibility(View.GONE);
-                        mConnectedStatues.setText(getString(R.string.connected_to_follower));
-                        mConnectedStatues.setTextColor(getResources().getColor(R.color.connectedToFollower));
-                        setDialogSucceed();
+                        initConnection(f);
                     }
+                }
 
-                    if(mChildList.isEmpty()){
-                        setDialogFailed();
-                        return;
-                    }
+                if (mChildList.isEmpty()) {
+                    setDialogFailed();
                 }
             }
         });
     }
 
+    // Initialize the connection between the child and follower
+    private void initConnection(Follower f) {
+        mChild.setFollowerId(f.getUserId());
+        mChild.setConnected(true);
+        mChildList.add(mChild);
+        f.setChildList(mChildList);
+        mViewModel.updateChild(mChild);
+        mViewModel.saveChildList(f);
+        mChildList.get(0).setConnected(true);
+        mEnterCodeBtn.setVisibility(View.GONE);
+        mEnterCodeEt.setVisibility(View.GONE);
+        mCodeError.setVisibility(View.GONE);
+        mConnectedStatues.setText(getString(R.string.connected_to_follower));
+        mConnectedStatues.setTextColor(getResources().getColor(R.color.connectedToFollower));
+        setDialogSucceed();
+    }
+
     private void signOut() {
+        stopService(mServiceIntent);
+        unregisterReceiver(mBatteryLevelReceiver);
         mViewModel.signOut();
+        SaveSharedPreference.clearUserName(this);
         Intent i = new Intent(ChildActivity.this, MainActivity.class);
+
         startActivity(i);
         finish();
     }
 
     private void callEmergency(int phoneNumber) {
-        Log.d(TAG, "callEmergency: mCall" + mCallPermissionGranted);
-        if(mCallPermissionGranted) {
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+            mCallPermissionGranted = true;
+        }
+
+        if (mCallPermissionGranted) {
             Log.d(TAG, "callEmergency: arrive");
             Intent callIntent = new Intent(Intent.ACTION_CALL);
             callIntent.setData(Uri.parse("tel:" + phoneNumber));
@@ -406,21 +432,17 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         }
         else{
             getCallingPermission();
-            Log.d(TAG, "callEmergency: else arrive");
         }
 
     }
 
     private void sendSms(String phoneNumber, String message) {
-        Log.d(TAG, "sendSms: mSms" + mSmsPermissionGranted);
         if (mSmsPermissionGranted) {
-            Log.d(TAG, "sendSms: arrive");
             SmsManager sms = SmsManager.getDefault();
             sms.sendTextMessage(phoneNumber, null, message, null, null);
             Toast.makeText(this, getString(R.string.message_sent), Toast.LENGTH_SHORT).show();
         }
         else{
-            Log.d(TAG, "sendSms: else arrive");
             getSmsPermissions();
         }
     }
@@ -453,7 +475,6 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "onActivityResult: called.");
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ENABLE_GPS: {
                 if(!mLocationPermissionGranted){
@@ -514,6 +535,30 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                 break;
         }
 
+
+    }
+
+
+    public class AlarmReceiverTest extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            int batteryLevel = intent.getIntExtra(
+                    BatteryManager.EXTRA_LEVEL, 0);
+            int maxLevel = intent
+                    .getIntExtra(BatteryManager.EXTRA_SCALE, 0);
+            int batteryHealth = intent.getIntExtra(
+                    BatteryManager.EXTRA_HEALTH,
+                    BatteryManager.BATTERY_HEALTH_UNKNOWN);
+            float batteryPercentage = ((float) batteryLevel / (float) maxLevel) * 100;
+
+            mChild.setBatteryPercent((int)batteryPercentage);
+            Toast.makeText(context, "percent: "+String.valueOf(batteryPercentage), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "health: "+String.valueOf(batteryHealth), Toast.LENGTH_SHORT).show();
+
+            mViewModel.setBattery(mChild);
+        }
 
     }
 

@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import com.developer.kalert.KAlertDialog;
 import com.example.behindu.R;
 import com.example.behindu.model.User;
+import com.example.behindu.util.SaveSharedPreference;
 import com.example.behindu.view.ChildActivity;
 import com.example.behindu.view.FollowerActivity;
 import com.example.behindu.view.MainActivity;
@@ -51,39 +52,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
 
         Button registerBtn = view.findViewById(R.id.new_user_btn);
         registerBtn.setOnClickListener(this);
-
-
-    /*    new KAlertDialog(getContext(), KAlertDialog.WARNING_TYPE)
-                .setTitleText("Are you sure?")
-                .setContentText("Won't be able to recover this file!")
-                .setCancelText("No,cancel plx!")
-                .setConfirmText("Yes,delete it!")
-                .showCancelButton(true)
-                .setCancelClickListener(new KAlertDialog.KAlertClickListener() {
-                    @Override
-                    public void onClick(KAlertDialog sDialog) {
-                        sDialog.cancel();
-                    }
-                })
-                .show();
-
-
-        new KAlertDialog(getContext(), KAlertDialog.WARNING_TYPE)
-                .setTitleText("Are you sure?")
-                .setContentText("Won't be able to recover this file!")
-                .setConfirmText("Yes,delete it!")
-                .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
-                    @Override
-                    public void onClick(KAlertDialog sDialog) {
-                        sDialog
-                                .setTitleText("Deleted!")
-                                .setContentText("Your imaginary file has been deleted!")
-                                .setConfirmText("OK")
-                                .setConfirmClickListener(null)
-                                .changeAlertType(KAlertDialog.SUCCESS_TYPE);
-                    }
-                })
-                .show();*/
 
 
         return view;
@@ -120,10 +88,14 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
             public void LogInSuccessfully(User user) {
                 if(user.isFollower()) {
                     progressBar.setVisibility(View.GONE);
+                    // save the user name on local storage
+                    SaveSharedPreference.setUserName(getContext(),user.getEmail(),"true");
                     moveToNewActivity(FollowerActivity.class);
                 }
                 else{
                     progressBar.setVisibility(View.GONE);
+                    // save the user name on local storage
+                    SaveSharedPreference.setUserName(getContext(),user.getEmail(),"false");
                     moveToNewActivity(ChildActivity.class);
                 }
             }
@@ -158,5 +130,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                 break;
         }
     }
+
+
+
 }
 

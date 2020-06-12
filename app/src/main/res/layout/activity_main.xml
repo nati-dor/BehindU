@@ -4,9 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
     tools:context=".view.MainActivity">
 
 
@@ -19,11 +20,10 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         app:cardUseCompatPadding="true"
         android:layout_marginTop="90dp"
-        app:contentPadding="10dp"
+        app:contentPadding="0dp"
         app:cardElevation="5dp"
         app:cardBackgroundColor="#F5F5F5"
         app:cardCornerRadius="10dp"
-        android:id="@+id/generate_code_cardview"
         xmlns:android="http://schemas.android.com/apk/res/android">
 
 
@@ -33,6 +33,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:gravity="center"
+            android:background="@drawable/cardview_border"
             android:orientation="vertical">
 
             <ImageView
@@ -75,37 +76,34 @@
                 android:hint="@string/EnterYourPassword"
                 android:gravity="center"
                 android:layout_gravity="center"
+                android:inputType="numberPassword"
                 android:id="@+id/passwordInput_login"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/loginBtn"
                 android:layout_width="match_parent"
-                android:layout_height="42dp"
+                android:layout_height="35dp"
                 android:layout_gravity="center"
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
                 android:layout_marginBottom="10dp"
-                android:background="#cace"
+                android:background="@drawable/button_style"
                 android:text="@string/login"
                 android:textAllCaps="false"
                 android:layout_marginTop="40dp"
                 android:textColor="#fff"
-                android:textStyle="bold"
+                android:textSize="15dp"
                 />
             <ProgressBar
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_marginTop="15dp"
                 android:visibility="invisible"
                 android:id="@+id/login_progressbar"/>
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
-
-
-
 
 
     <LinearLayout

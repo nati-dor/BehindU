@@ -13,6 +13,14 @@ public class User implements Parcelable {
     private String password;
     private String userId;
 
+    public int getFollowerPhoneNumber() {
+        return followerPhoneNumber;
+    }
+
+    public void setFollowerPhoneNumber(int followerPhoneNumber) {
+        this.followerPhoneNumber = followerPhoneNumber;
+    }
+
     public User() { }
 
     public User(String firstName, String lastName, String email, int followerPhoneNumber, boolean isFollower, String password, String userId) {

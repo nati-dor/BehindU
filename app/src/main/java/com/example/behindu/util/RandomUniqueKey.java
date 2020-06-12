@@ -24,6 +24,7 @@ public class RandomUniqueKey {
             // add Character one by one in end of sb
             sb.append(AlphaNumericString
                     .charAt(index));
+            sb.append(" ");
         }
 
         return sb.toString();

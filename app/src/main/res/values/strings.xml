@@ -68,4 +68,6 @@
     <string name="your_child">Your Child:</string>
     <string name="location_child_view">Location:</string>
     <string name="name_child_view">Name:</string>
+    <string name="route_creation_info">You will see the route(s) on map.</string>
+    <string name="battery">Battery:</string>
 </resources>

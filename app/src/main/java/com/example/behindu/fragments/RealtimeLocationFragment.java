@@ -1,28 +1,22 @@
 package com.example.behindu.fragments;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
+import android.content.res.Resources;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -44,6 +38,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
@@ -61,6 +56,7 @@ import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static com.example.behindu.model.Constants.LOCATION_UPDATE_INTERVAL;
@@ -92,7 +88,6 @@ public class RealtimeLocationFragment extends Fragment  implements
     private Marker mSelectedMarker = null;
 
 
-
     public RealtimeLocationFragment(UserLocation mLastLocationList) {
         this.mLastLocationList = mLastLocationList;
         this.mChild = mLastLocationList.getChild();
@@ -105,7 +100,6 @@ public class RealtimeLocationFragment extends Fragment  implements
 
         mMapView = view.findViewById(R.id.map_view);
 
-
         initGoogleMap(savedInstanceState);
 
         ImageButton refreshBtn = view.findViewById(R.id.reset_map_btn);
@@ -113,10 +107,35 @@ public class RealtimeLocationFragment extends Fragment  implements
             @Override
             public void onClick(View v) {
                 addMapMarker();
+                setMapStyle(mGoogleMap,R.raw.mapstyledefault);
+            }
+        });
+
+        ImageButton darkModeMap = view.findViewById(R.id.night_mode_map_btn);
+        darkModeMap.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                setMapStyle(mGoogleMap,R.raw.mapstyledark);
             }
         });
 
         return view;
+    }
+
+    private void setMapStyle(GoogleMap googleMap, int ref) {
+        try {
+            boolean success = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            getContext(), ref));
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            }
+
+        } catch (Resources.NotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void initGoogleMap(Bundle savedInstanceState){
@@ -176,6 +195,8 @@ public class RealtimeLocationFragment extends Fragment  implements
         });
     }
 
+
+
     private void getFollowerLocation(final onCallbackFollowerLocation followerLocation) {
         mFusedLocationFollower = LocationServices.getFusedLocationProviderClient(getContext());
         mLocationRequest = new LocationRequest();
@@ -203,10 +224,10 @@ public class RealtimeLocationFragment extends Fragment  implements
 
         // Overall map view window:
         int sizeOfList = mLastLocationList.getList().size();
-        double bottomBoundary = mLastLocationList.getList().get(sizeOfList-1).getGeoPoint().getLatitude() - 0.4;
-        double leftBoundary = mLastLocationList.getList().get(sizeOfList-1).getGeoPoint().getLongitude() - 0.4;
-        double topBoundary = mLastLocationList.getList().get(sizeOfList-1).getGeoPoint().getLatitude() + 0.4;
-        double rightBoundary = mLastLocationList.getList().get(sizeOfList-1).getGeoPoint().getLongitude() + 0.4;
+        double bottomBoundary = mLastLocationList.getList().get(sizeOfList-1).getGeoPoint().getLatitude() - 0.01;
+        double leftBoundary = mLastLocationList.getList().get(sizeOfList-1).getGeoPoint().getLongitude() - 0.01;
+        double topBoundary = mLastLocationList.getList().get(sizeOfList-1).getGeoPoint().getLatitude() + 0.01;
+        double rightBoundary = mLastLocationList.getList().get(sizeOfList-1).getGeoPoint().getLongitude() + 0.01;
 
         mMapBoundary = new LatLngBounds(
               new LatLng(bottomBoundary, leftBoundary),
@@ -478,6 +499,7 @@ public class RealtimeLocationFragment extends Fragment  implements
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        initMapStyle();
         setCameraView();
         addMapMarker();
         initCircleZoom();
@@ -486,6 +508,15 @@ public class RealtimeLocationFragment extends Fragment  implements
         mGoogleMap.setMyLocationEnabled(true);
     }
 
+    // Initialize the map style by the hour of the day
+    private void initMapStyle() {
+        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        if (hour >= 19 || hour < 6) {
+            setMapStyle(mGoogleMap, R.raw.mapstyledark);
+        } else {
+            setMapStyle(mGoogleMap, R.raw.mapstyledefault);
+        }
+    }
 
 
     @Override
@@ -533,7 +564,7 @@ public class RealtimeLocationFragment extends Fragment  implements
         {
             new KAlertDialog(getContext(), KAlertDialog.WARNING_TYPE)
                     .setTitleText(getString(R.string.determine_root) + mChild.getFirstName() + "?")
-                    .setContentText(" ")
+                    .setContentText(getString(R.string.route_creation_info))
                     .setCancelText(getString(R.string.no))
                     .setConfirmText(getString(R.string.yes))
                     .showCancelButton(true)
@@ -594,8 +625,6 @@ public class RealtimeLocationFragment extends Fragment  implements
         }
 
     }
-
-
 
 
     public interface onCallbackRetrieveUserLocations{

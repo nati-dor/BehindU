@@ -62,7 +62,9 @@
     <string name="phone_number_error">*הכנס מספר פלאפון של העוקב</string>
     <string name="registration_succeed">הרישום הסתיים בהצלחה.</string>
     <string name="ok_confirmation">אישור</string>
-    <string name="your_child">"פרטים של הילד : "</string>
+    <string name="your_child">"פרטים של הילד: "</string>
     <string name="location_child_view">מיקום אחרון:</string>
     <string name="name_child_view">שם:</string>
+    <string name="route_creation_info">המסלול יוצג על המפה עם פרטים על המרחק וזמן ההגעה.</string>
+    <string name="battery">"סוללה: "</string>
 </resources>

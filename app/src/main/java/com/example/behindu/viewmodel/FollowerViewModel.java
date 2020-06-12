@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.behindu.database.Database;
+import com.example.behindu.fragments.AddChildFragment;
 import com.example.behindu.fragments.RealtimeLocationFragment;
 import com.example.behindu.model.Child;
 import com.example.behindu.model.ClusterMarker;
@@ -69,5 +70,13 @@ public class FollowerViewModel extends ViewModel implements Database.OnFirestore
     public void retrieveUserLocations(ArrayList<ClusterMarker> mClusterMarkers,
                                       RealtimeLocationFragment.onCallbackRetrieveUserLocations onCallbackRetrieveUserLocations) {
         mDatabase.retrieveUserLocations(mClusterMarkers,onCallbackRetrieveUserLocations);
+    }
+
+    public void getBatteryPercent(AddChildFragment.OnCallbackBatteryStatus onCallbackBatteryStatus) {
+        mDatabase.getBatteryPercent(onCallbackBatteryStatus);
+    }
+
+    public void signOut() {
+        mDatabase.signOutUser();
     }
 }

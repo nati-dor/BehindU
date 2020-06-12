@@ -1,11 +1,14 @@
 package com.example.behindu.view;
 
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.developer.kalert.KAlertDialog;
 import com.example.behindu.R;
 import com.example.behindu.adapters.ViewPagerAdapter;
 import com.example.behindu.fragments.AddChildFragment;
@@ -23,11 +26,16 @@ public class FollowerActivity extends AppCompatActivity  {
 
     private FollowerViewModel mViewModel = new FollowerViewModel();
     private Child mChild;
+    private KAlertDialog mDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_view_follower);
+
+        mDialog =  new KAlertDialog(this, KAlertDialog.PROGRESS_TYPE);
+        mDialog.show();
+
         getUser();
     }
 
@@ -55,8 +63,10 @@ public class FollowerActivity extends AppCompatActivity  {
                 }
             });
 
-
+        mDialog.cancel();
     }
+
+
 
     public void initViewPager(UserLocation userLocations,Follower follower){
         TabLayout tabLayout = findViewById(R.id.tab_layout_follower);
@@ -64,14 +74,17 @@ public class FollowerActivity extends AppCompatActivity  {
 
         viewPager.setOffscreenPageLimit(3);
 
+
+
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(),0);
 
         adapter.addFragment(new RealtimeLocationFragment(userLocations),getString(R.string.real_time_lcoation));
         adapter.addFragment(new LocationHistoryFragment(userLocations.getList()),getString(R.string.last_locations));
-        adapter.addFragment(new AddChildFragment(follower),getString(R.string.add_child));
+        adapter.addFragment(new AddChildFragment(follower,userLocations),getString(R.string.add_child));
 
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
+
     }
 
     public interface getCurrentUser{

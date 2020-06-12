@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     android:orientation="vertical">
 
 
@@ -10,14 +11,15 @@
         <Button
             android:id="@+id/signOutChildBtn"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
             android:layout_marginEnd="5dp"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="10dp"
             android:layout_gravity="right"
-            android:background="@color/colorPrimaryDark"
+            android:background="@drawable/button_style"
             android:text="@string/sign_out"
             android:textAllCaps="false"
+            android:textSize="15dp"
             android:textColor="#fff" />
 
 
@@ -31,7 +33,6 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         app:cardUseCompatPadding="true"
         android:layout_marginTop="40dp"
-        app:contentPadding="10dp"
         app:cardElevation="5dp"
         app:cardBackgroundColor="#F5F5F5"
         app:cardCornerRadius="10dp"
@@ -42,59 +43,58 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="4"
+        android:background="@drawable/cardview_border"
         android:orientation="vertical"
         android:gravity="center">
 
         <Button
             android:id="@+id/sos_btn"
             android:layout_width="match_parent"
-            android:layout_height="42dp"
+            android:layout_height="35dp"
             android:layout_gravity="center"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="50dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            android:background="@color/colorPrimaryDark"
+            android:background="@drawable/button_style"
             android:text="@string/sos"
             android:textAllCaps="false"
             android:textColor="@android:color/holo_red_light"
-            android:textStyle="bold"
-            android:textSize="20dp"
+
+            android:textSize="15dp"
             />
 
 
         <Button
             android:id="@+id/send_message_follower_btn"
             android:layout_width="match_parent"
-            android:layout_height="42dp"
+            android:layout_height="35dp"
             android:layout_marginTop="50dp"
             android:layout_gravity="center"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            android:background="@color/colorPrimaryDark"
+            android:background="@drawable/button_style"
             android:text="@string/sendAFollowerMessage"
             android:textAllCaps="false"
             android:textColor="#fff"
-            android:textStyle="bold"
-            android:textSize="20dp"
+            android:textSize="15dp"
             />
 
 
         <Button
             android:id="@+id/call_the_follower_btn"
             android:layout_width="match_parent"
-            android:layout_height="42dp"
+            android:layout_height="35dp"
             android:layout_marginTop="50dp"
             android:layout_gravity="center"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginBottom="10dp"
-            android:background="@color/colorPrimaryDark"
+            android:background="@drawable/button_style"
             android:text="@string/callTheFollower"
             android:textAllCaps="false"
             android:textColor="#fff"
-            android:textStyle="bold"
 
-            android:textSize="20dp"
+            android:textSize="15dp"
             />
 
 
@@ -130,18 +130,17 @@
         <Button
             android:id="@+id/apply_code_btn"
             android:layout_width="match_parent"
-            android:layout_height="42dp"
+            android:layout_height="35dp"
             android:layout_gravity="center"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginBottom="10dp"
-            android:background="@color/colorPrimaryDark"
+            android:background="@drawable/button_style"
             android:text="@string/apply_code_child"
             android:textAllCaps="false"
             android:textColor="#fff"
-            android:textStyle="bold"
             android:layout_marginTop="40dp"
-            android:textSize="20dp"
+            android:textSize="15dp"
             />
 
     <TextView
@@ -152,6 +151,7 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:gravity="center"
+        android:layout_marginBottom="10dp"
         android:id="@+id/connect_status_tv"/>
 
 </LinearLayout>

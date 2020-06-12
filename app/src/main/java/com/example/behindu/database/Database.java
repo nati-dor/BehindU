@@ -1,11 +1,15 @@
 package com.example.behindu.database;
 
 
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.example.behindu.fragments.AddChildFragment;
 import com.example.behindu.fragments.RealtimeLocationFragment;
 import com.example.behindu.model.Child;
 import com.example.behindu.model.ClusterMarker;
@@ -23,9 +27,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -130,7 +137,7 @@ public class Database {
     function that use multi-threading */
     public synchronized void saveUserLocation(final UserLocation mUserLocation){
 
-        if(mUserLocation != null){
+        if(mUserLocation != null && mAuth.getUid() != null){
             mDocRef = fStore.collection("User Locations").document(mAuth.getCurrentUser().getUid());
             mDocRef.set(mUserLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
@@ -152,18 +159,19 @@ public class Database {
 
 
     public void getUserDetails(final ChildActivity.childLocationCallback callback){
-        mDocRef = fStore.collection("users").document(mAuth.getUid());
-
-        mDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
-                    Log.d(TAG, "onComplete: successfully get the user details");
-                    Child child = task.getResult().toObject(Child.class);
-                    callback.setLocation(child);
+        if(mAuth.getUid() !=null) {
+            mDocRef = fStore.collection("users").document(mAuth.getUid());
+            mDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "onComplete: successfully get the user details");
+                        Child child = task.getResult().toObject(Child.class);
+                        callback.setLocation(child);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     public void getChildLocation(User child, final FollowerActivity.getChildDetails childDetails) {
@@ -256,29 +264,7 @@ public class Database {
         });
     }
 
- /*   public void getListData(Child child){
-        Log.d(TAG, "getListData: Arrive");
-        mDocRef = fStore.collection("User Locations").document(child.getUserId());
-        mDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()) {
-                    if (task.getResult().toObject(UserLocation.class) != null) {
-                        Log.d(TAG, "onComplete: Arrive");
-                        UserLocation userLocations = task.getResult().toObject(UserLocation.class);
-                            onFirestoreTaskComplete.lastLocationDataAdded(userLocations.getList());
-                    }
-                    else
-                        onFirestoreTaskComplete.lastLocationDataAdded(null);
-                }
-                else
-                {
-                    Log.d(TAG, "onError: Arrive");
-                    onFirestoreTaskComplete.onError(task.getException());
-                }
-            }
-        });
-    }*/
+
 
     public void retrieveUserLocations(final ArrayList<ClusterMarker> mClusterMarkers, final RealtimeLocationFragment.onCallbackRetrieveUserLocations onCallbackRetrieveUserLocations) {
         try{
@@ -292,7 +278,6 @@ public class Database {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if(task.isSuccessful()){
-
                             final UserLocation updatedUserLocation = task.getResult().toObject(UserLocation.class);
                             onCallbackRetrieveUserLocations.setUserLocations(updatedUserLocation);
 
@@ -322,6 +307,7 @@ public class Database {
                             users.add(follower);
                         }
                      }
+                     Log.d(TAG, "onComplete:users: " + users.toString());
                      usersList.onCallbackUsersList(users);
                  }
              }
@@ -351,9 +337,51 @@ public class Database {
         });
     }
 
+    public void setBatteryPercent(Child mChild) {
+        fStore.collection("users").document(mAuth.getUid()).set(mChild)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                      if(task.isSuccessful()){
+                          Log.d(TAG, "onComplete: Successfully inserted the battery percent");
+                      }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "onFailure: Unsuccessfully inserted the battery percent");
+            }
+        });
+    }
+
+    public void getBatteryPercent(final AddChildFragment.OnCallbackBatteryStatus onCallbackBatteryStatus) {
+        fStore.collection("User Locations")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot snapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w("TAG", "listen:error", e);
+                            return;
+                        }
+
+                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                            switch (dc.getType()) {
+                                case MODIFIED:
+                                    UserLocation userLocation = dc.getDocument().toObject(UserLocation.class);
+                                    Child child = userLocation.getChild();
+                                    onCallbackBatteryStatus.setBatteryStatus(child.getBatteryPercent());
+                                    break;
+                            }
+                        }
+
+                    }
+                });
+
+    }
+
     public interface OnFirestoreTaskComplete{
         void lastLocationDataAdded(List<LastLocation> lastLocationList);
         void onError(Exception e);
-
     }
 }

@@ -42,8 +42,6 @@ public class LocationService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-
-
         return null;
     }
 
@@ -56,7 +54,7 @@ public class LocationService extends Service {
         if (Build.VERSION.SDK_INT >= 26) {
             String CHANNEL_ID = "location_channel";
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                    "My Channel",
+                    "BehindU",
                     NotificationManager.IMPORTANCE_DEFAULT);
 
             ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
@@ -79,14 +77,12 @@ public class LocationService extends Service {
     }
 
     private void getLocation() {
-
         // ---------------------------------- LocationRequest ------------------------------------
         // Create the location request to start receiving updates
         LocationRequest mLocationRequestHighAccuracy = new LocationRequest();
         mLocationRequestHighAccuracy.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequestHighAccuracy.setInterval(UPDATE_INTERVAL);
         mLocationRequestHighAccuracy.setFastestInterval(FASTEST_INTERVAL);
-
 
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -98,7 +94,6 @@ public class LocationService extends Service {
         mFusedLocationClient.requestLocationUpdates(mLocationRequestHighAccuracy, new LocationCallback() {
                     @Override
                     public void onLocationResult(LocationResult locationResult) {
-
                         Log.d(TAG, "onLocationResult: got location result.");
 
                         Location location = locationResult.getLastLocation();
@@ -113,9 +108,7 @@ public class LocationService extends Service {
                 Looper.myLooper()); // Looper.myLooper tells this to repeat forever until thread is destroyed
     }
 
-
     private void saveUserLocation(final UserLocation userLocation) {
-
         mViewModel.saveUserLocation(userLocation);
     }
 
@@ -123,7 +116,6 @@ public class LocationService extends Service {
     public void onDestroy() {
         stopSelf();
         super.onDestroy();
-
     }
 }
 

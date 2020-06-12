@@ -39,4 +39,8 @@ public class ChildViewModel extends ViewModel {
     public void updateChild(Child mChild) {
         mDatabase.updateChild(mChild);
     }
+
+    public void setBattery(Child mChild) {
+        mDatabase.setBatteryPercent(mChild);
+    }
 }

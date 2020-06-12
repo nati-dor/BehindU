@@ -64,8 +64,6 @@ public class RegisterFragment extends Fragment {
         registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                setProgressBar();
-                Log.d("onClickRegisterBtn","Arrive");
                 String firstName = firstNameEt.getText().toString().trim();
                 String lastName = lastNameEt.getText().toString().trim();
                 String email = emailEt.getText().toString().trim();
@@ -74,46 +72,45 @@ public class RegisterFragment extends Fragment {
 
                 if(firstName.isEmpty()) {
                     firstNameError.setError(getString(R.string.first_name_error));
-                    pDialog.cancel();
                     return;
                 }
 
                 if(lastName.isEmpty()) {
                     lastNameError.setError(getString(R.string.last_name_error));
-                    pDialog.cancel();
                     return;
                 }
 
                 if(email.isEmpty() || !email.contains("@")) {
                     emailError.setError(getString(R.string.email_login_error));
-                    pDialog.cancel();
                     return;
                 }
 
 
                 if(password.isEmpty() ||  password.length() < 6) {
                     passwordError.setError(getString(R.string.enter_password_error) + "\n" + getString(R.string.password_instructions));
-                    pDialog.cancel();
                     return;
                 }
 
                 if(followerPhoneNumEt.getText().toString().isEmpty() ) {
                     phoneNumberError.setError(getString(R.string.phone_number_error));
-                    pDialog.cancel();
+                   // pDialog.cancel();
                     return;
                 }
                 else{
                     followerPhoneNum = Integer.parseInt(followerPhoneNumEt.getText().toString().trim());
                 }
 
+                setProgressBar();
+
                 if(followerCb.isChecked()){
                     pDialog.show();
                     Follower follower = new Follower(firstName,lastName,email,followerPhoneNum,true,password,null,"DDDDDD");
                     signUpUser(follower);
+
                 }
                 else {
                     pDialog.show();
-                    Child child = new Child(firstName,lastName,email,followerPhoneNum,false,password,null,null,null,false);
+                    Child child = new Child(firstName,lastName,email,followerPhoneNum,false,password,null,null,null,false,0);
                     signUpUser(child);
                 }
             }
