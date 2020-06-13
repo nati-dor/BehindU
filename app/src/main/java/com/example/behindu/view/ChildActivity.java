@@ -543,7 +543,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
             int maxLevel = intent
                     .getIntExtra(BatteryManager.EXTRA_SCALE, 0);
             int batteryHealth = intent.getIntExtra(
-                    BatteryManager.EXTRA_HEALTH,
+                    BatteryManager.EXTRA_HEALTH,  
                     BatteryManager.BATTERY_HEALTH_UNKNOWN);
             float batteryPercentage = ((float) batteryLevel / (float) maxLevel) * 100;
 
