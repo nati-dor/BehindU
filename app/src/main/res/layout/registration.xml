@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="10dp"
-
+    android:gravity="center"
     android:id="@+id/registration_activity"
 
     android:orientation="vertical">
@@ -18,7 +18,6 @@
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
         app:cardUseCompatPadding="true"
-        android:layout_marginTop="50dp"
         app:cardElevation="5dp"
         app:cardBackgroundColor="#F5F5F5"
         app:cardCornerRadius="10dp">
@@ -31,7 +30,8 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:text="@string/register"
                 android:gravity="center"
                 android:textSize="35dp"
@@ -43,8 +43,8 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/first_name_layout_registration"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 app:errorEnabled="true">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/firstNameInput_register"
@@ -62,7 +62,8 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/last_name_layout_registration"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 app:errorEnabled="true">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/lastNameInput_register"
@@ -81,7 +82,8 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/email_layout_registration"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 app:errorEnabled="true">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/emailInput_register"
@@ -101,7 +103,8 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/phone_number_layout_registration"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 app:errorEnabled="true">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/follower_phoneNum_Et"
@@ -110,7 +113,7 @@
                     android:layout_marginLeft="25dp"
                     android:layout_marginRight="25dp"
                     android:textColor="@android:color/black"
-                    android:hint="הכנס מספר טלפון של העוקב"
+                    android:hint="@string/Enter_follower_phone_number"
                     android:textStyle="bold"
                     android:gravity="center"
                     android:inputType="phone"
@@ -121,7 +124,8 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/password_layout_registration"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 app:errorEnabled="true">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/passwordInput_register"
@@ -140,17 +144,17 @@
             <CheckBox
                 android:id="@+id/follower_Cb"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:layout_marginTop="20dp"
                 android:layout_gravity="center"
                 android:text="@string/Following" />
 
             <Button
                 android:id="@+id/createUserBtn"
                 android:layout_width="match_parent"
-                android:layout_height="35dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:layout_gravity="center"
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"

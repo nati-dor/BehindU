@@ -73,4 +73,5 @@
     <string name="child_status">סטטוס:</string>
     <string name="connected">מחובר/ת לאפליקציה</string>
     <string name="disconnect">לא מחובר/ת לאפליקציה</string>
+    <string name="Enter_follower_phone_number">הכנס מספר טלפון של עוקב</string>
 </resources>
