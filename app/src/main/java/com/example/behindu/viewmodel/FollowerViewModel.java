@@ -20,7 +20,7 @@ import java.util.List;
 
 import static android.content.ContentValues.TAG;
 
-public class FollowerViewModel extends ViewModel implements Database.OnFirestoreTaskComplete {
+public class FollowerViewModel extends ViewModel {
 
     private Database mDatabase = Database.getInstance();
     private MutableLiveData<List<LastLocation>> lastLocationData = new MutableLiveData<>();
@@ -30,7 +30,6 @@ public class FollowerViewModel extends ViewModel implements Database.OnFirestore
         return lastLocationData;
     }
 
-    private Database database = new Database(this);
 
     public FollowerViewModel(){
         Log.d(TAG, "FollowerViewModel: Arrive");
@@ -55,16 +54,6 @@ public class FollowerViewModel extends ViewModel implements Database.OnFirestore
         mDatabase.addChildCode(follower);
     }
 
-    @Override
-    public void lastLocationDataAdded(List<LastLocation> lastLocationList) {
-        Log.d(TAG, "lastLocationDataAdded: arrive");
-        lastLocationData.setValue(lastLocationList);
-    }
-
-    @Override
-    public void onError(Exception e) {
-
-    }
 
 
     public void retrieveUserLocations(ArrayList<ClusterMarker> mClusterMarkers,
@@ -78,5 +67,21 @@ public class FollowerViewModel extends ViewModel implements Database.OnFirestore
 
     public void signOut() {
         mDatabase.signOutUser();
+    }
+
+    public void makeSound(Follower follower) {
+        mDatabase.makeSound(follower);
+    }
+
+    public void getStatus(AddChildFragment.OnCallbackConnectingStatus onCallbackConnectingStatus) {
+        mDatabase.getStatus(onCallbackConnectingStatus);
+    }
+
+    public void getLocationNotification(FollowerActivity.getLocationNotifications getLocationNotifications) {
+        mDatabase.getLocationNotifications(getLocationNotifications);
+    }
+
+    public void setNewLocationNotify(boolean b,String childId) {
+        mDatabase.setNewLocationNotify(b,childId);
     }
 }

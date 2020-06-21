@@ -43,4 +43,21 @@ public class ChildViewModel extends ViewModel {
     public void setBattery(Child mChild) {
         mDatabase.setBatteryPercent(mChild);
     }
+
+    public void getSound(ChildActivity.onCallbackFollowerSound onCallbackFollowerSound) {
+        mDatabase.getSound(onCallbackFollowerSound);
+    }
+
+    public void setSound(boolean b) {
+        mDatabase.setSound(b);
+    }
+
+    public void setStatus(boolean b) {
+        mDatabase.setStatus(b);
+    }
+
+
+    public void setNewLocationNotify(boolean b,String userId) {
+        mDatabase.setNewLocationNotify(b,userId);
+    }
 }

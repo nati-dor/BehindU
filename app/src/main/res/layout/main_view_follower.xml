@@ -1,26 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_height="match_parent"
+<FrameLayout
+    android:id="@+id/fragment_container_menu"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-<com.google.android.material.tabs.TabLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:tabGravity="fill"
-    app:tabMode="fixed"
-    app:tabSelectedTextColor="#fff"
-    app:tabTextColor="@color/tabTextColor"
-    app:tabIndicatorColor="@color/tabIndecatorColor"
-    android:id="@+id/tab_layout_follower"
-    android:background="@color/colorPrimaryDark"/>
-
+    android:layout_above="@id/tab_layout_follower"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
   <androidx.viewpager.widget.ViewPager
-        android:layout_width="wrap_content"
+      android:id="@+id/view_pager_follower"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout_follower"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/view_pager_follower"/>
+        android:background="#fff"
+        app:tabGravity="fill"
+        app:tabIconTint="@color/colorPrimaryDark"
+        app:tabIndicatorColor="@color/colorPrimaryDark"
+        app:tabMode="fixed"
+        app:tabSelectedTextColor="@color/colorPrimaryDark"
+        app:tabTextAppearance="@style/TabLayoutTextStyle"
+        app:tabTextColor="@color/tabTextColor">
 
+    </com.google.android.material.tabs.TabLayout>
+  </androidx.viewpager.widget.ViewPager>
 
-</LinearLayout>
+  <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        app:itemTextColor="@color/tabTextColor"
+        android:background="?android:attr/windowBackground"
+        app:menu="@menu/bottom_navigation"
+        app:itemIconTint="@color/colorPrimaryDark"
+        app:itemTextAppearanceActive="@style/BottomMenuTextStyleActive"
+        app:itemTextAppearanceInactive="@style/BottomMenuTextStyleInActive"
+        android:id="@+id/bottom_navigation"/>
+</FrameLayout>

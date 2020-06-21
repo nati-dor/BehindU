@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -19,6 +20,9 @@ import com.example.behindu.fragments.RegisterFragment;
 import com.example.behindu.model.User;
 import com.example.behindu.util.SaveSharedPreference;
 
+import org.json.JSONObject;
+
+import okhttp3.Response;
 
 
 public class MainActivity extends AppCompatActivity implements CallbackFragment {
@@ -31,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements CallbackFragment 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_fragment);
+
 
         if(SaveSharedPreference.getUserName(MainActivity.this).length() == 0)
         {
@@ -70,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements CallbackFragment 
 
     }
 
-    /*Replace between fragments*/
 
     public void replaceFragment(){
         mFragment = new RegisterFragment();

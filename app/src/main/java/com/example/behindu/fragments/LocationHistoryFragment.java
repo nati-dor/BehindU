@@ -24,8 +24,6 @@ import java.util.List;
 
 public class LocationHistoryFragment extends Fragment {
 
-
-    final String TAG = "LocationHistoryFragment";
     private List<LastLocation> mUserLocations;
     private FollowerViewModel mViewModel;
     private LocationAdapter mLocationAdapter;
@@ -64,20 +62,14 @@ public class LocationHistoryFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d(TAG, "onActivityCreated: arrive");
 
         mViewModel = new ViewModelProvider(getActivity()).get(FollowerViewModel.class);
         mViewModel.getLastLocationData().observe(getViewLifecycleOwner(), new Observer<List<LastLocation>>() {
             @Override
             public void onChanged(List<LastLocation> lastLocationList) {
-                //   new LocationAdapter(lastLocationList);
                 mLocationAdapter.setLastLocation(lastLocationList);
                 mLocationAdapter.notifyDataSetChanged();
-                Toast.makeText(getView().getContext(), "Data has been changed", Toast.LENGTH_SHORT).show();
-                //Log.d(TAG, "onChanged: "+lastLocationList.get(lastLocationList.size()-1).getTimestamp().toString());
-                Log.d(TAG, "onChanged: observer arrive");
-                //check this
-
+                        //check this
             }
         });
     }

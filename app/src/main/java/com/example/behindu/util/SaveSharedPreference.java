@@ -6,10 +6,10 @@ import android.preference.PreferenceManager;
 
 public class SaveSharedPreference {
 
-    static final String PREF_USER_NAME= "username";
-    static final String IS_FOLLOWER = "isfollower";
+    private static final String PREF_USER_NAME= "username";
+    private static final String IS_FOLLOWER = "isfollower";
 
-    static SharedPreferences getSharedPreferences(Context ctx) {
+    private static SharedPreferences getSharedPreferences(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
@@ -18,7 +18,7 @@ public class SaveSharedPreference {
         SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
         editor.putString(PREF_USER_NAME, userName);
         editor.putString(IS_FOLLOWER,isFollower);
-        editor.commit();
+        editor.apply();
     }
 
     public static String getUserName(Context ctx)
@@ -34,6 +34,6 @@ public class SaveSharedPreference {
     {
         SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
         editor.clear(); //clear all stored data
-        editor.commit();
+        editor.apply();
     }
 }

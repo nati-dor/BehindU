@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
@@ -49,6 +50,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -74,9 +76,10 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     private Child mChild;
     private TextInputLayout mCodeError;
     private List<Child> mChildList;
-    private int mFollowerPhoneNumber;
     private Intent mServiceIntent;
     private AlarmReceiverTest mBatteryLevelReceiver;
+    private MediaPlayer mAlarm;
+
 
 
     @Override
@@ -85,6 +88,8 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.child_page);
 
         getPermissions();
+
+        mAlarm  = MediaPlayer.create(getBaseContext(),R.raw.alarm_sound);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -111,6 +116,17 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         Button signOutBtn = findViewById(R.id.signOutChildBtn);
         signOutBtn.setOnClickListener(this);
 
+        mViewModel.getSound(new onCallbackFollowerSound() {
+            @Override
+            public void setSound(Boolean sound) {
+                if(sound){
+                    mAlarm.start();
+                }
+                mViewModel.setSound(false);
+            }
+        });
+
+
     }
 
     private void getAlarmReceiver() {
@@ -132,7 +148,6 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                     public void setLocation(Child child) {
                         mChild = child;
                         getAlarmReceiver();
-                        Log.d(TAG, "setLocation: child is" + child.toString());
                         mUserLocation.setChild(child);
                         if (child.isConnected()) {
                             mEnterCodeEt.setVisibility(View.GONE);
@@ -167,7 +182,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
             @Override
             public void onComplete(@NonNull Task<Location> task) {
-                if (task.isSuccessful()) {
+                if (task.isSuccessful() && task.getResult() != null) {
                     final Location location = task.getResult();
                     mViewModel.getLocationList(new locationList() {
                         GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
@@ -180,11 +195,13 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                                 mUserLocation.setList(lastLocationList);
                                 saveUserLocation(mUserLocation);
                                 startLocationService(mUserLocation); // Starting the service after all the list has been load
+                                newLocationNotify(); // Making a notification for follower that new location has been added to the location list
                             } else {
                                 lastLocationList.add(new LastLocation(geoPoint, Calendar.getInstance().getTime()));
                                 mUserLocation.setList(lastLocationList);
                                 saveUserLocation(mUserLocation);
                                 startLocationService(mUserLocation); // Starting the service after all the list has been load
+                                newLocationNotify(); // Making a notification for follower that new location has been added to the location list
                             }
                         }
 
@@ -193,6 +210,12 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                 }
             }
         });
+    }
+
+// Making a notification for follower that new location has been added to the location list
+
+    private void newLocationNotify() {
+        mViewModel.setNewLocationNotify(true,mChild.getUserId());
     }
 
 
@@ -225,9 +248,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
 
     private boolean checkMapServices() {
         if (isServicesOK()) {
-            if (isMapsEnabled()) {
-                return true;
-            }
+            return isMapsEnabled();
         }
         return false;
     }
@@ -253,10 +274,11 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
 
     public boolean isMapsEnabled() {
         final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            buildAlertMessageNoGps();
-            return false;
+        if(manager !=null) {
+            if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                buildAlertMessageNoGps();
+                return false;
+            }
         }
         return true;
     }
@@ -296,7 +318,6 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 android.Manifest.permission.SEND_SMS)
                 != PackageManager.PERMISSION_GRANTED)
-            Log.d(TAG, "getSmsPermissions: Arrive");
         {
             mSmsPermissionGranted = false;
             ActivityCompat.requestPermissions(this,
@@ -327,9 +348,9 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[],
+                                           @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult: " + grantResults.toString());
+        Log.d(TAG, "onRequestPermissionsResult: " + Arrays.toString(grantResults));
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
@@ -404,10 +425,12 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     private void signOut() {
         stopService(mServiceIntent); // stopping the location service
         unregisterReceiver(mBatteryLevelReceiver); // unregister the battery receiver
+        mViewModel.setStatus(false);
         mViewModel.signOut();
-        SaveSharedPreference.clearUserName(this);
-        Intent i = new Intent(ChildActivity.this, MainActivity.class);
 
+        SaveSharedPreference.clearUserName(this);
+
+        Intent i = new Intent(ChildActivity.this, MainActivity.class);
         startActivity(i);
         finish();
     }
@@ -431,6 +454,12 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void sendSms(String phoneNumber, String message) {
+       /* if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+            mSmsPermissionGranted = true;
+        }*/
+
+
         if (mSmsPermissionGranted) {
             SmsManager sms = SmsManager.getDefault();
             sms.sendTextMessage(phoneNumber, null, message, null, null);
@@ -495,22 +524,42 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onResume() {
         super.onResume();
+        Thread thread = new Thread(){
+            public void run(){
+                mViewModel.setStatus(true);
+            }
+        };
+        thread.start();
+
+
         if(!checkMapServices()){
             getLocationPermission();
         }
         else
             getUserDetails();
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
 
     }
 
     @Override
+    protected void onDestroy() {
+        mViewModel.setStatus(false);
+        super.onDestroy();
+    }
+
+    @Override
     public void onClick(View v) {
-        mFollowerPhoneNumber = mUserLocation.getChild().getPhoneNumber();
+        int mFollowerPhoneNumber = mUserLocation.getChild().getPhoneNumber();
         switch(v.getId()){
             case R.id.sos_btn:
                 callEmergency(EMERGENCY_NUMBER_POLICE);
@@ -533,6 +582,8 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
+    
+
     public class AlarmReceiverTest extends BroadcastReceiver {
 
         @Override
@@ -543,13 +594,16 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
             int maxLevel = intent
                     .getIntExtra(BatteryManager.EXTRA_SCALE, 0);
             int batteryHealth = intent.getIntExtra(
-                    BatteryManager.EXTRA_HEALTH,  
+                    BatteryManager.EXTRA_HEALTH,
                     BatteryManager.BATTERY_HEALTH_UNKNOWN);
             float batteryPercentage = ((float) batteryLevel / (float) maxLevel) * 100;
 
             mChild.setBatteryPercent((int)batteryPercentage);
             mViewModel.setBattery(mChild);
         }
+
+
+
 
     }
 
@@ -563,6 +617,10 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
 
     public interface followerList{
         void onCallbackUsersList(ArrayList<Follower> follower);
+    }
+
+    public interface onCallbackFollowerSound{
+        void setSound(Boolean sound);
     }
 
 }

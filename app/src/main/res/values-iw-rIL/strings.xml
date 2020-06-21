@@ -67,4 +67,10 @@
     <string name="name_child_view">שם:</string>
     <string name="route_creation_info">המסלול יוצג על המפה עם פרטים על המרחק וזמן ההגעה.</string>
     <string name="battery">"סוללה: "</string>
+    <string name="home_menu">בית</string>
+    <string name="settings_menu">הגדרות</string>
+    <string name="actions_menu">פעולות</string>
+    <string name="child_status">סטטוס:</string>
+    <string name="connected">מחובר/ת לאפליקציה</string>
+    <string name="disconnect">לא מחובר/ת לאפליקציה</string>
 </resources>

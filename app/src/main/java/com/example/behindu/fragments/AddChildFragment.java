@@ -5,18 +5,20 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.behindu.R;
 import com.example.behindu.model.Child;
 import com.example.behindu.model.Follower;
@@ -40,92 +42,129 @@ public class AddChildFragment extends Fragment  {
     private Child mChild;
     private FollowerViewModel mViewModel = new FollowerViewModel();
     private TextView mNameTv;
-    public TextView mBatteryStatuesTv;
+    public  TextView mChildStatus;
     private TextView mLastLocation;
     private UserLocation mUserLocation;
-    private  WaveLoadingView mWaveLoadingView;
+    private WaveLoadingView mWaveLoadingView;
+
 
     public AddChildFragment(Follower follower, UserLocation userLocation) {
         this.mFollower = follower;
         this.mUserLocation = userLocation;
     }
 
-    public AddChildFragment() {
-    }
+    public AddChildFragment() { }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-
-
-        if(mFollower.getChildList().isEmpty()) {
+        if(mFollower.getChildList() == null) {
             mView = inflater.inflate(R.layout.add_child_fragment,container,false);
-
-            Button signOutBtn = mView.findViewById(R.id.signOutFollowerBtn);
-            signOutBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mViewModel.signOut();
-                    SaveSharedPreference.clearUserName(getContext());
-                    moveToNewActivity(MainActivity.class);
-                }
-            });
-
-            final TextView uniqueKeyTv = mView.findViewById(R.id.uniqueKey_tv);
-            final TextView instructionsTv = mView.findViewById(R.id.instructions_tv);
-
-            instructionsTv.setText(getString(R.string.instructions_add_child_1) +
-                    "\n\n" + getString(R.string.instructions_add_child_2));
-
-            Button addNewChild = mView.findViewById(R.id.addChildBtn);
-            addNewChild.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String uniqueKey = RandomUniqueKey.getUniqueKey();
-                    uniqueKeyTv.setText(uniqueKey);
-                    uniqueKey = uniqueKey.replace(" ","");
-                    mFollower.setFollowingId(uniqueKey);
-                    mViewModel.addChildCode(mFollower);
-                }
-            });
+            initViewFirstTime(mView);
         }
         else{
             mView = inflater.inflate(R.layout.child_view_follower_page,container,false);
-            mChild = mFollower.getChildList().get(0);
-            mNameTv = mView.findViewById(R.id.name_child_details);
-            mBatteryStatuesTv = mView.findViewById(R.id.battery_child_details);
-            mLastLocation = mView.findViewById(R.id.location_child_details);
-            mWaveLoadingView = mView.findViewById(R.id.waveLoadingView);
-            mWaveLoadingView.setShapeType(WaveLoadingView.ShapeType.CIRCLE);
-
-
-            Button signOutBtn = mView.findViewById(R.id.signOutFollowerBtn);
-            signOutBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mViewModel.signOut();
-                    SaveSharedPreference.clearUserName(getContext());
-                    moveToNewActivity(MainActivity.class);
-                }
-            });
-
-
-            mNameTv.setText(getString(R.string.name_child_view) + " " +mChild.getFirstName()+ " " + mChild.getLastName());
-            setBatteryLevel(mUserLocation.getChild().getBatteryPercent());
-            mLastLocation.setText(getString(R.string.location_child_view) +" " + getAddress(mChild.getRoutes()));
-
-            mViewModel.getBatteryPercent(new OnCallbackBatteryStatus() {
-                @Override
-                public void setBatteryStatus(int battery) {
-                    setBatteryLevel(battery);
-                }
-            });
-
+            initViewChild(mView);
         }
 
         return mView;
+    }
+
+    private void initViewFirstTime(View mView) {
+
+
+
+        final TextView uniqueKeyTv = mView.findViewById(R.id.uniqueKey_tv);
+        final TextView instructionsTv = mView.findViewById(R.id.instructions_tv);
+
+        instructionsTv.setText(getString(R.string.instructions_add_child_1) +
+                "\n\n" + getString(R.string.instructions_add_child_2));
+
+        Button addNewChild = mView.findViewById(R.id.addChildBtn);
+        addNewChild.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String uniqueKey = RandomUniqueKey.getUniqueKey();
+                uniqueKeyTv.setText(uniqueKey);
+                uniqueKey = uniqueKey.replace(" ","");
+                mFollower.setFollowingId(uniqueKey);
+                mViewModel.addChildCode(mFollower);
+            }
+        });
+
+    }
+
+
+    private void initViewChild(View mView) {
+        ImageView childImage = mView.findViewById(R.id.child_image);
+
+
+
+        mChild = mFollower.getChildList().get(0);
+        mNameTv = mView.findViewById(R.id.name_child_details);
+        mChildStatus = mView.findViewById(R.id.child_status);
+        mLastLocation = mView.findViewById(R.id.location_child_details);
+        mWaveLoadingView = mView.findViewById(R.id.waveLoadingView);
+        mWaveLoadingView.setShapeType(WaveLoadingView.ShapeType.CIRCLE);
+
+
+
+        mNameTv.setText(getString(R.string.name_child_view) + " " +mChild.getFirstName()+ " " + mChild.getLastName());
+        setBatteryLevel(mUserLocation.getChild().getBatteryPercent());
+        mLastLocation.setText(getString(R.string.location_child_view) +" " + getAddress(mChild.getRoutes()));
+        circleImage(mView,childImage);
+
+
+        mViewModel.getStatus(new OnCallbackConnectingStatus() {
+            @Override
+            public void setConnectingStatus(Boolean isConnected) {
+                setCurrentStatus(isConnected);
+            }
+        });
+
+
+        mViewModel.getBatteryPercent(new OnCallbackBatteryStatus() {
+            @Override
+            public void setBatteryStatus(int battery) {
+                setBatteryLevel(battery);
+            }
+        });
+
+    }
+
+    private void setCurrentStatus(Boolean isConnected) {
+
+        ;
+
+        if(isConnected) {
+            mChildStatus.setText(getString(R.string.child_status) + " " + getString(R.string.connected));
+            mChildStatus.setTextColor(getResources().getColor(R.color.connectedToFollower));
+        }
+        else{
+            mChildStatus.setText(getString(R.string.child_status) + " " + getString(R.string.disconnect));
+            mChildStatus.setTextColor(getResources().getColor(R.color.notConnectedToFollower));
+        }
+
+    }
+
+
+    private void circleImage(View mView, ImageView childImage) {
+
+        RequestOptions options = new RequestOptions()
+                .skipMemoryCache(true)
+                .centerInside()
+                .transform(new CircleCrop());
+
+
+        Glide.with(mView)
+                .load(mView.getResources()
+                        .getIdentifier("aviv", "drawable", mView.getContext().getPackageName()))
+                .thumbnail(0.9f)
+                .apply(options)
+                .into(childImage);
+
     }
 
     private void setBatteryLevel(final int battery) {
@@ -143,7 +182,7 @@ public class AddChildFragment extends Fragment  {
         }
 
         mWaveLoadingView.setCenterTitle(battery + "%");
-        mWaveLoadingView.setCenterTitleSize(15);
+        mWaveLoadingView.setCenterTitleSize(11);
         mWaveLoadingView.setProgressValue(battery);
         mWaveLoadingView.setBorderWidth(5);
         mWaveLoadingView.setAmplitudeRatio(1);
@@ -156,11 +195,6 @@ public class AddChildFragment extends Fragment  {
         mWaveLoadingView.startAnimation();
     }
 
-    private void moveToNewActivity(Class login) {
-        Intent i = new Intent(getContext(), login);
-        startActivity(i);
-        getActivity().finish();
-    }
 
     public String getAddress(GeoPoint location)  {
         List<Address> addressList = null;
@@ -174,6 +208,10 @@ public class AddChildFragment extends Fragment  {
     }
 
     public interface OnCallbackBatteryStatus{
-         void setBatteryStatus(int battery);
+        void setBatteryStatus(int battery);
+    }
+
+    public interface OnCallbackConnectingStatus{
+        void setConnectingStatus(Boolean isConnected);
     }
 }
