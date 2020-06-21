@@ -20,7 +20,8 @@
         app:cardUseCompatPadding="true"
         app:cardElevation="5dp"
         app:cardBackgroundColor="#F5F5F5"
-        app:cardCornerRadius="10dp">
+        app:cardCornerRadius="10dp"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,12 +32,11 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:text="@string/register"
                 android:gravity="center"
                 android:textSize="35dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="30dp"
                 android:textColor="@color/colorPrimaryDark"
                />
 
@@ -44,7 +44,7 @@
                 android:id="@+id/first_name_layout_registration"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 app:errorEnabled="true">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/firstNameInput_register"
@@ -63,7 +63,7 @@
                 android:id="@+id/last_name_layout_registration"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 app:errorEnabled="true">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/lastNameInput_register"
@@ -83,7 +83,7 @@
                 android:id="@+id/email_layout_registration"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 app:errorEnabled="true">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/emailInput_register"
@@ -104,7 +104,7 @@
                 android:id="@+id/phone_number_layout_registration"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 app:errorEnabled="true">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/follower_phoneNum_Et"
@@ -125,7 +125,7 @@
                 android:id="@+id/password_layout_registration"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 app:errorEnabled="true">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/passwordInput_register"
@@ -149,7 +149,10 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:text="@string/Following" />
-
+<Space
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"/>
             <Button
                 android:id="@+id/createUserBtn"
                 android:layout_width="match_parent"
@@ -159,7 +162,6 @@
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
                 android:layout_marginBottom="30dp"
-                android:layout_marginTop="30dp"
                 android:background="@drawable/button_style"
                 android:text="@string/CreateANewUser"
                 android:textAllCaps="false"
