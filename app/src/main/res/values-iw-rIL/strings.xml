@@ -81,4 +81,5 @@
     <string name="gps_status">מצב GPS:</string>
     <string name="connected_gps">פעיל</string>
     <string name="disconnect_gps">כבוי</string>
+    <string name="Enter_follower_phone_number">הכנס מספר טלפון של עוקב</string>
 </resources>

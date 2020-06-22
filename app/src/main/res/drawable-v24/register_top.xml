@@ -24,8 +24,8 @@
 
             <gradient
                 android:type="linear"
-                android:startColor="@color/colorPrimaryDark"
-                android:endColor="@color/colorcace"
+                android:startColor="@color/colorcace"
+                android:endColor="@color/colorPrimaryDark"
                 android:angle="45"/>
 
             <corners

@@ -84,4 +84,5 @@
     <string name="gps_status">GPS status:</string>
     <string name="connected_gps">ON</string>
     <string name="disconnect_gps">OFF</string>
+    <string name="Enter_follower_phone_number">Enter a follower phone number</string>
 </resources>

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+android:weightSum="11"
     android:orientation="vertical">
 
 
@@ -11,7 +12,8 @@
         <Button
             android:id="@+id/signOutChildBtn"
             android:layout_width="wrap_content"
-            android:layout_height="35dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_marginEnd="5dp"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="10dp"
@@ -26,49 +28,56 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="9"
         android:visibility="visible"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         app:cardUseCompatPadding="true"
-        android:layout_marginTop="40dp"
         app:cardElevation="5dp"
         app:cardBackgroundColor="#F5F5F5"
-        app:cardCornerRadius="10dp"
-
-        xmlns:android="http://schemas.android.com/apk/res/android">
+        app:cardCornerRadius="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="4"
+        android:layout_height="match_parent"
         android:background="@drawable/cardview_border"
         android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"
+        android:weightSum="15"
+     >
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            />
 
         <Button
             android:id="@+id/sos_btn"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="0dp"
+            android:layout_weight="2"
             android:layout_gravity="center"
-            android:layout_marginTop="50dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:background="@drawable/button_style"
             android:text="@string/sos"
             android:textAllCaps="false"
             android:textColor="@android:color/holo_red_light"
-
             android:textSize="15dp"
             />
 
-
+<Space
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    />
         <Button
             android:id="@+id/send_message_follower_btn"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_marginTop="50dp"
+            android:layout_height="0dp"
+            android:layout_weight="2"
             android:layout_gravity="center"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
@@ -78,13 +87,18 @@
             android:textColor="#fff"
             android:textSize="15dp"
             />
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            />
 
 
         <Button
             android:id="@+id/call_the_follower_btn"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_marginTop="50dp"
+            android:layout_height="0dp"
+            android:layout_weight="2"
             android:layout_gravity="center"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
@@ -101,36 +115,37 @@
 
 <LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="6"
     android:orientation="vertical"
-    android:layout_gravity="bottom">
-
+    android:layout_gravity="bottom"
+    android:weightSum="4">
 
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/enter_code_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:errorEnabled="true"
+        android:layout_height="0dp"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
-        android:layout_marginTop="20dp">
-    <com.google.android.material.textfield.TextInputEditText
-            android:layout_marginTop="30dp"
+        android:layout_weight="1"
+        app:errorEnabled="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/enter_code_Et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/enter_code"
             android:layout_marginLeft="25dp"
             android:layout_marginRight="25dp"
             android:gravity="center"
-            android:id="@+id/enter_code_Et"/>
+            android:hint="@string/enter_code" />
     </com.google.android.material.textfield.TextInputLayout>
 
-
-        <Button
+    <Button
             android:id="@+id/apply_code_btn"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_gravity="center"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
@@ -139,14 +154,13 @@
             android:text="@string/apply_code_child"
             android:textAllCaps="false"
             android:textColor="#fff"
-            android:layout_marginTop="40dp"
             android:textSize="15dp"
             />
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:textSize="15sp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
