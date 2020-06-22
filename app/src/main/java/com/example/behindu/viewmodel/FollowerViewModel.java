@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.behindu.database.Database;
-import com.example.behindu.fragments.AddChildFragment;
+import com.example.behindu.fragments.ChildDetailsFragment;
 import com.example.behindu.fragments.RealtimeLocationFragment;
 import com.example.behindu.model.Child;
 import com.example.behindu.model.ClusterMarker;
@@ -61,7 +61,7 @@ public class FollowerViewModel extends ViewModel {
         mDatabase.retrieveUserLocations(mClusterMarkers,onCallbackRetrieveUserLocations);
     }
 
-    public void getBatteryPercent(AddChildFragment.OnCallbackBatteryStatus onCallbackBatteryStatus) {
+    public void getBatteryPercent(ChildDetailsFragment.OnCallbackBatteryStatus onCallbackBatteryStatus) {
         mDatabase.getBatteryPercent(onCallbackBatteryStatus);
     }
 
@@ -73,7 +73,7 @@ public class FollowerViewModel extends ViewModel {
         mDatabase.makeSound(follower);
     }
 
-    public void getStatus(AddChildFragment.OnCallbackConnectingStatus onCallbackConnectingStatus) {
+    public void getStatus(ChildDetailsFragment.OnCallbackConnectingStatus onCallbackConnectingStatus) {
         mDatabase.getStatus(onCallbackConnectingStatus);
     }
 
@@ -83,5 +83,9 @@ public class FollowerViewModel extends ViewModel {
 
     public void setNewLocationNotify(boolean b,String childId) {
         mDatabase.setNewLocationNotify(b,childId);
+    }
+
+    public void getGPS(ChildDetailsFragment.OnCallbackGPSStatus onCallbackGPSStatus) {
+        mDatabase.getGPSAlert(onCallbackGPSStatus);
     }
 }

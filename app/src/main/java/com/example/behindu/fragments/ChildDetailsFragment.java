@@ -30,30 +30,34 @@ import com.example.behindu.viewmodel.FollowerViewModel;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 import me.itangqi.waveloadingview.WaveLoadingView;
 
-public class AddChildFragment extends Fragment  {
+public class ChildDetailsFragment extends Fragment  {
 
     private View mView;
     private Follower mFollower;
     private Child mChild;
     private FollowerViewModel mViewModel = new FollowerViewModel();
     private TextView mNameTv;
-    public  TextView mChildStatus;
+    private  TextView mChildStatus;
     private TextView mLastLocation;
+    private TextView mGPSStatus;
     private UserLocation mUserLocation;
     private WaveLoadingView mWaveLoadingView;
 
 
-    public AddChildFragment(Follower follower, UserLocation userLocation) {
+
+
+    public ChildDetailsFragment(Follower follower, UserLocation userLocation) {
         this.mFollower = follower;
         this.mUserLocation = userLocation;
     }
 
-    public AddChildFragment() { }
+    public ChildDetailsFragment() { }
 
     @Nullable
     @Override
@@ -100,26 +104,25 @@ public class AddChildFragment extends Fragment  {
     private void initViewChild(View mView) {
         ImageView childImage = mView.findViewById(R.id.child_image);
 
-
-
         mChild = mFollower.getChildList().get(0);
         mNameTv = mView.findViewById(R.id.name_child_details);
         mChildStatus = mView.findViewById(R.id.child_status);
         mLastLocation = mView.findViewById(R.id.location_child_details);
+        mGPSStatus = mView.findViewById(R.id.gps_status);
         mWaveLoadingView = mView.findViewById(R.id.waveLoadingView);
         mWaveLoadingView.setShapeType(WaveLoadingView.ShapeType.CIRCLE);
-
 
 
         mNameTv.setText(getString(R.string.name_child_view) + " " +mChild.getFirstName()+ " " + mChild.getLastName());
         setBatteryLevel(mUserLocation.getChild().getBatteryPercent());
         mLastLocation.setText(getString(R.string.location_child_view) +" " + getAddress(mChild.getRoutes()));
+        getGPSStatus();
         circleImage(mView,childImage);
 
 
         mViewModel.getStatus(new OnCallbackConnectingStatus() {
             @Override
-            public void setConnectingStatus(Boolean isConnected) {
+            public void setConnectingStatus(boolean isConnected) {
                 setCurrentStatus(isConnected);
             }
         });
@@ -134,9 +137,24 @@ public class AddChildFragment extends Fragment  {
 
     }
 
-    private void setCurrentStatus(Boolean isConnected) {
+    private void getGPSStatus() {
+        mViewModel.getGPS(new OnCallbackGPSStatus() {
+            @Override
+            public void setGPSStatus(boolean status) {
+                if(status){
+                    mGPSStatus.setText(getString(R.string.gps_status)+" " + getString(R.string.connected_gps));
+                    mGPSStatus.setTextColor(getResources().getColor(R.color.connectedToFollower));
+                }
+                else{
+                    mGPSStatus.setText(getString(R.string.gps_status)+" " + getString(R.string.disconnect_gps));
+                    mGPSStatus.setTextColor(getResources().getColor(R.color.notConnectedToFollower));
+                }
 
-        ;
+            }
+        });
+    }
+
+    private void setCurrentStatus(boolean isConnected) {
 
         if(isConnected) {
             mChildStatus.setText(getString(R.string.child_status) + " " + getString(R.string.connected));
@@ -212,6 +230,10 @@ public class AddChildFragment extends Fragment  {
     }
 
     public interface OnCallbackConnectingStatus{
-        void setConnectingStatus(Boolean isConnected);
+        void setConnectingStatus(boolean isConnected);
+    }
+
+    public interface OnCallbackGPSStatus{
+        void setGPSStatus(boolean status);
     }
 }

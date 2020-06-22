@@ -31,4 +31,8 @@ public class Constants {
     // Emergency phone number
     public static final int EMERGENCY_NUMBER_POLICE = 100;
 
+    // Default boundaries for google map view
+    public static final double LAT_GEO_POINT = 31.964348;
+    public static final double LNG_GEO_POINT = 34.7701588;
+
 }

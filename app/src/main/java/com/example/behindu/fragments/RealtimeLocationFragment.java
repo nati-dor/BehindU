@@ -59,6 +59,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static com.example.behindu.model.Constants.LAT_GEO_POINT;
+import static com.example.behindu.model.Constants.LNG_GEO_POINT;
 import static com.example.behindu.model.Constants.LOCATION_UPDATE_INTERVAL;
 import static com.example.behindu.model.Constants.MAPVIEW_BUNDLE_KEY;
 
@@ -223,17 +225,33 @@ public class RealtimeLocationFragment extends Fragment  implements
     private void setCameraView(){
 
         // Overall map view window:
-        int sizeOfList = mLastLocationList.getList().size();
-        double bottomBoundary = mLastLocationList.getList().get(sizeOfList-1).getGeoPoint().getLatitude() - 0.01;
-        double leftBoundary = mLastLocationList.getList().get(sizeOfList-1).getGeoPoint().getLongitude() - 0.01;
-        double topBoundary = mLastLocationList.getList().get(sizeOfList-1).getGeoPoint().getLatitude() + 0.01;
-        double rightBoundary = mLastLocationList.getList().get(sizeOfList-1).getGeoPoint().getLongitude() + 0.01;
+        if(mLastLocationList.getList() != null) {
+            int sizeOfList = mLastLocationList.getList().size();
+            double bottomBoundary = mLastLocationList.getList().get(sizeOfList - 1).getGeoPoint().getLatitude() - 0.01;
+            double leftBoundary = mLastLocationList.getList().get(sizeOfList - 1).getGeoPoint().getLongitude() - 0.01;
+            double topBoundary = mLastLocationList.getList().get(sizeOfList - 1).getGeoPoint().getLatitude() + 0.01;
+            double rightBoundary = mLastLocationList.getList().get(sizeOfList - 1).getGeoPoint().getLongitude() + 0.01;
 
-        mMapBoundary = new LatLngBounds(
-              new LatLng(bottomBoundary, leftBoundary),
-              new LatLng(topBoundary, rightBoundary)
-        );
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary,0));
+            mMapBoundary = new LatLngBounds(
+                    new LatLng(bottomBoundary, leftBoundary),
+                    new LatLng(topBoundary, rightBoundary)
+            );
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary, 0));
+        }
+
+        else{
+            double bottomBoundary = LAT_GEO_POINT - 0.01;
+            double leftBoundary = LNG_GEO_POINT - 0.01;
+            double topBoundary = LAT_GEO_POINT + 0.01;
+            double rightBoundary = LNG_GEO_POINT + 0.01;
+
+            mMapBoundary = new LatLngBounds(
+                    new LatLng(bottomBoundary, leftBoundary),
+                    new LatLng(topBoundary, rightBoundary)
+            );
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary, 0));
+        }
+
     }
 
 
@@ -574,7 +592,8 @@ public class RealtimeLocationFragment extends Fragment  implements
                         public void onClick(KAlertDialog kAlertDialog) {
                             kAlertDialog.cancel();
                             mSelectedMarker = marker;
-                            getFollowerLocation(new onCallbackFollowerLocation() {
+                            getFollowerLocation(
+                                    new onCallbackFollowerLocation() {
                                 @Override
                                 public void setFollowerLocation(GeoPoint location) {
                                     mFollowerLocation = location;

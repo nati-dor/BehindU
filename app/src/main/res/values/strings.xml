@@ -31,7 +31,7 @@
     <string name="message_sent">The message sent</string>
     <string name="real_time_lcoation">Realtime location</string>
     <string name="last_locations">Last locations</string>
-    <string name="add_child">Add child</string>
+    <string name="child_details">Child details</string>
     <string name="generate_code">Generate</string>
     <string name="instructions_add_child_1">1. Click on \'Generate\'.</string>
     <string name="instructions_add_child_2">2. Type the code on child phone.</string>
@@ -76,4 +76,12 @@
     <string name="child_status">Status:</string>
     <string name="connected">Connected to app</string>
     <string name="disconnect">Disconnected from app</string>
+    <string name="child_is_not_connected_title">The child is not connected to app</string>
+    <string name="child_is_not_connected_info">The child need to login the app</string>
+    <string name="GPS_off_title">The GPS is off</string>
+    <string name="GPS_off_info">You should enable the GPS to use the app</string>
+    <string name="settings_answer">Move to settings</string>
+    <string name="gps_status">GPS status:</string>
+    <string name="connected_gps">ON</string>
+    <string name="disconnect_gps">OFF</string>
 </resources>

@@ -63,7 +63,7 @@ import static com.example.behindu.model.Constants.PERMISSIONS_REQUEST_ENABLE_SMS
 
 public class ChildActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final String TAG = "Child Activity";
+    private static final String TAG = "Child Activity" ;
     private ChildViewModel mViewModel = new ChildViewModel();
     private boolean mLocationPermissionGranted = false;
     private boolean mCallPermissionGranted = false;
@@ -147,7 +147,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                     @Override
                     public void setLocation(Child child) {
                         mChild = child;
-                        getAlarmReceiver();
+                        getAlarmReceiver(); // Get the battery status
                         mUserLocation.setChild(child);
                         if (child.isConnected()) {
                             mEnterCodeEt.setVisibility(View.GONE);
@@ -170,15 +170,12 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void saveUserLocation(UserLocation mUserLocation) {
-        Log.d(TAG, "saveUserLocation: arrive");
         mViewModel.saveUserLocation(mUserLocation);
     }
 
     /* Get the last known location of child*/
 
     private void getLastKnownLocation() {
-        Log.d(TAG, "getLastKnowLocation: called");
-
         mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
             @Override
             public void onComplete(@NonNull Task<Location> task) {
@@ -237,11 +234,9 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if ("com.codingwithmitch.googledirectionstest.services.LocationService".equals(service.service.getClassName())) {
-                Log.d(TAG, "isLocationServiceRunning: location service is already running.");
                 return true;
             }
         }
-        Log.d(TAG, "isLocationServiceRunning: location service is not running.");
         return false;
     }
 
@@ -254,30 +249,41 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void buildAlertMessageNoGps() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("This application requires GPS to work properly, do you want to enable it?")
-                .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+
+        final KAlertDialog dialog =   new KAlertDialog(this, KAlertDialog.WARNING_TYPE);
+                dialog.setTitleText(getString(R.string.GPS_off_title))
+                .setContentText(getString(R.string.GPS_off_info))
+                .setConfirmText(getString(R.string.settings_answer))
+                .confirmButtonColor(R.color.colorPrimaryDark)
+                .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+                    @Override
+                    public void onClick(KAlertDialog kAlertDialog) {
                         Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
                     }
-                }).setNegativeButton("No, Thanks", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                moveToMainActivity();
-            }
-        });
-        final AlertDialog alert = builder.create();
-        alert.show();
+                })
+                .setCancelText(getString(R.string.no))
+                .setCancelClickListener(new KAlertDialog.KAlertClickListener() {
+                    @Override
+                    public void onClick(KAlertDialog kAlertDialog) {
+                        dialog.cancel();
+                        SaveSharedPreference.clearUserName(ChildActivity.this);
+                        moveToMainActivity();
+                        finish();
+                    }
+                }).show();
     }
 
     public boolean isMapsEnabled() {
         final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if(manager !=null) {
             if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                mViewModel.isGPSOn(false); // tells the follower the gps is off
                 buildAlertMessageNoGps();
                 return false;
+            }
+            else{
+                mViewModel.isGPSOn(true); // tells the follower the gps is on
             }
         }
         return true;
@@ -300,11 +306,10 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void getCallingPermission() {
-        Log.d(TAG, "getCallingPermission: Arrive");
+
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 android.Manifest.permission.CALL_PHONE)
                 != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "getCallingPermission: Arrive");
             mCallPermissionGranted = false;
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.CALL_PHONE},
@@ -350,33 +355,30 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult: " + Arrays.toString(grantResults));
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     mLocationPermissionGranted = true;
+                    mViewModel.isGPSOn(true); // tells the follower the gps is on
                     getUserDetails();
                 } else {
+                    mViewModel.isGPSOn(false);   // tells the follower the gps is off
                     buildAlertMessageNoGps();
                 }
             }
             // If request is cancelled, the result arrays are empty.
             case PERMISSIONS_REQUEST_ENABLE_CALL:
-                Log.d(TAG, "onRequestPermissionsResult: Arrive");
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "onRequestPermissionsResult: Arrive");
                     mCallPermissionGranted = true;
 
                 }
                 // If request is cancelled, the result arrays are empty.
             case PERMISSIONS_REQUEST_ENABLE_SMS:
-                Log.d(TAG, "onRequestPermissionsResult: Arrive");
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "onRequestPermissionsResult: if stat Arrive");
                     mSmsPermissionGranted = true;
                 }
         }
@@ -423,16 +425,16 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void signOut() {
-        stopService(mServiceIntent); // stopping the location service
+        if(mServiceIntent != null) {
+            stopService(mServiceIntent); // stopping the location service
+        }
         unregisterReceiver(mBatteryLevelReceiver); // unregister the battery receiver
         mViewModel.setStatus(false);
         mViewModel.signOut();
 
         SaveSharedPreference.clearUserName(this);
 
-        Intent i = new Intent(ChildActivity.this, MainActivity.class);
-        startActivity(i);
-        finish();
+        moveToMainActivity();
     }
 
     private void callEmergency(int phoneNumber) {
@@ -442,7 +444,6 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         }
 
         if (mCallPermissionGranted) {
-            Log.d(TAG, "callEmergency: arrive");
             Intent callIntent = new Intent(Intent.ACTION_CALL);
             callIntent.setData(Uri.parse("tel:" + phoneNumber));
             startActivity(callIntent);
@@ -471,9 +472,8 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void moveToMainActivity () {
-        Intent i = new Intent(this, MainActivity.class);
+        Intent i = new Intent(ChildActivity.this, MainActivity.class);
         startActivity(i);
-        this.overridePendingTransition(0, 0);
         this.finish();
     }
 

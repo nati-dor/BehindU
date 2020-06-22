@@ -60,4 +60,9 @@ public class ChildViewModel extends ViewModel {
     public void setNewLocationNotify(boolean b,String userId) {
         mDatabase.setNewLocationNotify(b,userId);
     }
+
+
+    public void isGPSOn(boolean b) {
+        mDatabase.setGPSAlert(b);
+    }
 }

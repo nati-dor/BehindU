@@ -77,7 +77,7 @@ public class LocationService extends Service {
     }
 
     private void getLocation() {
-        // ---------------------------------- LocationRequest ------------------------------------
+        // LocationRequest
         // Create the location request to start receiving updates
         LocationRequest mLocationRequestHighAccuracy = new LocationRequest();
         mLocationRequestHighAccuracy.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -102,11 +102,15 @@ public class LocationService extends Service {
                             GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
                                 mUserLocation.getChild().setRoutes(geoPoint);
                                 saveUserLocation(mUserLocation);
+                                /*Check if the last geoPoint is equal to the one on DB
+                                    if yes the GPS is off , else is ON*/
+
                             }
                     }
                 },
                 Looper.myLooper()); // Looper.myLooper tells this to repeat forever until thread is destroyed
     }
+
 
     private void saveUserLocation(final UserLocation userLocation) {
         mViewModel.saveUserLocation(userLocation);

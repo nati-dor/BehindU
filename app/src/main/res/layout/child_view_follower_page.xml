@@ -60,7 +60,16 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/child_status"
+            android:id="@+id/child_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:layout_margin="15dp"
+            android:text="test"
+            android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/gps_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="13sp"
@@ -77,6 +86,7 @@
                 android:layout_gravity="center"
                 app:wlv_progressValue="40"
                 app:wlv_shapeType="circle"
+                android:layout_marginTop="10dp"
                 app:wlv_round_rectangle="true"
                 app:wlv_triangle_direction="north"
                 app:wlv_titleCenterStrokeWidth="3dp"

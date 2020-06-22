@@ -1,20 +1,16 @@
 package com.example.behindu.database;
 
 
-import android.os.Message;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.behindu.fragments.AddChildFragment;
+import com.example.behindu.fragments.ChildDetailsFragment;
 import com.example.behindu.fragments.RealtimeLocationFragment;
 import com.example.behindu.model.Child;
 import com.example.behindu.model.ClusterMarker;
 import com.example.behindu.model.Follower;
-import com.example.behindu.model.LastLocation;
 import com.example.behindu.model.User;
 import com.example.behindu.model.UserLocation;
 import com.example.behindu.view.ChildActivity;
@@ -24,7 +20,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
@@ -137,7 +132,7 @@ public class Database {
     public synchronized void saveUserLocation(final UserLocation mUserLocation) {
 
         if (mUserLocation != null && mAuth.getUid() != null) {
-            mDocRef = fStore.collection("User Locations").document(mAuth.getCurrentUser().getUid());
+            mDocRef = fStore.collection("User Locations").document(mAuth.getUid());
             mDocRef.set(mUserLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -348,7 +343,7 @@ public class Database {
         });
     }
 
-    public void getBatteryPercent(final AddChildFragment.OnCallbackBatteryStatus onCallbackBatteryStatus) {
+    public void getBatteryPercent(final ChildDetailsFragment.OnCallbackBatteryStatus onCallbackBatteryStatus) {
         fStore.collection("User Locations")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -452,7 +447,7 @@ public class Database {
         }
     }
 
-    public void getStatus(final AddChildFragment.OnCallbackConnectingStatus onCallbackConnectingStatus) {
+    public void getStatus(final ChildDetailsFragment.OnCallbackConnectingStatus onCallbackConnectingStatus) {
 
         fStore.collection("Connected")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -471,12 +466,12 @@ public class Database {
                                 case ADDED:
                                     HashMap added;
                                     added = (HashMap) dc.getDocument().getData();
-                                    onCallbackConnectingStatus.setConnectingStatus((Boolean)added.get("connected"));
+                                    onCallbackConnectingStatus.setConnectingStatus((boolean)added.get("connected"));
                                     break;
                                 case MODIFIED:
                                     HashMap modified;
                                     modified = (HashMap) dc.getDocument().getData();
-                                    onCallbackConnectingStatus.setConnectingStatus((Boolean)modified.get("connected"));
+                                    onCallbackConnectingStatus.setConnectingStatus((boolean)modified.get("connected"));
                                     break;
                             }
                         }
@@ -544,6 +539,54 @@ public class Database {
                 });
 
 
+    }
+
+    public void setGPSAlert(boolean b) {
+        HashMap gps = new HashMap();
+        gps.put("gps",b);
+
+        if(mAuth.getUid()!=null) {
+            fStore.collection("GPS").document(mAuth.getUid())
+                    .set(gps).addOnCompleteListener(new OnCompleteListener() {
+                @Override
+                public void onComplete(@NonNull Task task) {
+                    if(task.isSuccessful()){
+                        Log.d(TAG, "setGPSAlert: successfully inserted to DB");
+                    }
+                }
+            });
+        }
+    }
+
+    public void getGPSAlert(final ChildDetailsFragment.OnCallbackGPSStatus onCallbackGPSStatus) {
+        fStore.collection("GPS")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot snapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w("TAG", "listen:error", e);
+                            return;
+                        }
+
+
+                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                            switch (dc.getType()) {
+                                case ADDED:
+                                    HashMap added;
+                                    added = (HashMap) dc.getDocument().getData();
+                                    onCallbackGPSStatus.setGPSStatus((boolean)added.get("gps"));
+                                    break;
+                                case MODIFIED:
+                                    HashMap modified;
+                                    modified = (HashMap) dc.getDocument().getData();
+                                    onCallbackGPSStatus.setGPSStatus((boolean)modified.get("gps"));
+                                    break;
+                            }
+                        }
+                    }
+                });
     }
 }
 
