@@ -141,32 +141,40 @@ android:weightSum="11"
             android:hint="@string/enter_code" />
     </com.google.android.material.textfield.TextInputLayout>
 
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="bottom"
+    android:gravity="bottom"
+    android:orientation="vertical">
+
     <Button
-            android:id="@+id/apply_code_btn"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_gravity="center"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/button_style"
-            android:text="@string/apply_code_child"
-            android:textAllCaps="false"
-            android:textColor="#fff"
-            android:textSize="15dp"
-            />
+        android:id="@+id/apply_code_btn"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/button_style"
+        android:text="@string/apply_code_child"
+        android:textAllCaps="false"
+        android:textColor="#fff"
+        android:textSize="15dp"
+        />
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="35dp"
         android:textSize="15sp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:gravity="center"
+      android:text="connected"
         android:layout_marginBottom="10dp"
         android:id="@+id/connect_status_tv"/>
+</LinearLayout>
 
 </LinearLayout>
 </LinearLayout>

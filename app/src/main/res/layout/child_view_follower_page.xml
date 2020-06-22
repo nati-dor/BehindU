@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout android:layout_height="match_parent"
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:gravity="center"
@@ -11,16 +12,14 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5"
+        android:layout_weight="5.5"
         android:visibility="visible"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         app:cardUseCompatPadding="true"
         app:cardElevation="5dp"
         android:layout_marginBottom="20dp"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
-        app:cardCornerRadius="10dp"
-        xmlns:android="http://schemas.android.com/apk/res/android">
+        app:cardCornerRadius="10dp">
 
 
         <LinearLayout
@@ -32,20 +31,20 @@
 >
 
             <ImageView
+                android:id="@+id/child_image"
                 android:layout_width="80dp"
-                android:layout_height="0dp"
-                android:layout_weight="3"
+                android:layout_height="80dp"
                 android:layout_gravity="center"
-                android:src="@drawable/aviv"
-                android:layout_marginBottom="30dp"
-                android:id="@+id/child_image"/>
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="15dp"
+                android:layout_weight="0"
+                android:src="@drawable/aviv" />
 
 
             <TextView
                 android:id="@+id/name_child_details"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
                android:layout_margin="15dp"
                 android:textColor="#808080"
                 android:text="test"
@@ -56,9 +55,8 @@
             <TextView
                 android:id="@+id/location_child_details"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="2"
-                android:layout_margin="14dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
                 android:textColor="#808080"
                 android:text="test"
                 android:textSize="15sp"
@@ -76,8 +74,7 @@
             <TextView
                 android:id="@+id/gps_status"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:textSize="13sp"
                 android:layout_margin="15dp"
                 android:text="test"
@@ -85,7 +82,7 @@
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="0dp"
-    android:layout_weight="3"
+    android:layout_weight="2"
     android:gravity="center">
             <me.itangqi.waveloadingview.WaveLoadingView
                 android:id="@+id/waveLoadingView"
@@ -94,12 +91,12 @@
                 app:wlv_borderColor="@color/colorAccent"
                 app:wlv_borderWidth="3dp"
                 android:layout_gravity="center"
-                app:wlv_progressValue="40"
                 app:wlv_shapeType="circle"
                 android:layout_marginTop="10dp"
                 app:wlv_round_rectangle="true"
                 app:wlv_triangle_direction="north"
                 app:wlv_titleCenterStrokeWidth="3dp"
+                android:layout_marginBottom="10dp"
                 app:wlv_waveColor="@color/colorAccent"/>
 
 </LinearLayout>
