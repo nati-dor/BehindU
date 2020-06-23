@@ -13,7 +13,7 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="0dp"
        android:visibility="visible"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         app:cardUseCompatPadding="true"
@@ -24,7 +24,7 @@
         app:cardCornerRadius="10dp"
         android:id="@+id/generate_code_cardview"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_weight="5">
+        android:layout_weight="10">
 
 
 
