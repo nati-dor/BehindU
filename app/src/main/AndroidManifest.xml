@@ -38,9 +38,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.ChildActivity"
-            android:exported="true"/>
+            android:exported="true"
+            android:screenOrientation="portrait"/>
         <activity android:name=".view.FollowerActivity"
-            android:exported="true"/>
+            android:exported="true"
+            android:screenOrientation="portrait"/>
 
         <service android:name=".services.LocationService"
             android:stopWithTask="true">
