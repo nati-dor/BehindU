@@ -39,6 +39,8 @@ public class RegisterFragment extends Fragment {
     private int mFollowerPhoneNum;
     private KAlertDialog mDialog;
 
+    public RegisterFragment() {
+    }
 
     @Nullable
     @Override

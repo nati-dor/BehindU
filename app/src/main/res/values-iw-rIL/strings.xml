@@ -82,4 +82,8 @@
     <string name="connected_gps">פעיל</string>
     <string name="disconnect_gps">כבוי</string>
     <string name="Enter_follower_phone_number">הכנס מספר טלפון של עוקב</string>
+    <string name="unknown_location">מיקום לא ידוע</string>
+    <string name="launch_notification">פתח</string>
+    <string name="remove_notification">הסר</string>
+    <string name="location_updated_title_notification">"עדכון אחרון: "</string>
 </resources>

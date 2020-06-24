@@ -27,6 +27,8 @@ public class ActionsFragment extends Fragment{
     FollowerViewModel viewModel = new FollowerViewModel();
     private Boolean mConnected = false;
 
+    public ActionsFragment() {
+    }
 
     public ActionsFragment(Follower mFollower) {
         this.mFollower = mFollower;

@@ -31,8 +31,15 @@ public class Constants {
     // Emergency phone number
     public static final int EMERGENCY_NUMBER_POLICE = 100;
 
+
     // Default boundaries for google map view
     public static final double LAT_GEO_POINT = 31.964348;
     public static final double LNG_GEO_POINT = 34.7701588;
+
+    // Notifications center constants
+    public static final String EXTRA_STARTED_FROM_NOTIFICATION = "com.example.behindu"
+            + ".started_from_notification";
+    public static final String CHANNEL_ID = "location_channel";
+    public static int NOTIFICATION_ID = 1223;
 
 }

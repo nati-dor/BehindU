@@ -66,6 +66,11 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
+    // To request runtime permission
+    implementation 'com.karumi:dexter:6.0.0'
+
+    // To send events between activity / service
+    implementation 'org.greenrobot:eventbus:3.1.1'
 
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'

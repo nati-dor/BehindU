@@ -95,6 +95,9 @@ public class RealtimeLocationFragment extends Fragment  implements
         this.mChild = mLastLocationList.getChild();
     }
 
+    public RealtimeLocationFragment() {
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -518,7 +521,7 @@ public class RealtimeLocationFragment extends Fragment  implements
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
         initMapStyle();
-        setCameraView();
+       setCameraView();
         addMapMarker();
         initCircleZoom();
         mGoogleMap.setOnPolylineClickListener(this);

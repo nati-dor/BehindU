@@ -22,6 +22,9 @@ public class SettingsFragment extends Fragment {
 
     private FollowerViewModel mViewModel = new FollowerViewModel();
 
+    public SettingsFragment() {
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

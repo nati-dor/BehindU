@@ -32,6 +32,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     private TextInputLayout mUserError;
     private TextInputLayout mPass;
 
+    public LoginFragment() {
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {

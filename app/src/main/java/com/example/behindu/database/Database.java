@@ -46,7 +46,8 @@ public class Database {
     private DocumentReference mDocRef;
    // private OnFirestoreTaskComplete onFirestoreTaskComplete;
     private String childId;
-    private int numOfNotifications = 0;
+    //private int numOfNotifications = 0;
+    private  static long  numOfNotifications = 0;
 
 
     private static Database instance = null;
@@ -232,7 +233,7 @@ public class Database {
     // Get the last location list of the child
 
     public void getLocationList(final ChildActivity.locationList locationList) {
-        mDocRef = fStore.collection("User Locations").document(mAuth.getCurrentUser().getUid());
+        mDocRef = fStore.collection("User Locations").document(mAuth.getUid());
         mDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -480,18 +481,21 @@ public class Database {
 
     }
 
-    public void setNewLocationNotify(boolean b,String userID) {
+    public void  setNewLocationNotify(boolean b,String userID) {
+       int numOfNotifications1 = 0;
         Log.d(TAG, "setNewLocationNotify: " + numOfNotifications);
         if(b){
-            numOfNotifications++;
+            //numOfNotifications1++;
+           numOfNotifications++;
         }
         else {
             Log.d(TAG, "setNewLocationNotify: arrive");
-            numOfNotifications = 0;
+            //numOfNotifications1 = 0;
+           numOfNotifications = 0;
         }
         HashMap notification = new HashMap();
         notification.put("newNotification",b);
-        notification.put("numOfNotifications",numOfNotifications);
+        notification.put("numOfNotifications",numOfNotifications1);
 
         if(mAuth.getUid() != null) {
             fStore.collection("New Locations")

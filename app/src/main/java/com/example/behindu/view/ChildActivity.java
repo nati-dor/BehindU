@@ -4,10 +4,12 @@ import android.Manifest;
 import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -16,6 +18,7 @@ import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
@@ -48,6 +51,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.GeoPoint;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,11 +93,61 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     private MediaPlayer mAlarm;
 
 
+    private LocationService mService = null;
+    private boolean mBound = false;
+    private final ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            LocationService.LocalBinder binder = (LocationService.LocalBinder)service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mBound = false;
+            mService = null;
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.child_page);
+
+
+        Dexter.withActivity(this)
+                .withPermissions(Arrays.asList(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                ))
+                .withListener(new MultiplePermissionsListener() {
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport report) {
+
+                        bindService(new Intent(ChildActivity.this,
+                                        LocationService.class),mServiceConnection,
+                                Context.BIND_AUTO_CREATE);
+
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+
+                    }
+                }).check();
+
+
+        Log.d(TAG, "onCreate: ChildActivity"+ "Arrive");
 
         getPermissions();
 
@@ -191,22 +253,33 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                                 lastLocationList.add(new LastLocation(geoPoint, Calendar.getInstance().getTime()));
                                 mUserLocation.setList(lastLocationList);
                                 saveUserLocation(mUserLocation);
-                                startLocationService(mUserLocation); // Starting the service after all the list has been load
+
+                                requestLocationUpdates();
+                               // mServiceIntent.putExtra("UserLocations", mUserLocation);
+                              //  startLocationService(mUserLocation); // Starting the service after all the list has been load
                                 newLocationNotify(); // Making a notification for follower that new location has been added to the location list
-                            } else {
+                            }
+                            else {
                                 lastLocationList.add(new LastLocation(geoPoint, Calendar.getInstance().getTime()));
                                 mUserLocation.setList(lastLocationList);
                                 saveUserLocation(mUserLocation);
-                                startLocationService(mUserLocation); // Starting the service after all the list has been load
+                                requestLocationUpdates();
+                              //  startLocationService(mUserLocation); // Starting the service after all the list has been load
                                 newLocationNotify(); // Making a notification for follower that new location has been added to the location list
                             }
-                        }
+                                }
 
 
                     });
                 }
             }
         });
+    }
+
+    private void requestLocationUpdates() {
+        Intent intent = new Intent(ChildActivity.this,LocationService.class);
+        intent.putExtra("UserLocation",mUserLocation);
+        mService.requestLocationUpdates(intent);
     }
 
 // Making a notification for follower that new location has been added to the location list
@@ -233,7 +306,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     private boolean isLocationServiceRunning() {
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if ("com.codingwithmitch.googledirectionstest.services.LocationService".equals(service.service.getClassName())) {
+            if (getClass().getName().equals(service.service.getClassName())) {
                 return true;
             }
         }
@@ -425,15 +498,16 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void signOut() {
-        if(mServiceIntent != null) {
-            stopService(mServiceIntent); // stopping the location service
+
+        if(mBound){
+            unbindService(mServiceConnection);
+            mBound = false;
         }
+
         unregisterReceiver(mBatteryLevelReceiver); // unregister the battery receiver
         mViewModel.setStatus(false);
         mViewModel.signOut();
-
         SaveSharedPreference.clearUserName(this);
-
         moveToMainActivity();
     }
 
@@ -549,6 +623,11 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     protected void onStop() {
         super.onStop();
 
+        if(mBound){
+            unbindService(mServiceConnection);
+            mBound = false;
+        }
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -605,6 +684,18 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
 
 
 
+    }
+
+    @Subscribe(sticky =  true, threadMode = ThreadMode.MAIN)
+    public void onListenLocation(SendLocationToActivity event){
+        if(event != null){
+            String data = new StringBuilder()
+                    .append(event.getLocation().getLatitude())
+                    .append("/")
+                    .append(event.getLocation().getLongitude())
+                    .toString();
+            //Toast.makeText(mService, data, Toast.LENGTH_SHORT).show();
+        }
     }
 
     public interface childLocationCallback{
