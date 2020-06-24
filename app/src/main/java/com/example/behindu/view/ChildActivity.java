@@ -686,18 +686,6 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    @Subscribe(sticky =  true, threadMode = ThreadMode.MAIN)
-    public void onListenLocation(SendLocationToActivity event){
-        if(event != null){
-            String data = new StringBuilder()
-                    .append(event.getLocation().getLatitude())
-                    .append("/")
-                    .append(event.getLocation().getLongitude())
-                    .toString();
-            //Toast.makeText(mService, data, Toast.LENGTH_SHORT).show();
-        }
-    }
-
     public interface childLocationCallback{
         void setLocation(Child child);
     }
