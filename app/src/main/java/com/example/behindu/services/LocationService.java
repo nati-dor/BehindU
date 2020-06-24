@@ -27,7 +27,6 @@ import com.example.behindu.R;
 import com.example.behindu.model.UserLocation;
 import com.example.behindu.view.Common;
 import com.example.behindu.view.MainActivity;
-import com.example.behindu.view.SendLocationToActivity;
 import com.example.behindu.viewmodel.ChildViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -166,7 +165,6 @@ public class LocationService extends Service {
 
     private void onNewLocation(Location lastLocation) throws URISyntaxException {
         mLocation = lastLocation;
-        EventBus.getDefault().postSticky(new SendLocationToActivity(mLocation));
 
         if(mLocation != null) {
             GeoPoint geoPoint = new GeoPoint(mLocation.getLatitude(), mLocation.getLongitude());
