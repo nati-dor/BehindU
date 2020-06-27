@@ -2,31 +2,63 @@
 <RelativeLayout android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:id="@+id/map_conatiner"
+    android:layout_gravity="bottom"
+    android:gravity="bottom"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
+
 
     <com.google.android.gms.maps.MapView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/map_view"/>
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:text="reset"
-            android:src="@drawable/reset_btn"
-            android:layout_marginTop="1dp"
-            android:id="@+id/reset_map_btn"/>
-        <ImageButton
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:visibility="visible"
+            android:elevation="10dp"
+            android:background="@drawable/white_border"
+            android:id="@+id/relLayout1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:background="@color/greyMapCircle">
+            
+            <fragment
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                android:id="@+id/autocomplete_fragment"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    <ImageButton
+        android:id="@+id/reset_map_btn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_above="@+id/night_mode_map_btn"
+        android:layout_marginBottom="2dp"
+        android:layout_marginRight="10dp"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/reset_btn"
+        android:text="reset" />
+
+    <ImageButton
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/night_mode_map"
-            android:layout_marginTop="5dp"
-            android:layout_below="@+id/reset_map_btn"
-            android:id="@+id/night_mode_map_btn"/>
+            android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/night_mode_map_btn"
+            android:layout_marginBottom="70dp"
+            />
+
     </RelativeLayout>
-
-
-</RelativeLayout>

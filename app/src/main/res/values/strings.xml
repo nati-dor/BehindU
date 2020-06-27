@@ -89,4 +89,14 @@
     <string name="launch_notification">Launch</string>
     <string name="remove_notification">Remove</string>
     <string name="location_updated_title_notification">Location Updated</string>
+    <string name="dangerous_zone_search">city,street. for example: California , west coast</string>
+    <string name="dangerous_zone_title">Dangerous Zones</string>
+    <string name="dangerous_zone_info">Do you want to add this area to \"Dangerous zones\"?</string>
+    <string name="dangerous_zone_notification_title">Dangerous zone arrived</string>
+    <string name="dangerous_zone_message">Your child is closed to</string>
+    <string name="dangerous_zone_meters">and the distance is:</string>
+    <string name="meters_notification">meters</string>
+    <string name="dangerous_zone_notifications">Dangerous Zone Notifications</string>
+    <string name="dangerous_zone_added">The zone added sucessefully</string>
+    <string name="unknown_location_title">Uknown location</string>
 </resources>

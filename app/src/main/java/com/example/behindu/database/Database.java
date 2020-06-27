@@ -28,6 +28,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public class Database {
     private String childId;
     //private int numOfNotifications = 0;
     private  static long  numOfNotifications = 0;
+    private static int numberOfZones = 0;
 
 
     private static Database instance = null;
@@ -592,6 +594,39 @@ public class Database {
                     }
                 });
     }
+
+    public void addDangerousZones(List<GeoPoint> zoneList) {
+        HashMap zones = new HashMap();
+       zones.put("zone",zoneList);
+
+        if(mAuth.getUid()!=null) {
+            fStore.collection("Dangerous zones").document(mAuth.getUid())
+                    .set(zones).addOnCompleteListener(new OnCompleteListener() {
+                @Override
+                public void onComplete(@NonNull Task task) {
+                    if(task.isSuccessful()){
+                        Log.d(TAG, "addDangerousZones: successfully inserted to DB");
+                    }
+                }
+            });
+        }
+    }
+
+    public void getDangerousZones(final RealtimeLocationFragment.onCallbackDangerousZones onCallbackDangerousZones) {
+        fStore.collection("Dangerous zones")
+                .document(mAuth.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()&& task.getResult() != null) {
+                    HashMap hashMap;
+                    hashMap = (HashMap)task.getResult().getData();
+                    List<GeoPoint> zones = (List<GeoPoint>)hashMap.get("zone");
+                    onCallbackDangerousZones.setDangerousZonesList(zones);
+                }
+            }
+        });
+    }
+
 }
 
 

@@ -1,31 +1,27 @@
 package com.example.behindu.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
 import com.developer.kalert.KAlertDialog;
 import com.example.behindu.R;
 import com.example.behindu.model.Follower;
-import com.example.behindu.view.ChildActivity;
-import com.example.behindu.view.FollowerActivity;
 import com.example.behindu.viewmodel.FollowerViewModel;
+import com.google.android.libraries.places.api.net.PlacesClient;
 
 public class ActionsFragment extends Fragment{
 
     private Follower mFollower;
     FollowerViewModel viewModel = new FollowerViewModel();
     private Boolean mConnected = false;
+    PlacesClient mPlacesClient;
 
     public ActionsFragment() {
     }
@@ -41,8 +37,31 @@ public class ActionsFragment extends Fragment{
         View view = inflater.inflate(R.layout.actions_fragment, container, false);
 
         checkConnection();
+    /*    if(!Places.isInitialized()){
+            Places.initialize(getContext(),"AIzaSyCuFvotxjgZh6NJSueQOmDgMe9IvF0hm4A");
+        }
 
-        ImageButton alarmBtn = view.findViewById(R.id.play_sound_btn);
+        mPlacesClient = Places.createClient(getContext());
+
+
+
+        final AutocompleteSupportFragment autocompleteSupportFragment =
+                (AutocompleteSupportFragment)getChildFragmentManager()
+                        .findFragmentById(R.id.autocomplete_fragment);
+        autocompleteSupportFragment.setPlaceFields(Arrays.asList(Place.Field.ID,Place.Field.LAT_LNG,Place.Field.NAME,Place.Field.ADDRESS));
+
+        autocompleteSupportFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+                Toast.makeText(getContext(), "Arrive", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(@NonNull Status status) {
+
+            }
+        });*/
+          ImageButton alarmBtn = view.findViewById(R.id.play_sound_btn);
         alarmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -1,10 +1,18 @@
 package com.example.behindu.fragments;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.icu.text.DecimalFormat;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
+import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,10 +21,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -27,7 +37,9 @@ import com.example.behindu.model.ClusterMarker;
 import com.example.behindu.model.PolylineData;
 import com.example.behindu.model.UserLocation;
 import com.example.behindu.util.ClusterManagerRenderer;
+import com.example.behindu.view.FollowerActivity;
 import com.example.behindu.viewmodel.FollowerViewModel;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -36,6 +48,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -46,6 +61,10 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
@@ -55,25 +74,33 @@ import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
+import static com.example.behindu.model.Constants.CHANNEL_ID;
+import static com.example.behindu.model.Constants.DANGEROUS_ZONE_NOTIFICATION;
 import static com.example.behindu.model.Constants.LAT_GEO_POINT;
 import static com.example.behindu.model.Constants.LNG_GEO_POINT;
 import static com.example.behindu.model.Constants.LOCATION_UPDATE_INTERVAL;
 import static com.example.behindu.model.Constants.MAPVIEW_BUNDLE_KEY;
 
+
 public class RealtimeLocationFragment extends Fragment  implements
         OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener,
-        GoogleMap.OnPolylineClickListener
+        GoogleMap.OnPolylineClickListener,
+        GoogleMap.OnMarkerDragListener,
+        PlaceSelectionListener,
+        View.OnClickListener
 {
 
     private static final String TAG = "RealtimeLoctionFragment";
     private MapView mMapView;
     private GoogleMap mGoogleMap;
-    private LatLngBounds mMapBoundary;
     private UserLocation mLastLocationList;
     private ClusterManager mClusterManager;
     private ClusterManagerRenderer mClusterManagerRender;
@@ -81,13 +108,23 @@ public class RealtimeLocationFragment extends Fragment  implements
     private Child mChild;
     private FollowerViewModel mViewModel = new FollowerViewModel();
     private GeoApiContext mGeoApiContext = null;
-    private FusedLocationProviderClient mFusedLocationFollower;
-    private LocationRequest mLocationRequest;
     private GeoPoint mFollowerLocation;
     private Handler mHandler = new Handler();
     private Runnable mRunnable;
     private ArrayList<PolylineData> mPolylinesData = new ArrayList<>();
     private Marker mSelectedMarker = null;
+    private double mLat;
+    private double mLng;
+    private int mMapStyle;
+    private ImageButton mRefreshBtn;
+    private ImageButton mDarkModeMap;
+    private List<GeoPoint> mZones;
+    private String mCurrentRedZone;
+    private boolean mNotificationSent = false;
+    private Circle mCircle;
+    private AutocompleteSupportFragment mAutoComplete;
+    View mView;
+
 
 
     public RealtimeLocationFragment(UserLocation mLastLocationList) {
@@ -101,33 +138,52 @@ public class RealtimeLocationFragment extends Fragment  implements
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.real_time_fragment,container,false);
+        mView = inflater.inflate(R.layout.real_time_fragment,container,false);
 
-        mMapView = view.findViewById(R.id.map_view);
+        mMapView = mView.findViewById(R.id.map_view);
 
+        mRefreshBtn = mView.findViewById(R.id.reset_map_btn);
+        mRefreshBtn.setOnClickListener(this);
+
+        mDarkModeMap = mView.findViewById(R.id.night_mode_map_btn);
+        mDarkModeMap.setOnClickListener(this);
+
+        initGooglePlacesApi();
         initGoogleMap(savedInstanceState);
 
-        ImageButton refreshBtn = view.findViewById(R.id.reset_map_btn);
-        refreshBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addMapMarker();
-                setMapStyle(mGoogleMap,R.raw.mapstyledefault);
-            }
-        });
-
-        ImageButton darkModeMap = view.findViewById(R.id.night_mode_map_btn);
-        darkModeMap.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                setMapStyle(mGoogleMap,R.raw.mapstyledark);
-            }
-        });
-
-        return view;
+        return mView;
     }
 
+    private void initGooglePlacesApi() {
+
+        if(!Places.isInitialized()){
+            Places.initialize(getContext(),getString(R.string.google_map_api_key));
+        }
+
+        Places.createClient(getContext());
+
+        mAutoComplete = (AutocompleteSupportFragment)getChildFragmentManager()
+                .findFragmentById(R.id.autocomplete_fragment);
+
+        mAutoComplete.setPlaceFields(Arrays.asList
+                (Place.Field.ID,Place.Field.LAT_LNG,Place.Field.NAME,Place.Field.ADDRESS));
+        mAutoComplete.a.setHint(getString(R.string.dangerous_zone_search));
+    }
+
+
+    // Draw the dangerous zone circle on map
+    private void drawDangerousZonesCircle(GeoPoint address) {
+        if (address != null) {
+            mCircle =  mGoogleMap.addCircle(new CircleOptions()
+                    .center(new LatLng(address.getLatitude(), address.getLongitude()))
+                    .radius(100)
+                    .strokeColor(getResources().getColor(R.color.dangerousZones))
+                    .fillColor(getResources().getColor(R.color.dangerousZones)));
+        }
+
+    }
+
+    // Set the map style when initialize the map
     private void setMapStyle(GoogleMap googleMap, int ref) {
         try {
             boolean success = googleMap.setMapStyle(
@@ -171,8 +227,10 @@ public class RealtimeLocationFragment extends Fragment  implements
                 marker.getPosition().latitude,
                 marker.getPosition().longitude
         );
-        DirectionsApiRequest directions = new DirectionsApiRequest(mGeoApiContext);
 
+
+
+        DirectionsApiRequest directions = new DirectionsApiRequest(mGeoApiContext);
 
         directions.alternatives(true);
         directions.origin(
@@ -181,6 +239,7 @@ public class RealtimeLocationFragment extends Fragment  implements
                         mFollowerLocation.getLongitude()
                 )
         );
+        Log.d(TAG, "calculateDirections: origin: " + mFollowerLocation.getLatitude()+","+mFollowerLocation.getLongitude());
         Log.d(TAG, "calculateDirections: destination: " + destination.toString());
         directions.destination(destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
             @Override
@@ -203,13 +262,13 @@ public class RealtimeLocationFragment extends Fragment  implements
 
 
     private void getFollowerLocation(final onCallbackFollowerLocation followerLocation) {
-        mFusedLocationFollower = LocationServices.getFusedLocationProviderClient(getContext());
-        mLocationRequest = new LocationRequest();
+        FusedLocationProviderClient mFusedLocationFollower = LocationServices.getFusedLocationProviderClient(getContext());
+        LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setNumUpdates(1);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        
+
         mFusedLocationFollower.requestLocationUpdates(mLocationRequest,new LocationCallback(),null);
-        
+
         mFusedLocationFollower.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
             @Override
             public void onComplete(@NonNull Task<Location> task) {
@@ -217,17 +276,18 @@ public class RealtimeLocationFragment extends Fragment  implements
                     Location location = task.getResult();
                     GeoPoint follower = new GeoPoint(location.getLatitude(), location.getLongitude());
                     followerLocation.setFollowerLocation(follower);
-              }
+                }
                 else
                     Log.d(TAG, "onComplete: Location is null");
             }
         });
-  
+
     }
 
     private void setCameraView(){
 
         // Overall map view window:
+        LatLngBounds mMapBoundary;
         if(mLastLocationList.getList() != null) {
             int sizeOfList = mLastLocationList.getList().size();
             double bottomBoundary = mLastLocationList.getList().get(sizeOfList - 1).getGeoPoint().getLatitude() - 0.01;
@@ -257,7 +317,7 @@ public class RealtimeLocationFragment extends Fragment  implements
 
     }
 
-
+    // Add the cluster marker tp map
     private void addMapMarker(){
         if(mGoogleMap != null){
             resetMap();
@@ -275,7 +335,7 @@ public class RealtimeLocationFragment extends Fragment  implements
 
             ClusterMarker clusterMarker = new ClusterMarker(
                     new LatLng(mChild.getRoutes().getLatitude(),
-                               mChild.getRoutes().getLongitude()),
+                            mChild.getRoutes().getLongitude()),
                     name,snippet,defaultImage,mChild
             );
 
@@ -332,7 +392,7 @@ public class RealtimeLocationFragment extends Fragment  implements
 
 
     // Make the camera zoom on the current route
-    public void zoomRoute(List<LatLng> lstLatLngRoute) {
+    private void zoomRoute(List<LatLng> lstLatLngRoute) {
 
         if (mGoogleMap == null || lstLatLngRoute == null || lstLatLngRoute.isEmpty()) return;
 
@@ -427,7 +487,7 @@ public class RealtimeLocationFragment extends Fragment  implements
                 .fillColor(ContextCompat.getColor(context, R.color.greyMapCircle))
                 .addAll(createOuterBounds())
                 .addHole(createHole(center, radius))
-                .strokeWidth(0);
+                .strokeWidth(1);
     }
 
 
@@ -446,36 +506,96 @@ public class RealtimeLocationFragment extends Fragment  implements
         mHandler.removeCallbacks(mRunnable);
     }
 
+
+    // Retrieving the child location
     private void retrieveUserLocations(){
         Log.d(TAG, "retrieveUserLocations: userid:" + mClusterMarkers.get(0).getUser().getUserId());
-            mViewModel.retrieveUserLocations(mClusterMarkers, new onCallbackRetrieveUserLocations() {
-                @Override
-                public void setUserLocations(UserLocation updatedUserLocation) {
+        mViewModel.retrieveUserLocations(mClusterMarkers, new onCallbackRetrieveUserLocations() {
+            @Override
+            public void setUserLocations(UserLocation updatedUserLocation) {
 
-                    // update the location
-                    for (int i = 0; i < mClusterMarkers.size(); i++) {
-                        try {
-                            if (mClusterMarkers.get(i).getUser().getUserId().equals(updatedUserLocation.getChild().getUserId())) {
+                // update the location
+                for (int i = 0; i < mClusterMarkers.size(); i++) {
+                    try {
+                        if (mClusterMarkers.get(i).getUser().getUserId().equals(updatedUserLocation.getChild().getUserId())) {
 
-                                LatLng updatedLatLng = new LatLng(
-                                        updatedUserLocation.getChild().getRoutes().getLatitude(),
-                                        updatedUserLocation.getChild().getRoutes().getLongitude()
-                                );
+                            LatLng updatedLatLng = new LatLng(
+                                    updatedUserLocation.getChild().getRoutes().getLatitude(),
+                                    updatedUserLocation.getChild().getRoutes().getLongitude()
+                            );
 
-                                mClusterMarkers.get(i).setPosition(updatedLatLng);
-                                mClusterManagerRender.setUpdateMarker(mClusterMarkers.get(i));
-
-                            }
-
-
-                        } catch (NullPointerException e) {
-                            Log.e(TAG, "retrieveUserLocations: NullPointerException: " + e.getMessage());
+                            mClusterMarkers.get(i).setPosition(updatedLatLng);
+                            mClusterManagerRender.setUpdateMarker(mClusterMarkers.get(i));
+                            checkDistance(updatedLatLng); // Check the distance to dangerous zones
                         }
+
+
+                    } catch (NullPointerException e) {
+                        Log.e(TAG, "retrieveUserLocations: NullPointerException: " + e.getMessage());
                     }
-
                 }
-            });
 
+            }
+        });
+
+    }
+
+    // Check in a real time if the child is in a distance that under 1000 to a dangerous zone
+    private void checkDistance(LatLng current) {
+        for(GeoPoint geoPoint : mZones){
+            double mDistance = distance(current.latitude, geoPoint.getLatitude(),
+                    current.longitude, geoPoint.getLongitude(),
+                    0, 0);
+            if(mDistance < 1000){
+                List<Address> addressList;
+                Geocoder geoCoder = new Geocoder(getContext(), Locale.getDefault());
+                String distance = new DecimalFormat("#").format(mDistance);
+                try {
+                    addressList = geoCoder.getFromLocation(geoPoint.getLatitude(), geoPoint.getLongitude(), 1);
+                    mCurrentRedZone =  addressList.get(0).getAddressLine(0);
+                    Intent intent = new Intent(getContext(), FollowerActivity.class);
+                    if(!mNotificationSent) {
+                        showNotification(getContext(),
+                                getString(R.string.dangerous_zone_notification_title),
+                                getString(R.string.dangerous_zone_message)
+                                        + mCurrentRedZone + "\n"
+                                        + getString(R.string.dangerous_zone_meters)
+                                        + " " + distance + " " + getString(R.string.meters_notification),
+                                intent, DANGEROUS_ZONE_NOTIFICATION);
+                        mNotificationSent = true;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Log.d(TAG, "checkDistance Location: " + mCurrentRedZone);
+
+            }
+            else mNotificationSent = false;
+        }
+    }
+
+    // Set the notification when the child is near to a dangerous zone
+
+    private void showNotification(Context context, String title, String message, Intent intent, int reqCode) {
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, reqCode, intent, PendingIntent.FLAG_ONE_SHOT);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.map_marker)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(message))
+                .setAutoCancel(true)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name =  getString(R.string.dangerous_zone_notifications);;// The user-visible name of the channel.
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            notificationManager.createNotificationChannel(mChannel);
+        }
+        notificationManager.notify(reqCode, notificationBuilder.build());
     }
 
 
@@ -489,7 +609,7 @@ public class RealtimeLocationFragment extends Fragment  implements
     @Override
     public void onStart() {
         super.onStart();
-      mMapView.onStart();
+        mMapView.onStart();
     }
 
     @Override
@@ -521,12 +641,56 @@ public class RealtimeLocationFragment extends Fragment  implements
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
         initMapStyle();
-       setCameraView();
+        setCameraView();
         addMapMarker();
         initCircleZoom();
-        mGoogleMap.setOnPolylineClickListener(this);
+        getDangerousZones();
+        initLocationButton();
+        mAutoComplete.setOnPlaceSelectedListener(this);
         mGoogleMap.setOnInfoWindowClickListener(this);
+        mGoogleMap.setOnPolylineClickListener(this);
+        mGoogleMap.setOnMarkerDragListener(this);
         mGoogleMap.setMyLocationEnabled(true);
+    }
+
+    //  Initial the location button to the left bottom on the screen
+    private void initLocationButton() {
+        // Get the button view
+        View locationButton = ((View) mView.findViewById(1).getParent()).findViewById(2);
+
+        RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
+        // Places the location button on left bottom
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        rlp.setMargins(0, 0, 0, 290);
+        locationButton.setLayoutParams(rlp);
+    }
+
+
+    private void getDangerousZones() {
+        mViewModel.getDangerousZones(new onCallbackDangerousZones() {
+            @Override
+            public void setDangerousZonesList(List<GeoPoint> zonesList) {
+                if(zonesList == null) {
+                    zonesList = new ArrayList<>();
+                }
+                mZones = zonesList;
+                addDangerousZones(zonesList);
+            }
+        });
+    }
+
+    // Draw the dangerous circles on map
+    private void addDangerousZones(List<GeoPoint> addressList) {
+        if (addressList != null) {
+            for (GeoPoint geoPoint : addressList) {
+                mGoogleMap.addCircle(new CircleOptions()
+                        .center(new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude()))
+                        .radius(800)
+                        .strokeColor(getResources().getColor(R.color.dangerousZones))
+                        .fillColor(getResources().getColor(R.color.dangerousZones)));
+            }
+        }
     }
 
     // Initialize the map style by the hour of the day
@@ -534,15 +698,17 @@ public class RealtimeLocationFragment extends Fragment  implements
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         if (hour >= 19 || hour < 6) {
             setMapStyle(mGoogleMap, R.raw.mapstyledark);
+            mMapStyle = R.raw.mapstyledark;
         } else {
             setMapStyle(mGoogleMap, R.raw.mapstyledefault);
+            mMapStyle = R.raw.mapstyledefault;
         }
     }
 
 
     @Override
     public void onInfoWindowClick(final Marker marker) {
-            // Open a new intent with the directions of google map to the child
+        // Open a new intent with the directions of google map to the child
         if(marker.getTitle().contains(getString(R.string.trip))){
             new KAlertDialog(getContext(), KAlertDialog.WARNING_TYPE)
                     .setTitleText(getString(R.string.open_google_map))
@@ -574,14 +740,14 @@ public class RealtimeLocationFragment extends Fragment  implements
                     }).setCancelClickListener(new KAlertDialog.KAlertClickListener() {
                 @Override
                 public void onClick(KAlertDialog kAlertDialog) {
-                   kAlertDialog.cancel();
+                    kAlertDialog.cancel();
                 }
             })
                     .show();
         }
 
 
-        else
+        else if(marker.getTitle().contains(mChild.getFirstName()))
         {
             new KAlertDialog(getContext(), KAlertDialog.WARNING_TYPE)
                     .setTitleText(getString(R.string.determine_root) + mChild.getFirstName() + "?")
@@ -597,12 +763,12 @@ public class RealtimeLocationFragment extends Fragment  implements
                             mSelectedMarker = marker;
                             getFollowerLocation(
                                     new onCallbackFollowerLocation() {
-                                @Override
-                                public void setFollowerLocation(GeoPoint location) {
-                                    mFollowerLocation = location;
-                                    calculateDirections(marker);
-                                }
-                            });
+                                        @Override
+                                        public void setFollowerLocation(GeoPoint location) {
+                                            mFollowerLocation = location;
+                                            calculateDirections(marker);
+                                        }
+                                    });
                         }
                     }).setCancelClickListener(new KAlertDialog.KAlertClickListener() {
                 @Override
@@ -612,6 +778,51 @@ public class RealtimeLocationFragment extends Fragment  implements
             })
                     .show();
         }
+        else{
+            new KAlertDialog(getContext(), KAlertDialog.WARNING_TYPE)
+                    .setTitleText(getString(R.string.dangerous_zone_title))
+                    .setContentText(getString(R.string.dangerous_zone_info))
+                    .setCancelText(getString(R.string.no))
+                    .setConfirmText(getString(R.string.yes))
+                    .showCancelButton(true)
+                    .confirmButtonColor(R.color.acceptButton)
+                    .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+                        @Override
+                        public void onClick(KAlertDialog kAlertDialog) {
+                            kAlertDialog.cancel();
+                            GeoPoint geoPoint = new GeoPoint(mLat,mLng);
+                            mZones.add(geoPoint);
+                            drawDangerousZonesCircle(geoPoint);
+                            marker.remove();
+                            successDialog();
+                            mViewModel.addDangerousZones(mZones);
+                        }
+                    }).setCancelClickListener(new KAlertDialog.KAlertClickListener() {
+                @Override
+                public void onClick(KAlertDialog kAlertDialog) {
+                    kAlertDialog.cancel();
+                    marker.remove();
+                    mCircle.remove();
+                }
+            })
+                    .show();
+        }
+
+    }
+
+    private void successDialog() {
+        new KAlertDialog(getContext(), KAlertDialog.SUCCESS_TYPE)
+                .setTitleText(getString(R.string.dangerous_zone_title))
+                .setContentText(getString(R.string.dangerous_zone_added))
+                .setConfirmText(getString(R.string.ok_confirmation))
+                .showCancelButton(true)
+                .confirmButtonColor(R.color.acceptButton)
+                .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+                    @Override
+                    public void onClick(KAlertDialog kAlertDialog) {
+                        kAlertDialog.cancel();
+                    }
+                }).show();
     }
 
     @Override
@@ -620,7 +831,6 @@ public class RealtimeLocationFragment extends Fragment  implements
         int index = 0;
         for(PolylineData polylineData: mPolylinesData){
             index++;
-            Log.d(TAG, "onPolylineClick: toString: " + polylineData.toString());
             if(polyline.getId().equals(polylineData.getPolyline().getId())){
                 polylineData.getPolyline().setColor(ContextCompat.getColor(getActivity(), R.color.polyLineSelected));
                 polylineData.getPolyline().setZIndex(1);
@@ -638,6 +848,9 @@ public class RealtimeLocationFragment extends Fragment  implements
                         .snippet(info)
                 );
 
+                marker.setIcon(BitmapDescriptorFactory
+                        .fromResource(R.drawable.map_destination));
+
                 marker.showInfoWindow();
             }
             else{
@@ -646,14 +859,159 @@ public class RealtimeLocationFragment extends Fragment  implements
             }
         }
 
+
+    }
+
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        String mAddress = getString(R.string.unknown_location_title);
+        mLat = marker.getPosition().latitude;
+        mLng = marker.getPosition().longitude;
+        mCircle.remove();
+        drawDangerousZonesCircle(new GeoPoint(mLat,mLng));
+        List<Address> addressList;
+        Geocoder geoCoder = new Geocoder(getContext(), Locale.getDefault());
+        try {
+            addressList =  geoCoder.getFromLocation(mLat,mLng,1);
+            if(addressList != null) {
+                 mAddress = addressList.get(0).getAddressLine(0);
+            }
+            marker.setTitle(mAddress);
+            marker.showInfoWindow();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.reset_map_btn:
+                refreshMap();
+                break;
+            case R.id.night_mode_map_btn:
+                mapStyle();
+                break;
+        }
+    }
+
+
+    // Search the location and show his address on map
+    private void applyDangerousZonesSearch(String address) {
+        Geocoder geoCoder = new Geocoder(getContext(), Locale.getDefault());
+        List<Address> addresses = null;
+        try
+        {
+            addresses = geoCoder.getFromLocationName(address, 5);
+            if (addresses.size() > 0)
+            {
+                mLat = addresses.get(0).getLatitude();
+                mLng = addresses.get(0).getLongitude();
+                final LatLng user = new LatLng(mLat, mLng);
+
+                Marker zoneMarker = mGoogleMap.addMarker(new MarkerOptions()
+                        .draggable(true)
+                        .position(user)
+                        .title(addresses.get(0).getAddressLine(0))
+                        .icon(BitmapDescriptorFactory
+                                .fromResource(R.drawable.map_marker)));
+
+                zoneMarker.showInfoWindow();
+                mSelectedMarker = zoneMarker;
+
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(user, 15));
+
+                // Zoom in, animating the camera.
+                mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(10), 1500, null);
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        if(addresses != null) {
+            GeoPoint geoPoint = new GeoPoint(addresses.get(0).getLatitude(),addresses.get(0).getLongitude());
+            drawDangerousZonesCircle(geoPoint);
+        }
+    }
+
+
+
+    // Calculating the distance from the dangerous zone to the current
+    // location of the child
+
+    public static double distance(double lat1, double lat2, double lon1,
+                                  double lon2, double el1, double el2) {
+
+        final int R = 6371; // Radius of the earth
+
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c * 1000; // convert to meters
+
+        double height = el1 - el2;
+
+        distance = Math.pow(distance, 2) + Math.pow(height, 2);
+
+        return Math.sqrt(distance);
+    }
+
+    // Change the map style dark \ light
+    private void mapStyle() {
+        if(mMapStyle == R.raw.mapstyledefault) {
+            setMapStyle(mGoogleMap, R.raw.mapstyledark);
+            mMapStyle = R.raw.mapstyledark;
+        }
+        else
+        {
+            setMapStyle(mGoogleMap,R.raw.mapstyledefault);
+            mMapStyle = R.raw.mapstyledefault;
+        }
+    }
+
+    // Refresh the map and the context on map
+    private void refreshMap() {
+        addMapMarker();
+        setMapStyle(mGoogleMap,mMapStyle);
+        addDangerousZones(mZones);
+    }
+
+    @Override
+    public void onPlaceSelected(@NonNull Place place) {
+        String address = place.getAddress();
+        applyDangerousZonesSearch(address);
+    }
+
+    @Override
+    public void onError(@NonNull Status status) {
+
     }
 
 
     public interface onCallbackRetrieveUserLocations{
         void setUserLocations(UserLocation updatedUserLocation);
     }
-    
+
     public interface onCallbackFollowerLocation{
         void setFollowerLocation(GeoPoint location);
     }
- }
+
+    public interface onCallbackDangerousZones{
+        void setDangerousZonesList(List<GeoPoint> zonesList);
+    }
+}

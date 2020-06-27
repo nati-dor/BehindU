@@ -1,5 +1,6 @@
 package com.example.behindu.viewmodel;
 
+import android.location.Address;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -14,9 +15,11 @@ import com.example.behindu.model.ClusterMarker;
 import com.example.behindu.model.Follower;
 import com.example.behindu.model.LastLocation;
 import com.example.behindu.view.FollowerActivity;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static android.content.ContentValues.TAG;
 
@@ -88,4 +91,14 @@ public class FollowerViewModel extends ViewModel {
     public void getGPS(ChildDetailsFragment.OnCallbackGPSStatus onCallbackGPSStatus) {
         mDatabase.getGPSAlert(onCallbackGPSStatus);
     }
+
+    public void addDangerousZones(List<GeoPoint> zones) {
+        mDatabase.addDangerousZones(zones);
+    }
+
+    public void getDangerousZones(RealtimeLocationFragment.onCallbackDangerousZones onCallbackDangerousZones) {
+        mDatabase.getDangerousZones(onCallbackDangerousZones);
+    }
+
+
 }

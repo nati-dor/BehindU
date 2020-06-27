@@ -37,8 +37,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.GeoPoint;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.net.URISyntaxException;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
@@ -46,7 +44,7 @@ import static com.example.behindu.model.Constants.CHANNEL_ID;
 import static com.example.behindu.model.Constants.EMERGENCY_NUMBER_POLICE;
 import static com.example.behindu.model.Constants.EXTRA_STARTED_FROM_NOTIFICATION;
 import static com.example.behindu.model.Constants.FASTEST_INTERVAL;
-import static com.example.behindu.model.Constants.NOTIFICATION_ID;
+import static com.example.behindu.model.Constants.NOTIF_ID;
 import static com.example.behindu.model.Constants.UPDATE_INTERVAL;
 
 public class LocationService extends Service {
@@ -124,9 +122,9 @@ public class LocationService extends Service {
     private void removeLocationUpdates() {
 
         try{
-           mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
-           Common.setRequestLocationUpdates(this,false);
-           stopSelf();
+            mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
+            Common.setRequestLocationUpdates(this,false);
+            stopSelf();
         }
 
         catch (SecurityException ex){
@@ -174,7 +172,7 @@ public class LocationService extends Service {
 
         // Update notification content if running as a foreground service
         if(serviceIsRunningInForeGround(this)){
-            mNotificationManager.notify(NOTIFICATION_ID,getNotification());
+            mNotificationManager.notify(NOTIF_ID,getNotification());
         }
     }
 
@@ -232,8 +230,6 @@ public class LocationService extends Service {
 
     public void requestLocationUpdates(Intent intent) {
         Common.setRequestLocationUpdates(this,true);
-       // Intent service = new Intent(getApplicationContext(),LocationService.class);
-        //service.putExtra("UserLocation",mUserLocation);
         startService(intent);
 
         try{
@@ -270,7 +266,7 @@ public class LocationService extends Service {
     public boolean onUnbind(Intent intent) {
         if(!mChangingConfiguration && Common.requestLocationUpdates(this)) {
             try {
-                startForeground(NOTIFICATION_ID,getNotification());
+                startForeground(NOTIF_ID,getNotification());
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
@@ -281,7 +277,6 @@ public class LocationService extends Service {
     @Override
     public void onDestroy() {
         mServiceHandler.removeCallbacks(null);
-
         super.onDestroy();
     }
 

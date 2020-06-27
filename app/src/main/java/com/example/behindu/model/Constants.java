@@ -40,6 +40,7 @@ public class Constants {
     public static final String EXTRA_STARTED_FROM_NOTIFICATION = "com.example.behindu"
             + ".started_from_notification";
     public static final String CHANNEL_ID = "location_channel";
-    public static int NOTIFICATION_ID = 1223;
+    public static int NOTIF_ID = 1223;
+    public static int DANGEROUS_ZONE_NOTIFICATION = 1224;
 
 }

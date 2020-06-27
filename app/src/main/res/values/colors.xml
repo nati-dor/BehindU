@@ -9,13 +9,14 @@
     <color name="tabIndecatorColor">#fff</color>
     <color name="tabBackgroundColor">#FFF2CC</color>
     <color name="disableBtn">#F4F3F0</color>
-    <color name="polyLineSelected">#CC50E133</color>
+    <color name="polyLineSelected">#FF50E133</color>
     <color name="polyLineUnSelected">#FF3D00</color>
     <color name="connectedToFollower">#4EA630</color>
     <color name="notConnectedToFollower">#FF3333</color>
-    <color name="greyMapCircle">#789E9E9E</color>
+    <color name="greyMapCircle">#339E9E9E</color>
     <color name="acceptButton">#A5DC86</color>
     <color name="backgroundAutoFill">#f2f2f2</color>
     <color name="textColor">#808080</color>
+    <color name="dangerousZones">#33F00000</color>
 
 </resources>
