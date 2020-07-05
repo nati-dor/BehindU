@@ -102,9 +102,7 @@ public class Database {
         mAuth.signInWithEmailAndPassword(username, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                Log.d(TAG, "onComplete: 1");
                 if (task.isSuccessful()) {
-                    Log.d(TAG, "onComplete: 2");
                     mAuth = FirebaseAuth.getInstance();
                     mDocRef = fStore.document("users/" + mAuth.getUid());
                     mDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {

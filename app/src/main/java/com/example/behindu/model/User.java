@@ -8,14 +8,14 @@ public class User implements Parcelable {
     private String firstName;
     private String lastName;
     private String email;
-    private int followerPhoneNumber;
+    private String followerPhoneNumber;
     private boolean isFollower;
     private String password;
     private String userId;
 
     public User() { }
 
-    public User(String firstName, String lastName, String email, int followerPhoneNumber, boolean isFollower, String password, String userId) {
+    public User(String firstName, String lastName, String email, String followerPhoneNumber, boolean isFollower, String password, String userId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -29,7 +29,7 @@ public class User implements Parcelable {
         firstName = in.readString();
         lastName = in.readString();
         email = in.readString();
-        followerPhoneNumber = in.readInt();
+        followerPhoneNumber = in.readString();
         isFollower = in.readByte() != 0;
         password = in.readString();
         userId = in.readString();
@@ -74,12 +74,16 @@ public class User implements Parcelable {
         this.email = email;
     }
 
-    public int getPhoneNumber() {
+    public String getPhoneNumber() {
         return followerPhoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.followerPhoneNumber = phoneNumber;
+    }
+
+    public String getFollowerPhoneNumber() {
+        return followerPhoneNumber;
     }
 
     public boolean isFollower() {
@@ -106,13 +110,6 @@ public class User implements Parcelable {
         this.userId = userId;
     }
 
-    public int getFollowerPhoneNumber() {
-        return followerPhoneNumber;
-    }
-
-    public void setFollowerPhoneNumber(int followerPhoneNumber) {
-        this.followerPhoneNumber = followerPhoneNumber;
-    }
 
     @Override
     public int describeContents() {
@@ -124,7 +121,7 @@ public class User implements Parcelable {
         dest.writeString(firstName);
         dest.writeString(lastName);
         dest.writeString(email);
-        dest.writeInt(followerPhoneNumber);
+        dest.writeString(followerPhoneNumber);
         dest.writeByte((byte) (isFollower ? 1 : 0));
         dest.writeString(password);
         dest.writeString(userId);

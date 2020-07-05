@@ -29,7 +29,7 @@ public class Constants {
     public static final String DEFAULT_USER_ID ="cp2iDImempZamCDq0gwvrHBzyNf1";
 
     // Emergency phone number
-    public static final int EMERGENCY_NUMBER_POLICE = 100;
+    public static final String EMERGENCY_NUMBER_POLICE = "100";
 
 
     // Default boundaries for google map view

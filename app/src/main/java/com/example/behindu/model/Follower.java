@@ -10,7 +10,7 @@ public class Follower extends User {
 
     public Follower(){}
 
-    public Follower(String firstName, String lastName, String email, int followerPhoneNumber, boolean isFollower,
+    public Follower(String firstName, String lastName, String email, String followerPhoneNumber, boolean isFollower,
                     String password,HashMap<String,Child> childList,String followingId,String childId) {
         super(firstName, lastName, email, followerPhoneNumber, isFollower, password,null);
         this.childList = childList;

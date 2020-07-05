@@ -509,7 +509,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         moveToMainActivity();
     }
 
-    private void callEmergency(int phoneNumber) {
+    private void callEmergency(String phoneNumber) {
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
             mCallPermissionGranted = true;
@@ -527,10 +527,10 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void sendSms(String phoneNumber, String message) {
-       /* if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
             mSmsPermissionGranted = true;
-        }*/
+        }
 
 
         if (mSmsPermissionGranted) {
@@ -636,7 +636,8 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        int mFollowerPhoneNumber = mUserLocation.getChild().getPhoneNumber();
+        String mFollowerPhoneNumber = mUserLocation.getChild().getPhoneNumber();
+
         switch(v.getId()){
             case R.id.sos_btn:
                 callEmergency(EMERGENCY_NUMBER_POLICE);

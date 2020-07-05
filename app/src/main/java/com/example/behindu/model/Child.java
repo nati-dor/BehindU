@@ -15,7 +15,7 @@ public class Child extends User implements Parcelable {
 
     public Child() { }
 
-    public Child(String firstName, String lastName, String email, int followerNumber, boolean isFollower,
+    public Child(String firstName, String lastName, String email, String followerNumber, boolean isFollower,
                  String password,GeoPoint routes,GeoPoint lastLocation,String followerId,boolean connected,int batteryPercent) {
         super(firstName, lastName, email, followerNumber, isFollower, password,null);
         this.routes = routes;

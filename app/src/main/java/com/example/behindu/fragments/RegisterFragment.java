@@ -32,7 +32,7 @@ public class RegisterFragment extends Fragment {
     private TextInputLayout mEmailError;
     private TextInputLayout mPasswordError;
     private TextInputLayout mPhoneNumberError;
-    private int mFollowerPhoneNum;
+    private String mFollowerPhoneNum;
     private KAlertDialog mDialog;
 
     public RegisterFragment() {
@@ -91,11 +91,10 @@ public class RegisterFragment extends Fragment {
 
                 if(mFollowerPhoneNumEt.getText().toString().isEmpty() ) {
                     mPhoneNumberError.setError(getString(R.string.phone_number_error));
-                   // mDialog.cancel();
                     return;
                 }
                 else{
-                    mFollowerPhoneNum = Integer.parseInt(mFollowerPhoneNumEt.getText().toString().trim());
+                    mFollowerPhoneNum = mFollowerPhoneNumEt.getText().toString().trim();
                 }
 
                 setProgressBar();
