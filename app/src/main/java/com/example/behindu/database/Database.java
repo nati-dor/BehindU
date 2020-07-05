@@ -627,7 +627,7 @@ public class Database {
     }
 
     public void getChildList(final ChildDetailsFragment.OnCallbackChildAdded onCallbackChildAdded,  final Follower mFollower) {
-          Follower follower = mFollower;
+          final Follower follower = mFollower;
         fStore.collection("users")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -645,7 +645,10 @@ public class Database {
                                 case MODIFIED:
 
                                     if(dc.getDocument().getId().equals(mFollower.getUserId())) {
-                                            onCallbackChildAdded.setChildList(dc.getDocument().toObject(Follower.class));
+                                       Follower follower1 =  dc.getDocument().toObject(Follower.class);
+                                       if(follower1.getChildList() != null) {
+                                           onCallbackChildAdded.setChildList(dc.getDocument().toObject(Follower.class));
+                                       }
                                     }
                                   break;
                             }

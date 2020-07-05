@@ -291,10 +291,10 @@ public class RealtimeLocationFragment extends Fragment  implements
         LatLngBounds mMapBoundary;
         if (mLastLocationList.getList() != null) {
             int sizeOfList = mLastLocationList.getList().size();
-            double bottomBoundary = mLastLocationList.getChild().getLastLocation().getLatitude() - 0.05;
-            double leftBoundary =  mLastLocationList.getChild().getLastLocation().getLongitude() - 0.05;
-            double topBoundary =  mLastLocationList.getChild().getLastLocation().getLatitude() + 0.05;
-            double rightBoundary =  mLastLocationList.getChild().getLastLocation().getLongitude() + 0.05;
+            double bottomBoundary = mLastLocationList.getList().get(sizeOfList - 1).getGeoPoint().getLatitude() - 0.05;
+            double leftBoundary = mLastLocationList.getList().get(sizeOfList - 1).getGeoPoint().getLongitude() - 0.05;
+            double topBoundary = mLastLocationList.getList().get(sizeOfList - 1).getGeoPoint().getLatitude() + 0.05;
+            double rightBoundary = mLastLocationList.getList().get(sizeOfList - 1).getGeoPoint().getLongitude() + 0.05;
 
             mMapBoundary = new LatLngBounds(
                     new LatLng(bottomBoundary, leftBoundary),

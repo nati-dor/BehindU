@@ -675,7 +675,6 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                     BatteryManager.BATTERY_HEALTH_UNKNOWN);
             float batteryPercentage = ((float) batteryLevel / (float) maxLevel) * 100;
 
-            Toast.makeText(context, batteryPercentage + "", Toast.LENGTH_SHORT).show();
 
             mChild.setBatteryPercent((int)batteryPercentage);
             mViewModel.setBattery(mChild);

@@ -101,8 +101,6 @@ public class LocationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         mUserLocation = intent.getParcelableExtra("UserLocation");
 
-        Log.d(TAG, "onStartCommand: iss" + mUserLocation.getChild().getBatteryPercent());
-
         boolean startedFromNotification = intent.getBooleanExtra(EXTRA_STARTED_FROM_NOTIFICATION, false);
 
         if(startedFromNotification){
@@ -203,8 +201,7 @@ public class LocationService extends Service {
                 .addAction(R.drawable.ic_cancel_black_24dp,getString(R.string.remove_notification),servicePendingIntent)
                 .addAction(R.drawable.ic_cancel_black_24dp,getString(R.string.sos),sosPendingIntent).setColor(getResources().getColor(R.color.colorAccent))
                 .setContentText(text)
-                .setContentTitle(Common.getLocationTitle(this,
-                        getString(R.string.location_updated_title_notification)))
+                .setContentTitle(Common.getLocationTitle(this,getString(R.string.location_updated_title_notification)))
                 .setOngoing(true)
                 .setPriority(Notification.PRIORITY_HIGH)
                 .setSmallIcon(R.drawable.icon)
