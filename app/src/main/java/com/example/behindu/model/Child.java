@@ -8,20 +8,20 @@ import com.google.firebase.firestore.GeoPoint;
 public class Child extends User implements Parcelable {
 
     private GeoPoint routes;
-    private String lastLocation;
+    private GeoPoint lastLocation;
     private String followerId;
     private boolean connected;
     private int batteryPercent;
 
-
     public Child() { }
 
     public Child(String firstName, String lastName, String email, int followerNumber, boolean isFollower,
-                 String password,GeoPoint routes,String lastLocation,String followerId,boolean connected,int batteryPercent) {
+                 String password,GeoPoint routes,GeoPoint lastLocation,String followerId,boolean connected,int batteryPercent) {
         super(firstName, lastName, email, followerNumber, isFollower, password,null);
         this.routes = routes;
         this.lastLocation = lastLocation;
         this.followerId = followerId;
+        this.connected = connected;
         this.batteryPercent = batteryPercent;
     }
 
@@ -29,8 +29,10 @@ public class Child extends User implements Parcelable {
         super(in);
         double lat = in.readDouble();
         double lng = in.readDouble();
+        double l = in.readDouble();
+        double lo = in.readDouble();
         routes = new GeoPoint(lat,lng);
-        lastLocation = in.readString();
+        lastLocation = new GeoPoint(l,lo);
         followerId = in.readString();
         batteryPercent = in.readInt();
     }
@@ -65,11 +67,11 @@ public class Child extends User implements Parcelable {
         this.routes = routes;
     }
 
-    public String getLastLocation() {
+    public GeoPoint getLastLocation() {
         return lastLocation;
     }
 
-    public void setLastLocation(String lastLocation) {
+    public void setLastLocation(GeoPoint lastLocation) {
         this.lastLocation = lastLocation;
     }
 
@@ -109,7 +111,8 @@ public class Child extends User implements Parcelable {
         super.writeToParcel(dest,flags);
         dest.writeDouble(routes.getLatitude());
         dest.writeDouble(routes.getLongitude());
-        dest.writeString(lastLocation);
+        dest.writeDouble(lastLocation.getLatitude());
+        dest.writeDouble(lastLocation.getLongitude());
         dest.writeString(followerId);
         dest.writeInt(batteryPercent);
     }

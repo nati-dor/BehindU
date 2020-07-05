@@ -99,4 +99,7 @@
     <string name="dangerous_zone_notifications">Dangerous Zone Notifications</string>
     <string name="dangerous_zone_added">The zone added sucessefully</string>
     <string name="unknown_location_title">Uknown location</string>
+    <string name="registraion_failed_title">Register failed</string>
+    <string name="register_failed_info">The user name is already exists</string>
+    <string name="dangerous_zone_ontap_title">Dangerous Zone</string>
 </resources>

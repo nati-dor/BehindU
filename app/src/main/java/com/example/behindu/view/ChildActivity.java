@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -29,7 +28,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -58,12 +56,11 @@ import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.example.behindu.model.Constants.EMERGENCY_NUMBER_POLICE;
@@ -87,7 +84,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     private TextView mConnectedStatues;
     private Child mChild;
     private TextInputLayout mCodeError;
-    private List<Child> mChildList;
+    private HashMap<String,Child> mChildList;
     private Intent mServiceIntent;
     private AlarmReceiverTest mBatteryLevelReceiver;
     private MediaPlayer mAlarm;
@@ -203,8 +200,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         }
 
 
-        mViewModel.getUserDetails(
-                new childLocationCallback() {
+        mViewModel.getUserDetails(new childLocationCallback() {
                     @Override
                     public void setLocation(Child child) {
                         mChild = child;
@@ -231,6 +227,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void saveUserLocation(UserLocation mUserLocation) {
+        Log.d(TAG, "onCallbackLocationList:battery is " + mUserLocation.getChild().getBatteryPercent() + "");
         mViewModel.saveUserLocation(mUserLocation);
     }
 
@@ -251,19 +248,20 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                                 lastLocationList = new ArrayList<>();
                                 lastLocationList.add(new LastLocation(geoPoint, Calendar.getInstance().getTime()));
                                 mUserLocation.setList(lastLocationList);
+                                mUserLocation.getChild().setLastLocation(geoPoint);
+
                                 saveUserLocation(mUserLocation);
 
                                 requestLocationUpdates();
-                               // mServiceIntent.putExtra("UserLocations", mUserLocation);
-                              //  startLocationService(mUserLocation); // Starting the service after all the list has been load
+
                                 newLocationNotify(); // Making a notification for follower that new location has been added to the location list
                             }
                             else {
                                 lastLocationList.add(new LastLocation(geoPoint, Calendar.getInstance().getTime()));
                                 mUserLocation.setList(lastLocationList);
+                                mUserLocation.getChild().setLastLocation(geoPoint);
                                 saveUserLocation(mUserLocation);
                                 requestLocationUpdates();
-                              //  startLocationService(mUserLocation); // Starting the service after all the list has been load
                                 newLocationNotify(); // Making a notification for follower that new location has been added to the location list
                             }
                                 }
@@ -277,6 +275,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
 
     private void requestLocationUpdates() {
         Intent intent = new Intent(ChildActivity.this,LocationService.class);
+        Log.d(TAG, "requestLocationUpdates: " + mUserLocation.getChild().getBatteryPercent());
         intent.putExtra("UserLocation",mUserLocation);
         mService.requestLocationUpdates(intent);
     }
@@ -465,7 +464,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         mViewModel.getAllUsers(new followerList() {
             @Override
             public void onCallbackUsersList(ArrayList<Follower> follower) {
-                mChildList = new ArrayList<>();
+                mChildList = new HashMap<String,Child>();
                 for (Follower f : follower) {
                     if (f.getFollowingId().equals(code)) {
                         initConnection(f);
@@ -483,11 +482,11 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     private void initConnection(Follower f) {
         mChild.setFollowerId(f.getUserId());
         mChild.setConnected(true);
-        mChildList.add(mChild);
+        mChildList.put(mChild.getUserId(),mChild);
+        f.setChildId(mChild.getUserId());
         f.setChildList(mChildList);
         mViewModel.updateChild(mChild);
         mViewModel.saveChildList(f);
-        mChildList.get(0).setConnected(true);
         mEnterCodeBtn.setVisibility(View.GONE);
         mEnterCodeEt.setVisibility(View.GONE);
         mCodeError.setVisibility(View.GONE);
@@ -675,6 +674,8 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                     BatteryManager.EXTRA_HEALTH,
                     BatteryManager.BATTERY_HEALTH_UNKNOWN);
             float batteryPercentage = ((float) batteryLevel / (float) maxLevel) * 100;
+
+            Toast.makeText(context, batteryPercentage + "", Toast.LENGTH_SHORT).show();
 
             mChild.setBatteryPercent((int)batteryPercentage);
             mViewModel.setBattery(mChild);

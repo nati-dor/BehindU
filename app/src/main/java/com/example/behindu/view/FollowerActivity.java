@@ -2,13 +2,11 @@ package com.example.behindu.view;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.developer.kalert.KAlertDialog;
@@ -28,20 +26,21 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.HashMap;
-import java.util.List;
 
-public class FollowerActivity extends AppCompatActivity  {
+public class FollowerActivity extends AppCompatActivity    {
 
     private FollowerViewModel mViewModel = new FollowerViewModel();
     private Child mChild;
     private KAlertDialog mDialog;
-    private ViewPager mViewPager;
+    public ViewPager mViewPager;
     private BadgeDrawable mBadgeDrawable;
-    private TabLayout mTabLayout;
+    public TabLayout mTabLayout;
     private Follower mFollower;
-    private ViewPagerAdapter mAdapter;
+    public ViewPagerAdapter mAdapter;
     private boolean mHomeFragment;
     private Fragment mSelectedFragment = null;
+    private int mPosition;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,17 +62,20 @@ public class FollowerActivity extends AppCompatActivity  {
             @Override
             public void setCurrentUser(Follower follower) {
                 mFollower = follower;
+
                 getChildLocation(follower);
             }
         });
     }
 
+
+
     private void getChildLocation(final Follower follower) {
 
-        List<Child> childList = follower.getChildList();
+        HashMap<String,Child> childList = follower.getChildList();
 
         if(childList !=null){
-            mChild = childList.get(0);
+            mChild = childList.get(mFollower.getChildId());
         }
 
         mViewModel.getChildLocation(mChild, new getChildDetails() {
@@ -109,6 +111,8 @@ public class FollowerActivity extends AppCompatActivity  {
         mTabLayout.getTabAt(1).setIcon(R.drawable.last_location_viewpager);
         mTabLayout.getTabAt(2).setIcon(R.drawable.child_viewpager);
 
+
+
         setLocationNotification();
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -119,13 +123,14 @@ public class FollowerActivity extends AppCompatActivity  {
 
             @Override
             public void onPageSelected(int position) {
-                if(position==1) {
+                mPosition = position;
+                if(mPosition==1) {
                     if (mBadgeDrawable != null) {
                         mBadgeDrawable.clearColorFilter();
                         mBadgeDrawable.setVisible(false);
                     }
                     if (follower.getChildList() != null) {
-                        String childId = follower.getChildList().get(0).getUserId();
+                        String childId = mFollower.getChildId();
                         mViewModel.setNewLocationNotify(false, childId);
                     }
                 }
@@ -167,7 +172,6 @@ public class FollowerActivity extends AppCompatActivity  {
             new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    //FragmentManager fragmentManager = getSupportFragmentManager();
 
                     switch (item.getItemId()){
                         case R.id.nav_home:
@@ -191,13 +195,20 @@ public class FollowerActivity extends AppCompatActivity  {
                                 .replace(R.id.fragment_container_menu,
                                         mSelectedFragment).commit();
                     }
-
-
                     return true;
                 }
             };
 
 
+    @Override
+    public void onBackPressed() {
+        if(mPosition == 2){
+            mViewPager.setCurrentItem(0,true);
+        }
+        else{
+            super.onBackPressed();
+        }
+    }
 
 
     public interface getCurrentUser{

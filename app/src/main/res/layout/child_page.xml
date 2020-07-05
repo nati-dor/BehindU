@@ -125,10 +125,9 @@ android:weightSum="11"
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/enter_code_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
-        android:layout_weight="1"
         app:errorEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -138,7 +137,7 @@ android:weightSum="11"
             android:layout_marginLeft="25dp"
             android:layout_marginRight="25dp"
             android:gravity="center"
-            android:hint="@string/enter_code" />
+           android:hint="@string/enter_code" />
     </com.google.android.material.textfield.TextInputLayout>
 
 

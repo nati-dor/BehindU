@@ -1,6 +1,5 @@
 package com.example.behindu.viewmodel;
 
-import android.location.Address;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -19,7 +18,6 @@ import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static android.content.ContentValues.TAG;
 
@@ -101,4 +99,7 @@ public class FollowerViewModel extends ViewModel {
     }
 
 
+    public void getChildList(ChildDetailsFragment.OnCallbackChildAdded onCallbackChildAdded, Follower mFollower) {
+        mDatabase.getChildList(onCallbackChildAdded,mFollower);
+    }
 }

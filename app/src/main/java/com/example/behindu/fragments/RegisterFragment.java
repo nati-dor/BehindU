@@ -2,7 +2,6 @@ package com.example.behindu.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,9 +22,6 @@ import com.example.behindu.view.ChildActivity;
 import com.example.behindu.view.FollowerActivity;
 import com.example.behindu.view.MainActivity;
 import com.example.behindu.viewmodel.MainActivityViewModel;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class RegisterFragment extends Fragment {
@@ -106,7 +102,7 @@ public class RegisterFragment extends Fragment {
 
                 if(followerCb.isChecked()){
                     mDialog.show();
-                    Follower follower = new Follower(firstName,lastName,email,mFollowerPhoneNum,true,password,null,"DDDDDD");
+                    Follower follower = new Follower(firstName,lastName,email,mFollowerPhoneNum,true,password,null,"DDDDDD",null);
                     signUpUser(follower);
 
                 }
@@ -131,13 +127,28 @@ public class RegisterFragment extends Fragment {
                      registrationsSucceed(user);
                  }
                  else{
-                     Snackbar.make(getView(),"Registration Failed", BaseTransientBottomBar.LENGTH_LONG);
+                     registrationFailed();
                  }
              }
          });
      }
 
-     public void setProgressBar(){
+    private void registrationFailed() {
+        final KAlertDialog dialog =   new KAlertDialog(getContext(),KAlertDialog.ERROR_TYPE);
+                dialog.setTitleText(getString(R.string.registraion_failed_title))
+                .setContentText(getString(R.string.register_failed_info))
+                .setConfirmText(getString(R.string.dialog_ok))
+                .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+                    @Override
+                    public void onClick(KAlertDialog kAlertDialog) {
+                        mDialog.cancel();
+                        dialog.cancel();
+                    }
+                })
+                .show();
+    }
+
+    public void setProgressBar(){
          mDialog = new KAlertDialog(getContext(), KAlertDialog.PROGRESS_TYPE);
          mDialog.getProgressHelper().setSpinSpeed(150);
          mDialog.setCancelable(false);

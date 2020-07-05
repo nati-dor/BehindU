@@ -101,7 +101,7 @@ public class LocationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         mUserLocation = intent.getParcelableExtra("UserLocation");
 
-        Log.d(TAG, "onStartCommand: " + mUserLocation.toString());
+        Log.d(TAG, "onStartCommand: iss" + mUserLocation.getChild().getBatteryPercent());
 
         boolean startedFromNotification = intent.getBooleanExtra(EXTRA_STARTED_FROM_NOTIFICATION, false);
 
@@ -167,6 +167,7 @@ public class LocationService extends Service {
         if(mLocation != null) {
             GeoPoint geoPoint = new GeoPoint(mLocation.getLatitude(), mLocation.getLongitude());
             mUserLocation.getChild().setRoutes(geoPoint);
+            mUserLocation.getChild().setLastLocation(geoPoint);
             saveUserLocation(mUserLocation);
         }
 
@@ -177,6 +178,7 @@ public class LocationService extends Service {
     }
 
     private void saveUserLocation(final UserLocation userLocation) {
+        Log.d(TAG, "onCallbackLocationList:battery is " + mUserLocation.getChild().getBatteryPercent() + "");
         mViewModel.saveUserLocation(userLocation);
     }
 

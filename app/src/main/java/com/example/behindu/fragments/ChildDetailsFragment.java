@@ -1,22 +1,20 @@
 package com.example.behindu.fragments;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
@@ -26,8 +24,7 @@ import com.example.behindu.model.Child;
 import com.example.behindu.model.Follower;
 import com.example.behindu.model.UserLocation;
 import com.example.behindu.util.RandomUniqueKey;
-import com.example.behindu.util.SaveSharedPreference;
-import com.example.behindu.view.MainActivity;
+import com.example.behindu.view.FollowerActivity;
 import com.example.behindu.viewmodel.FollowerViewModel;
 import com.google.firebase.firestore.GeoPoint;
 
@@ -52,9 +49,10 @@ public class ChildDetailsFragment extends Fragment  {
     private UserLocation mUserLocation;
     private WaveLoadingView mWaveLoadingView;
     private GeoPoint mRoutes;
-
-
-
+    private HashMap<String,Child> mChildList;
+    private ViewPager viewPager;
+    private LayoutInflater mInflater;
+    private ViewGroup mContainer;
 
     public ChildDetailsFragment(Follower follower, UserLocation userLocation) {
         this.mFollower = follower;
@@ -69,12 +67,17 @@ public class ChildDetailsFragment extends Fragment  {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
+        mContainer = container;
+        mInflater = inflater;
+        getChild();
+
         if(mFollower.getChildList() == null) {
             mView = inflater.inflate(R.layout.add_child_fragment,container,false);
             initViewFirstTime(mView);
         }
         else{
             mView = inflater.inflate(R.layout.child_view_follower_page,container,false);
+            mChildList = mFollower.getChildList();
             initViewChild(mView);
         }
 
@@ -82,8 +85,6 @@ public class ChildDetailsFragment extends Fragment  {
     }
 
     private void initViewFirstTime(View mView) {
-
-
 
         final TextView uniqueKeyTv = mView.findViewById(R.id.uniqueKey_tv);
         final TextView instructionsTv = mView.findViewById(R.id.instructions_tv);
@@ -105,17 +106,49 @@ public class ChildDetailsFragment extends Fragment  {
 
     }
 
+    private void getChild(){
+        mViewModel.getChildList(new OnCallbackChildAdded() {
+            @Override
+            public void setChildList(Follower follower) {
+                initUpdatedViewPager(follower);
+            }
+        },mFollower);
+    }
+
+    private void initUpdatedViewPager(Follower follower) {
+
+        FollowerActivity followerActivity = ((FollowerActivity)getActivity());
+
+        mFollower = follower;
+        viewPager = followerActivity.mViewPager;
+
+
+        followerActivity.mAdapter.replaceFragment(new ChildDetailsFragment(),getString(R.string.child_details),2);
+        mView = mInflater.inflate(R.layout.child_view_follower_page,mContainer,false);
+
+        mChildList = follower.getChildList();
+        initViewChild(mView);
+
+        viewPager.getAdapter().notifyDataSetChanged();
+
+        followerActivity.mTabLayout.setupWithViewPager(viewPager);
+        followerActivity.mTabLayout.getTabAt(0).setIcon(R.drawable.location_viewpager);
+        followerActivity.mTabLayout.getTabAt(1).setIcon(R.drawable.last_location_viewpager);
+        followerActivity.mTabLayout.getTabAt(2).setIcon(R.drawable.child_viewpager);
+
+    }
+
 
     private void initViewChild(View mView) {
         ImageView childImage = mView.findViewById(R.id.child_image);
 
-        mChild = mFollower.getChildList().get(0);
-        mNameTv = mView.findViewById(R.id.name_child_details);
-        mChildStatus = mView.findViewById(R.id.child_status);
-        mLastLocation = mView.findViewById(R.id.location_child_details);
-        mGPSStatus = mView.findViewById(R.id.gps_status);
-        mWaveLoadingView = mView.findViewById(R.id.waveLoadingView);
-        mWaveLoadingView.setShapeType(WaveLoadingView.ShapeType.CIRCLE);
+            mChild = mChildList.get(mFollower.getChildId());
+            mNameTv = mView.findViewById(R.id.name_child_details);
+            mChildStatus = mView.findViewById(R.id.child_status);
+            mLastLocation = mView.findViewById(R.id.location_child_details);
+            mGPSStatus = mView.findViewById(R.id.gps_status);
+            mWaveLoadingView = mView.findViewById(R.id.waveLoadingView);
+            mWaveLoadingView.setShapeType(WaveLoadingView.ShapeType.CIRCLE);
 
 
         mNameTv.setText(getString(R.string.name_child_view) + " " +mChild.getFirstName()+ " " + mChild.getLastName());
@@ -219,7 +252,7 @@ public class ChildDetailsFragment extends Fragment  {
     }
 
 
-    public String getAddress(GeoPoint location)  {
+    private String getAddress(GeoPoint location)  {
         List<Address> addressList = null;
         Geocoder gcd = new Geocoder(mView.getContext(), Locale.getDefault());
         try {
@@ -240,5 +273,9 @@ public class ChildDetailsFragment extends Fragment  {
 
     public interface OnCallbackGPSStatus{
         void setGPSStatus(boolean status);
+    }
+
+    public interface OnCallbackChildAdded{
+        void setChildList(Follower follower);
     }
 }

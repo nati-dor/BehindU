@@ -1,11 +1,9 @@
 package com.example.behindu.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -69,7 +67,7 @@ public class LocationHistoryFragment extends Fragment {
             public void onChanged(List<LastLocation> lastLocationList) {
                 mLocationAdapter.setLastLocation(lastLocationList);
                 mLocationAdapter.notifyDataSetChanged();
-                        //check this
+
             }
         });
     }

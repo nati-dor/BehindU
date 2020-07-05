@@ -87,7 +87,7 @@
     <string name="remove_notification">הסר</string>
     <string name="location_updated_title_notification">"עדכון אחרון: "</string>
     <string name="dangerous_zone_search">הכנס כתובת, עיר ,רחוב...</string>
-    <string name="dangerous_zone_title">איזורים מסוכנים</string>
+    <string name="dangerous_zone_title">אזורים מסוכנים</string>
     <string name="dangerous_zone_info">האם להוסיף אזור זה ל\"אזורים מסוכנים\"?</string>
     <string name="dangerous_zone_notification_title">הגעה לאזור מסוכן</string>
     <string name="dangerous_zone_message">הילד שלך קרוב ל</string>
@@ -96,4 +96,7 @@
     <string name="dangerous_zone_notifications">התראות אזור מסוכן</string>
     <string name="dangerous_zone_added">האזור נוסף בהצלחה</string>
     <string name="unknown_location_title">מיקום לא ידוע</string>
+    <string name="registraion_failed_title">ההרשמה נכשלה</string>
+    <string name="register_failed_info">המשתמש נמצא כבר בשימוש</string>
+    <string name="dangerous_zone_ontap_title">אזור מסוכן</string>
 </resources>

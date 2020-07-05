@@ -14,14 +14,13 @@ import com.developer.kalert.KAlertDialog;
 import com.example.behindu.R;
 import com.example.behindu.model.Follower;
 import com.example.behindu.viewmodel.FollowerViewModel;
-import com.google.android.libraries.places.api.net.PlacesClient;
 
-public class ActionsFragment extends Fragment{
+public class ActionsFragment extends Fragment {
 
     private Follower mFollower;
     FollowerViewModel viewModel = new FollowerViewModel();
     private Boolean mConnected = false;
-    PlacesClient mPlacesClient;
+
 
     public ActionsFragment() {
     }
@@ -37,30 +36,7 @@ public class ActionsFragment extends Fragment{
         View view = inflater.inflate(R.layout.actions_fragment, container, false);
 
         checkConnection();
-    /*    if(!Places.isInitialized()){
-            Places.initialize(getContext(),"AIzaSyCuFvotxjgZh6NJSueQOmDgMe9IvF0hm4A");
-        }
 
-        mPlacesClient = Places.createClient(getContext());
-
-
-
-        final AutocompleteSupportFragment autocompleteSupportFragment =
-                (AutocompleteSupportFragment)getChildFragmentManager()
-                        .findFragmentById(R.id.autocomplete_fragment);
-        autocompleteSupportFragment.setPlaceFields(Arrays.asList(Place.Field.ID,Place.Field.LAT_LNG,Place.Field.NAME,Place.Field.ADDRESS));
-
-        autocompleteSupportFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(@NonNull Place place) {
-                Toast.makeText(getContext(), "Arrive", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(@NonNull Status status) {
-
-            }
-        });*/
           ImageButton alarmBtn = view.findViewById(R.id.play_sound_btn);
         alarmBtn.setOnClickListener(new View.OnClickListener() {
             @Override

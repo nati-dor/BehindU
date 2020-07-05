@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,11 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
 
     public ViewPagerAdapter(@NonNull FragmentManager fm, int behavior) {
         super(fm, behavior);
+    }
+
+    @Override
+    public int getItemPosition(@NonNull Object object) {
+        return FragmentStatePagerAdapter.POSITION_NONE;
     }
 
     @NonNull
@@ -40,4 +46,11 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
         mFragmentList.add(fragment);
         mFragmentListTitles.add(title);
     }
+
+   public void replaceFragment(Fragment fragment,String title,int position){
+        mFragmentListTitles.remove(position);
+        mFragmentList.remove(position);
+        mFragmentListTitles.add(position,title);
+        mFragmentList.add(position,fragment);
+   }
 }

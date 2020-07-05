@@ -63,4 +63,17 @@ public class ClusterMarker implements ClusterItem {
     public void setUser(User user) {
         this.user = user;
     }
+
+    @Override
+    public String toString() {
+        return "ClusterMarker{" +
+                "position=" + position +
+                ", title='" + title + '\'' +
+                ", snippet='" + snippet + '\'' +
+                ", iconPicture=" + iconPicture +
+                ", user=" + user +
+                '}';
+    }
 }
+
+

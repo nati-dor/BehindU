@@ -45,11 +45,9 @@ public class Database {
     private FirebaseFirestore fStore = FirebaseFirestore.getInstance();
     private String userID;
     private DocumentReference mDocRef;
-   // private OnFirestoreTaskComplete onFirestoreTaskComplete;
     private String childId;
-    //private int numOfNotifications = 0;
     private  static long  numOfNotifications = 0;
-    private static int numberOfZones = 0;
+
 
 
     private static Database instance = null;
@@ -140,6 +138,7 @@ public class Database {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
+                        Log.d(TAG, "onComplete: UID " + mAuth.getUid());
                         Log.d(TAG, "onComplete: insert user location into DB succeed.");
                         Log.d(TAG, "onComplete: ");
                     }
@@ -374,7 +373,7 @@ public class Database {
 
     public void makeSound(Follower follower) {
         HashMap sound = new HashMap();
-        String childId = follower.getChildList().get(0).getUserId();
+        String childId = follower.getChildId();
         sound.put("play", true);
         fStore.collection("Sound Alarm").document(childId)
                 .set(sound).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -487,17 +486,15 @@ public class Database {
        int numOfNotifications1 = 0;
         Log.d(TAG, "setNewLocationNotify: " + numOfNotifications);
         if(b){
-            //numOfNotifications1++;
            numOfNotifications++;
         }
         else {
             Log.d(TAG, "setNewLocationNotify: arrive");
-            //numOfNotifications1 = 0;
            numOfNotifications = 0;
         }
         HashMap notification = new HashMap();
         notification.put("newNotification",b);
-        notification.put("numOfNotifications",numOfNotifications1);
+        notification.put("numOfNotifications",numOfNotifications);
 
         if(mAuth.getUid() != null) {
             fStore.collection("New Locations")
@@ -620,13 +617,42 @@ public class Database {
                 if(task.isSuccessful()&& task.getResult() != null) {
                     HashMap hashMap;
                     hashMap = (HashMap)task.getResult().getData();
-                    List<GeoPoint> zones = (List<GeoPoint>)hashMap.get("zone");
-                    onCallbackDangerousZones.setDangerousZonesList(zones);
+                    if(hashMap !=null) {
+                        List<GeoPoint> zones = (List<GeoPoint>) hashMap.get("zone");
+                        onCallbackDangerousZones.setDangerousZonesList(zones);
+                    }
                 }
             }
         });
     }
 
+    public void getChildList(final ChildDetailsFragment.OnCallbackChildAdded onCallbackChildAdded,  final Follower mFollower) {
+          Follower follower = mFollower;
+        fStore.collection("users")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot snapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w("TAG", "listen:error", e);
+                            return;
+                        }
+
+
+                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                            switch (dc.getType()) {
+                                case MODIFIED:
+
+                                    if(dc.getDocument().getId().equals(mFollower.getUserId())) {
+                                            onCallbackChildAdded.setChildList(dc.getDocument().toObject(Follower.class));
+                                    }
+                                  break;
+                            }
+                        }
+                    }
+                });
+    }
 }
 
 
