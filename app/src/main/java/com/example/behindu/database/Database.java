@@ -542,12 +542,12 @@ public class Database {
 
     }
 
-    public void setGPSAlert(boolean b) {
+    public void setGPSAlert(boolean b,Follower follower) {
         HashMap gps = new HashMap();
         gps.put("gps",b);
 
         if(mAuth.getUid()!=null) {
-            fStore.collection("GPS").document(mAuth.getUid())
+            fStore.collection("GPS").document(follower.getChildId())
                     .set(gps).addOnCompleteListener(new OnCompleteListener() {
                 @Override
                 public void onComplete(@NonNull Task task) {

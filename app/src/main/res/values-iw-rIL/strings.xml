@@ -86,7 +86,7 @@
     <string name="launch_notification">פתח</string>
     <string name="remove_notification">הסר</string>
     <string name="location_updated_title_notification">"עדכון אחרון: "</string>
-    <string name="dangerous_zone_search">הכנס כתובת, עיר ,רחוב...</string>
+    <string name="dangerous_zone_search">הוסף אזור מסוכן</string>
     <string name="dangerous_zone_title">אזורים מסוכנים</string>
     <string name="dangerous_zone_info">האם להוסיף אזור זה ל\"אזורים מסוכנים\"?</string>
     <string name="dangerous_zone_notification_title">הגעה לאזור מסוכן</string>

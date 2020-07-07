@@ -102,4 +102,8 @@ public class FollowerViewModel extends ViewModel {
     public void getChildList(ChildDetailsFragment.OnCallbackChildAdded onCallbackChildAdded, Follower mFollower) {
         mDatabase.getChildList(onCallbackChildAdded,mFollower);
     }
+
+    public void setGPSStatus(boolean isGPSOn, Follower follower) {
+        mDatabase.setGPSAlert(isGPSOn,follower);
+    }
 }

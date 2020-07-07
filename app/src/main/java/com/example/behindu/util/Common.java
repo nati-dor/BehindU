@@ -1,4 +1,4 @@
-package com.example.behindu.view;
+package com.example.behindu.util;
 
 import android.content.Context;
 import android.location.Address;
@@ -6,8 +6,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.preference.PreferenceManager;
 
-import com.example.behindu.R;
-import com.example.behindu.model.LastLocation;
 import com.example.behindu.services.LocationService;
 
 import java.io.IOException;
@@ -20,11 +18,7 @@ public class Common {
     private static final String KEY_REQUEST_LOCATION_UPDATES = "LocationUpdateEnable" ;
 
     public static String getLocationText(Location mLocation,Context ctx) {
-       /* return mLocation == null ? ("Unknown")
-                : mLocation.getLatitude() +
-                "/" +
-                mLocation.getLongitude();*/
-        // LastLocation location = mLastLocation.get(position);
+
         String address = null;
         List<Address> addressesList;
         try {

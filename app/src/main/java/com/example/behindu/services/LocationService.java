@@ -25,7 +25,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.example.behindu.R;
 import com.example.behindu.model.UserLocation;
-import com.example.behindu.view.Common;
+import com.example.behindu.util.Common;
 import com.example.behindu.view.MainActivity;
 import com.example.behindu.viewmodel.ChildViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -60,13 +60,13 @@ public class LocationService extends Service {
     private Handler mServiceHandler;
     private Location mLocation;
 
-
     public LocationService() {
     }
 
 
     @Override
     public void onCreate() {
+        Log.d(TAG, "onCreate: Arrive");
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         mLocationCallback = new LocationCallback(){
             @Override
@@ -100,6 +100,7 @@ public class LocationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mUserLocation = intent.getParcelableExtra("UserLocation");
+        Log.d(TAG, "onStartCommand: Arrive");
 
         boolean startedFromNotification = intent.getBooleanExtra(EXTRA_STARTED_FROM_NOTIFICATION, false);
 
@@ -176,7 +177,6 @@ public class LocationService extends Service {
     }
 
     private void saveUserLocation(final UserLocation userLocation) {
-        Log.d(TAG, "onCallbackLocationList:battery is " + mUserLocation.getChild().getBatteryPercent() + "");
         mViewModel.saveUserLocation(userLocation);
     }
 
@@ -218,6 +218,7 @@ public class LocationService extends Service {
     }
 
     private boolean serviceIsRunningInForeGround(Context context) {
+        Log.d(TAG, "serviceIsRunningInForeGround: Arrive");
         ActivityManager manager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
         for(ActivityManager.RunningServiceInfo service:manager.getRunningServices(Integer.MAX_VALUE))
             if(getClass().getName().equals(service.service.getClassName()))
@@ -228,6 +229,7 @@ public class LocationService extends Service {
     }
 
     public void requestLocationUpdates(Intent intent) {
+        Log.d(TAG, "requestLocationUpdates: Arrive");
         Common.setRequestLocationUpdates(this,true);
         startService(intent);
 
@@ -248,6 +250,7 @@ public class LocationService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d(TAG, "onBind: Arrive");
 
         stopForeground(true);
         mChangingConfiguration = false;
@@ -256,6 +259,7 @@ public class LocationService extends Service {
 
     @Override
     public void onRebind(Intent intent) {
+        Log.d(TAG, "onRebind: Arrive");
         stopForeground(true);
         mChangingConfiguration = false;
         super.onRebind(intent);
@@ -279,94 +283,6 @@ public class LocationService extends Service {
         super.onDestroy();
     }
 
-    //***************************************************************************************//
-/*    private static final String TAG = "LocationService";
-
-    private FusedLocationProviderClient mFusedLocationClient;
-    private UserLocation mUserLocation;
-    private ChildViewModel mViewModel = new ChildViewModel();
-
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        if (Build.VERSION.SDK_INT >= 26) {
-            String CHANNEL_ID = "location_channel";
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                    "BehindU",
-                    NotificationManager.IMPORTANCE_DEFAULT);
-
-            ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
-
-            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setContentTitle("")
-                    .setContentText("").build();
-
-            startForeground(1, notification);
-        }
-    }
-
-
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        mUserLocation = intent.getParcelableExtra("UserLocations");
-       getLocation();
-        return START_NOT_STICKY;
-    }
-
-    private void getLocation() {
-        // LocationRequest
-        // Create the location request to start receiving updates
-        LocationRequest mLocationRequestHighAccuracy = new LocationRequest();
-        mLocationRequestHighAccuracy.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequestHighAccuracy.setInterval(UPDATE_INTERVAL);
-        mLocationRequestHighAccuracy.setFastestInterval(FASTEST_INTERVAL);
-
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "getLocation: stopping the location service.");
-            stopSelf();
-            return;
-        }
-        Log.d(TAG, "getLocation: getting location information.");
-        mFusedLocationClient.requestLocationUpdates(mLocationRequestHighAccuracy, new LocationCallback() {
-                    @Override
-                    public void onLocationResult(LocationResult locationResult) {
-                        Log.d(TAG, "onLocationResult: got location result.");
-
-                        Location location = locationResult.getLastLocation();
-
-                        if (location != null) {
-                            GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-                                mUserLocation.getChild().setRoutes(geoPoint);
-                                saveUserLocation(mUserLocation);
-
-                            }
-                    }
-                },
-                Looper.myLooper()); // Looper.myLooper tells this to repeat forever until thread is destroyed
-    }
-
-
-    private void saveUserLocation(final UserLocation userLocation) {
-        mViewModel.saveUserLocation(userLocation);
-    }
-
-    @Override
-    public void onDestroy() {
-        stopSelf();
-        super.onDestroy();
-    }*/
 }
 
 

@@ -129,6 +129,7 @@ public class ChildDetailsFragment extends Fragment  {
         mChildList = follower.getChildList();
         initViewChild(mView);
 
+
         viewPager.getAdapter().notifyDataSetChanged();
 
         followerActivity.mTabLayout.setupWithViewPager(viewPager);
@@ -152,8 +153,8 @@ public class ChildDetailsFragment extends Fragment  {
 
 
         mNameTv.setText(getString(R.string.name_child_view) + " " +mChild.getFirstName()+ " " + mChild.getLastName());
-        setBatteryLevel(mUserLocation.getChild().getBatteryPercent());
         mLastLocation.setText(getString(R.string.location_child_view) +" " + getAddress(mRoutes));
+        setBatteryLevel(mUserLocation.getChild().getBatteryPercent());
         getGPSStatus();
         circleImage(mView,childImage);
 

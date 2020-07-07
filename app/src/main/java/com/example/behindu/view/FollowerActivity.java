@@ -99,7 +99,7 @@ public class FollowerActivity extends AppCompatActivity    {
 
         mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 0);
 
-        mAdapter.addFragment(new RealtimeLocationFragment(userLocations),getString(R.string.real_time_lcoation));
+        mAdapter.addFragment(new RealtimeLocationFragment(userLocations,follower),getString(R.string.real_time_lcoation));
         mAdapter.addFragment(new LocationHistoryFragment(userLocations.getList()),getString(R.string.last_locations));
         mAdapter.addFragment(new ChildDetailsFragment(follower,userLocations),getString(R.string.child_details));
 
@@ -155,6 +155,7 @@ public class FollowerActivity extends AppCompatActivity    {
 
                 if((boolean)notifications.get("newNotification") && numOfNotifications != 0) {
                     mBadgeDrawable = mTabLayout.getTabAt(1).getOrCreateBadge();
+                    mBadgeDrawable.setBackgroundColor(getResources().getColor(R.color.notConnectedToFollower));
                     mBadgeDrawable.setVisible(true);
                     mBadgeDrawable.setNumber(newNotification);
                 }

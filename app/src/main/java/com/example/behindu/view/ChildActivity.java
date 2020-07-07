@@ -88,6 +88,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     private Intent mServiceIntent;
     private AlarmReceiverTest mBatteryLevelReceiver;
     private MediaPlayer mAlarm;
+    private KAlertDialog mDialog;
 
 
     private LocationService mService = null;
@@ -275,7 +276,6 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
 
     private void requestLocationUpdates() {
         Intent intent = new Intent(ChildActivity.this,LocationService.class);
-        Log.d(TAG, "requestLocationUpdates: " + mUserLocation.getChild().getBatteryPercent());
         intent.putExtra("UserLocation",mUserLocation);
         mService.requestLocationUpdates(intent);
     }
@@ -321,8 +321,8 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
 
     private void buildAlertMessageNoGps() {
 
-        final KAlertDialog dialog =   new KAlertDialog(this, KAlertDialog.WARNING_TYPE);
-                dialog.setTitleText(getString(R.string.GPS_off_title))
+        mDialog =   new KAlertDialog(this, KAlertDialog.WARNING_TYPE);
+                mDialog.setTitleText(getString(R.string.GPS_off_title))
                 .setContentText(getString(R.string.GPS_off_info))
                 .setConfirmText(getString(R.string.settings_answer))
                 .confirmButtonColor(R.color.colorPrimaryDark)
@@ -337,7 +337,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                 .setCancelClickListener(new KAlertDialog.KAlertClickListener() {
                     @Override
                     public void onClick(KAlertDialog kAlertDialog) {
-                        dialog.cancel();
+                        mDialog.cancel();
                         SaveSharedPreference.clearUserName(ChildActivity.this);
                         moveToMainActivity();
                         finish();
@@ -349,12 +349,13 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if(manager !=null) {
             if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                mViewModel.isGPSOn(false); // tells the follower the gps is off
                 buildAlertMessageNoGps();
                 return false;
             }
             else{
-                mViewModel.isGPSOn(true); // tells the follower the gps is on
+                    mLocationPermissionGranted = true;
+                    if(mDialog != null)
+                       mDialog.cancel();
             }
         }
         return true;
@@ -432,11 +433,16 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     mLocationPermissionGranted = true;
-                    mViewModel.isGPSOn(true); // tells the follower the gps is on
                     getUserDetails();
                 } else {
-                    mViewModel.isGPSOn(false);   // tells the follower the gps is off
                     buildAlertMessageNoGps();
+                    final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    if(manager !=null) {
+                        if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                            mLocationPermissionGranted = true;
+                            mDialog.cancel();
+                        }
+                    }
                 }
             }
             // If request is cancelled, the result arrays are empty.

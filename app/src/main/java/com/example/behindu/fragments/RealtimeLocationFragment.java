@@ -34,6 +34,7 @@ import com.developer.kalert.KAlertDialog;
 import com.example.behindu.R;
 import com.example.behindu.model.Child;
 import com.example.behindu.model.ClusterMarker;
+import com.example.behindu.model.Follower;
 import com.example.behindu.model.PolylineData;
 import com.example.behindu.model.UserLocation;
 import com.example.behindu.util.ClusterManagerRenderer;
@@ -125,11 +126,17 @@ public class RealtimeLocationFragment extends Fragment  implements
     private Circle mCircle;
     private AutocompleteSupportFragment mAutoComplete;
     private View mView;
+    private List<LatLng> mCurrentRoute;
+    private Polyline mSelectedPolyline;
+    private boolean isGPSOn;
+    private GeoPoint mLastLocation = new GeoPoint(0,0);
+    private Follower mFollower;
 
 
-    public RealtimeLocationFragment(UserLocation mLastLocationList) {
+    public RealtimeLocationFragment(UserLocation mLastLocationList,Follower follower) {
         this.mLastLocationList = mLastLocationList;
         this.mChild = mLastLocationList.getChild();
+        this.mFollower = follower;
     }
 
     public RealtimeLocationFragment() {
@@ -340,7 +347,7 @@ public class RealtimeLocationFragment extends Fragment  implements
 
             mClusterManager.addItem(clusterMarker);
             mClusterMarkers.add(clusterMarker);
-           mClusterManager.cluster();
+            mClusterManager.cluster();
 
         }
     }
@@ -398,7 +405,7 @@ public class RealtimeLocationFragment extends Fragment  implements
         for (LatLng latLngPoint : lstLatLngRoute)
             boundsBuilder.include(latLngPoint);
 
-        int routePadding = 200;
+        int routePadding = 300;
         LatLngBounds latLngBounds = boundsBuilder.build();
 
         mGoogleMap.animateCamera(
@@ -458,7 +465,7 @@ public class RealtimeLocationFragment extends Fragment  implements
     private static Iterable<LatLng> createHole(LatLng center, int radius) {
         int points = 50; // number of corners of inscribed polygon
 
-        double radiusLatitude = Math.toDegrees(radius / (float) 6000); //radius checj
+        double radiusLatitude = Math.toDegrees(radius / (float) 6000); //radius check
         double radiusLongitude = radiusLatitude / Math.cos(Math.toRadians(center.latitude));
 
         List<LatLng> result = new ArrayList<>(points);
@@ -505,10 +512,27 @@ public class RealtimeLocationFragment extends Fragment  implements
 
     // Retrieving the child location
     private void retrieveUserLocations() {
-      //  Log.d(TAG, "retrieveUserLocations: userid:" + mClusterMarkers.get(0).getUser().getUserId());
         mViewModel.retrieveUserLocations(mClusterMarkers, new onCallbackRetrieveUserLocations() {
             @Override
             public void setUserLocations(UserLocation updatedUserLocation) {
+
+                Log.d(TAG, "setUserLocations: updatedUserLocation: " +
+                        updatedUserLocation.getChild().getRoutes().getLatitude()
+                        + " " + updatedUserLocation.getChild().getRoutes().getLongitude());
+
+               // Log.d(TAG, "setUserLocations: mLastLocation: " + mLastLocation.getLatitude()
+               // + " " + mLastLocation.getLongitude());
+
+
+                if(mLastLocation.getLatitude() == updatedUserLocation.getChild().getRoutes().getLatitude()
+                && mLastLocation.getLongitude() == updatedUserLocation.getChild().getRoutes().getLongitude())
+                    isGPSOn = false;
+
+                else
+                    isGPSOn = true;
+
+                mLastLocation = updatedUserLocation.getChild().getRoutes();
+                mViewModel.setGPSStatus(isGPSOn,mFollower);
 
                 // update the location
                 for (int i = 0; i < mClusterMarkers.size(); i++) {
@@ -523,6 +547,7 @@ public class RealtimeLocationFragment extends Fragment  implements
                             mClusterMarkers.get(i).setPosition(updatedLatLng);
                             mClusterManagerRender.setUpdateMarker(mClusterMarkers.get(i));
                             checkDistance(updatedLatLng); // Check the distance to dangerous zones
+                            drawPolyline(updatedLatLng);
                         }
 
 
@@ -533,6 +558,19 @@ public class RealtimeLocationFragment extends Fragment  implements
 
             }
         });
+
+    }
+
+    private void drawPolyline(LatLng updatedLatLng) {
+
+        if(mCurrentRoute == null){
+            mCurrentRoute = new ArrayList<>();
+        }
+
+        mCurrentRoute.add(updatedLatLng);
+
+        mSelectedPolyline = mGoogleMap.addPolyline(new PolylineOptions()
+                .width(10).addAll(mCurrentRoute));
 
     }
 
@@ -563,7 +601,7 @@ public class RealtimeLocationFragment extends Fragment  implements
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-             //   Log.d(TAG, "checkDistance Location: " + mCurrentRedZone);
+                //   Log.d(TAG, "checkDistance Location: " + mCurrentRedZone);
 
             } else mNotificationSent = false;
         }
@@ -649,7 +687,6 @@ public class RealtimeLocationFragment extends Fragment  implements
         mGoogleMap.setOnMarkerDragListener(this);
         mGoogleMap.setMyLocationEnabled(true);
         mGoogleMap.setOnMapClickListener(this);
-        Log.d(TAG, "onMapReadyyy: Arrive");
     }
 
 
@@ -888,7 +925,7 @@ public class RealtimeLocationFragment extends Fragment  implements
         try {
             addressList =  geoCoder.getFromLocation(mLat,mLng,1);
             if(addressList != null) {
-                 mAddress = addressList.get(0).getAddressLine(0);
+                mAddress = addressList.get(0).getAddressLine(0);
             }
             marker.setTitle(mAddress);
             marker.showInfoWindow();
@@ -980,6 +1017,7 @@ public class RealtimeLocationFragment extends Fragment  implements
         if(mMapStyle == R.raw.mapstyledefault) {
             setMapStyle(mGoogleMap, R.raw.mapstyledark);
             mMapStyle = R.raw.mapstyledark;
+
         }
         else
         {
@@ -994,6 +1032,9 @@ public class RealtimeLocationFragment extends Fragment  implements
         addMapMarker();
         setMapStyle(mGoogleMap,mMapStyle);
         addDangerousZones(mZones);
+        if(mSelectedPolyline != null)
+            mSelectedPolyline.remove();
+        mCurrentRoute.clear();
     }
 
     @Override
