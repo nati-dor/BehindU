@@ -49,10 +49,12 @@
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="location">
-        <!-- android:stopWithTask="true">-->
-
-
         </service>
+        <receiver android:name=".util.GPSBroadcastReceiver"  android:exported="true">
+            <intent-filter>
+                <action android:name="android.location.PROVIDERS_CHANGED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

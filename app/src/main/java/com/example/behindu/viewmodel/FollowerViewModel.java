@@ -86,8 +86,8 @@ public class FollowerViewModel extends ViewModel {
         mDatabase.setNewLocationNotify(b,childId);
     }
 
-    public void getGPS(ChildDetailsFragment.OnCallbackGPSStatus onCallbackGPSStatus) {
-        mDatabase.getGPSAlert(onCallbackGPSStatus);
+    public void getGPS(ChildDetailsFragment.OnCallbackGPSStatus onCallbackGPSStatus,Follower follower) {
+        mDatabase.getGPSAlert(onCallbackGPSStatus,follower);
     }
 
     public void addDangerousZones(List<GeoPoint> zones) {
@@ -103,7 +103,4 @@ public class FollowerViewModel extends ViewModel {
         mDatabase.getChildList(onCallbackChildAdded,mFollower);
     }
 
-    public void setGPSStatus(boolean isGPSOn, Follower follower) {
-        mDatabase.setGPSAlert(isGPSOn,follower);
-    }
 }

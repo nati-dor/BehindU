@@ -75,6 +75,7 @@ public class LocationService extends Service {
                 try {
                     onNewLocation(locationResult.getLastLocation());
                 } catch (URISyntaxException e) {
+                    Log.d(TAG, "onLocationResult: Arrive");
                     e.printStackTrace();
                 }
             }
@@ -141,10 +142,11 @@ public class LocationService extends Service {
                         @Override
                         public void onComplete(@NonNull Task<Location> task) {
                             if(task.isSuccessful() && task.getResult() != null){
+                                Log.d(TAG, "onComplete1: Arrive");
                                 mLocation = task.getResult();
                             }
                             else
-                                Log.e( "onComplete: ","Error to retrieve last location");
+                                Log.e( "onComplete1: ","Error to retrieve last location");
                         }
                     });
         }

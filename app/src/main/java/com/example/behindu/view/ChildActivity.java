@@ -1,7 +1,6 @@
 package com.example.behindu.view;
 
 import android.Manifest;
-import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -13,9 +12,9 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.BatteryManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.telephony.SmsManager;
@@ -39,6 +38,7 @@ import com.example.behindu.model.Follower;
 import com.example.behindu.model.LastLocation;
 import com.example.behindu.model.UserLocation;
 import com.example.behindu.services.LocationService;
+import com.example.behindu.util.GPSBroadcastReceiver;
 import com.example.behindu.util.SaveSharedPreference;
 import com.example.behindu.viewmodel.ChildViewModel;
 import com.google.android.gms.common.ConnectionResult;
@@ -85,7 +85,6 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     private Child mChild;
     private TextInputLayout mCodeError;
     private HashMap<String,Child> mChildList;
-    private Intent mServiceIntent;
     private AlarmReceiverTest mBatteryLevelReceiver;
     private MediaPlayer mAlarm;
     private KAlertDialog mDialog;
@@ -97,6 +96,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             LocationService.LocalBinder binder = (LocationService.LocalBinder)service;
+            Log.d(TAG, "onServiceConnected: Arrive");
             mService = binder.getService();
             mBound = true;
         }
@@ -120,6 +120,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.child_page);
 
+       registerGPSReceiver();
 
         Dexter.withActivity(this)
                 .withPermissions(Arrays.asList(
@@ -186,6 +187,13 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         });
 
 
+    }
+
+    private void registerGPSReceiver() {
+        BroadcastReceiver br = new GPSBroadcastReceiver();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(LocationManager.PROVIDERS_CHANGED_ACTION);
+        this.registerReceiver(br,filter);
     }
 
     private void getAlarmReceiver() {
@@ -287,7 +295,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
-    private void startLocationService(UserLocation mUserLocation) {
+   /* private void startLocationService(UserLocation mUserLocation) {
         if (!isLocationServiceRunning()) {
             mServiceIntent = new Intent(this, LocationService.class);
             mServiceIntent.putExtra("UserLocations", mUserLocation);
@@ -299,9 +307,9 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                 startService(mServiceIntent);
             }
         }
-    }
+    }*/
 
-    private boolean isLocationServiceRunning() {
+   /* private boolean isLocationServiceRunning() {
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (getClass().getName().equals(service.service.getClassName())) {
@@ -309,7 +317,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
             }
         }
         return false;
-    }
+    }*/
 
 
     private boolean checkMapServices() {

@@ -63,6 +63,6 @@ public class ChildViewModel extends ViewModel {
 
 
     public void isGPSOn(boolean b) {
-        //mDatabase.setGPSAlert(b);
+        mDatabase.setGPSAlert(b);
     }
 }

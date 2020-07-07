@@ -532,7 +532,6 @@ public class RealtimeLocationFragment extends Fragment  implements
                     isGPSOn = true;
 
                 mLastLocation = updatedUserLocation.getChild().getRoutes();
-                mViewModel.setGPSStatus(isGPSOn,mFollower);
 
                 // update the location
                 for (int i = 0; i < mClusterMarkers.size(); i++) {

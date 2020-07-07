@@ -542,12 +542,12 @@ public class Database {
 
     }
 
-    public void setGPSAlert(boolean b,Follower follower) {
+    public void setGPSAlert(boolean b) {
         HashMap gps = new HashMap();
         gps.put("gps",b);
 
         if(mAuth.getUid()!=null) {
-            fStore.collection("GPS").document(follower.getChildId())
+            fStore.collection("GPS").document(mAuth.getUid())
                     .set(gps).addOnCompleteListener(new OnCompleteListener() {
                 @Override
                 public void onComplete(@NonNull Task task) {
@@ -559,7 +559,8 @@ public class Database {
         }
     }
 
-    public void getGPSAlert(final ChildDetailsFragment.OnCallbackGPSStatus onCallbackGPSStatus) {
+    public void getGPSAlert(final ChildDetailsFragment.OnCallbackGPSStatus onCallbackGPSStatus,
+                            final Follower follower) {
         fStore.collection("GPS")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -575,14 +576,18 @@ public class Database {
                         for (DocumentChange dc : snapshots.getDocumentChanges()) {
                             switch (dc.getType()) {
                                 case ADDED:
-                                    HashMap added;
-                                    added = (HashMap) dc.getDocument().getData();
-                                    onCallbackGPSStatus.setGPSStatus((boolean)added.get("gps"));
+                                    if(dc.getDocument().getId().equals(follower.getChildId())) {
+                                        HashMap added;
+                                        added = (HashMap) dc.getDocument().getData();
+                                        onCallbackGPSStatus.setGPSStatus((boolean) added.get("gps"));
+                                    }
                                     break;
                                 case MODIFIED:
-                                    HashMap modified;
-                                    modified = (HashMap) dc.getDocument().getData();
-                                    onCallbackGPSStatus.setGPSStatus((boolean)modified.get("gps"));
+                                    if(dc.getDocument().getId().equals(follower.getChildId())) {
+                                        HashMap modified;
+                                        modified = (HashMap) dc.getDocument().getData();
+                                        onCallbackGPSStatus.setGPSStatus((boolean) modified.get("gps"));
+                                    }
                                     break;
                             }
                         }

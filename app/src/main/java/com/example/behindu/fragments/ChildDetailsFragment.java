@@ -190,7 +190,7 @@ public class ChildDetailsFragment extends Fragment  {
                 }
 
             }
-        });
+        },mFollower);
     }
 
     private void setCurrentStatus(boolean isConnected) {
