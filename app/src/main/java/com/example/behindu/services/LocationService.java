@@ -66,7 +66,6 @@ public class LocationService extends Service {
 
     @Override
     public void onCreate() {
-        Log.d(TAG, "onCreate: Arrive");
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         mLocationCallback = new LocationCallback(){
             @Override
@@ -75,7 +74,6 @@ public class LocationService extends Service {
                 try {
                     onNewLocation(locationResult.getLastLocation());
                 } catch (URISyntaxException e) {
-                    Log.d(TAG, "onLocationResult: Arrive");
                     e.printStackTrace();
                 }
             }
@@ -101,7 +99,6 @@ public class LocationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mUserLocation = intent.getParcelableExtra("UserLocation");
-        Log.d(TAG, "onStartCommand: Arrive");
 
         boolean startedFromNotification = intent.getBooleanExtra(EXTRA_STARTED_FROM_NOTIFICATION, false);
 
@@ -142,7 +139,7 @@ public class LocationService extends Service {
                         @Override
                         public void onComplete(@NonNull Task<Location> task) {
                             if(task.isSuccessful() && task.getResult() != null){
-                                Log.d(TAG, "onComplete1: Arrive");
+
                                 mLocation = task.getResult();
                             }
                             else
@@ -172,10 +169,6 @@ public class LocationService extends Service {
             saveUserLocation(mUserLocation);
         }
 
-        // Update notification content if running as a foreground service
-        if(serviceIsRunningInForeGround(this)){
-            mNotificationManager.notify(NOTIF_ID,getNotification());
-        }
     }
 
     private void saveUserLocation(final UserLocation userLocation) {
@@ -220,7 +213,6 @@ public class LocationService extends Service {
     }
 
     private boolean serviceIsRunningInForeGround(Context context) {
-        Log.d(TAG, "serviceIsRunningInForeGround: Arrive");
         ActivityManager manager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
         for(ActivityManager.RunningServiceInfo service:manager.getRunningServices(Integer.MAX_VALUE))
             if(getClass().getName().equals(service.service.getClassName()))
@@ -230,10 +222,13 @@ public class LocationService extends Service {
         return false;
     }
 
-    public void requestLocationUpdates(Intent intent) {
-        Log.d(TAG, "requestLocationUpdates: Arrive");
+    public void requestLocationUpdates(Intent intent) throws URISyntaxException {
         Common.setRequestLocationUpdates(this,true);
         startService(intent);
+        // Update notification content if running as a foreground service
+        if(serviceIsRunningInForeGround(this)){
+            mNotificationManager.notify(NOTIF_ID,getNotification());
+        }
 
         try{
             mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest,
@@ -252,8 +247,6 @@ public class LocationService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(TAG, "onBind: Arrive");
-
         stopForeground(true);
         mChangingConfiguration = false;
         return mBinder;
@@ -261,7 +254,6 @@ public class LocationService extends Service {
 
     @Override
     public void onRebind(Intent intent) {
-        Log.d(TAG, "onRebind: Arrive");
         stopForeground(true);
         mChangingConfiguration = false;
         super.onRebind(intent);

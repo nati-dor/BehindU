@@ -91,7 +91,7 @@
     <string name="dangerous_zone_info">האם להוסיף אזור זה ל\"אזורים מסוכנים\"?</string>
     <string name="dangerous_zone_notification_title">הגעה לאזור מסוכן</string>
     <string name="dangerous_zone_message">הילד שלך קרוב ל</string>
-    <string name="dangerous_zone_meters">והמרחק הוא:</string>
+    <string name="dangerous_zone_meters">והמרחק הוא</string>
     <string name="meters_notification">מטרים</string>
     <string name="dangerous_zone_notifications">התראות אזור מסוכן</string>
     <string name="dangerous_zone_added">האזור נוסף בהצלחה</string>

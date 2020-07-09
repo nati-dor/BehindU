@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.icu.text.DecimalFormat;
 import android.location.Address;
 import android.location.Geocoder;
@@ -128,9 +129,8 @@ public class RealtimeLocationFragment extends Fragment  implements
     private View mView;
     private List<LatLng> mCurrentRoute;
     private Polyline mSelectedPolyline;
-    private boolean isGPSOn;
-    private GeoPoint mLastLocation = new GeoPoint(0,0);
     private Follower mFollower;
+    private ClusterMarker mSelectedCluster;
 
 
     public RealtimeLocationFragment(UserLocation mLastLocationList,Follower follower) {
@@ -146,6 +146,7 @@ public class RealtimeLocationFragment extends Fragment  implements
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.real_time_fragment, container, false);
+        Log.d(TAG, "onCreateView: called");
 
         mMapView = mView.findViewById(R.id.map_view);
 
@@ -158,8 +159,6 @@ public class RealtimeLocationFragment extends Fragment  implements
         initGooglePlacesApi();
         initGoogleMap(savedInstanceState);
 
-
-        Log.d(TAG, "onCreateViewReal: Arrive");
         return mView;
     }
 
@@ -321,6 +320,8 @@ public class RealtimeLocationFragment extends Fragment  implements
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary, 0));
         }
 
+
+
     }
 
     // Add the cluster marker of the child to map
@@ -339,14 +340,15 @@ public class RealtimeLocationFragment extends Fragment  implements
             String name = mChild.getFirstName() + " " + mChild.getLastName();
             int defaultImage = R.drawable.aviv;
 
-            ClusterMarker clusterMarker = new ClusterMarker(
+            mSelectedCluster = new ClusterMarker(
                     new LatLng(mChild.getRoutes().getLatitude(),
                             mChild.getRoutes().getLongitude()),
                     name, snippet, defaultImage, mChild
             );
+            Log.d(TAG, "addMapMarker: " + mChild.toString());
 
-            mClusterManager.addItem(clusterMarker);
-            mClusterMarkers.add(clusterMarker);
+            mClusterManager.addItem(mSelectedCluster);
+            mClusterMarkers.add(mSelectedCluster);
             mClusterManager.cluster();
 
         }
@@ -516,22 +518,6 @@ public class RealtimeLocationFragment extends Fragment  implements
             @Override
             public void setUserLocations(UserLocation updatedUserLocation) {
 
-                Log.d(TAG, "setUserLocations: updatedUserLocation: " +
-                        updatedUserLocation.getChild().getRoutes().getLatitude()
-                        + " " + updatedUserLocation.getChild().getRoutes().getLongitude());
-
-               // Log.d(TAG, "setUserLocations: mLastLocation: " + mLastLocation.getLatitude()
-               // + " " + mLastLocation.getLongitude());
-
-
-                if(mLastLocation.getLatitude() == updatedUserLocation.getChild().getRoutes().getLatitude()
-                && mLastLocation.getLongitude() == updatedUserLocation.getChild().getRoutes().getLongitude())
-                    isGPSOn = false;
-
-                else
-                    isGPSOn = true;
-
-                mLastLocation = updatedUserLocation.getChild().getRoutes();
 
                 // update the location
                 for (int i = 0; i < mClusterMarkers.size(); i++) {
@@ -586,7 +572,7 @@ public class RealtimeLocationFragment extends Fragment  implements
                 try {
                     addressList = geoCoder.getFromLocation(geoPoint.getLatitude(), geoPoint.getLongitude(), 1);
                     mCurrentRedZone = addressList.get(0).getAddressLine(0);
-                    Intent intent = new Intent(getContext(), FollowerActivity.class);
+                    Intent intent = new Intent(getContext(),FollowerActivity.class);
                     if (!mNotificationSent) {
                         showNotification(getContext(),
                                 getString(R.string.dangerous_zone_notification_title),
@@ -597,18 +583,20 @@ public class RealtimeLocationFragment extends Fragment  implements
                                 intent, DANGEROUS_ZONE_NOTIFICATION);
                         mNotificationSent = true;
                     }
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 //   Log.d(TAG, "checkDistance Location: " + mCurrentRedZone);
 
-            } else mNotificationSent = false;
+            }
         }
     }
 
     // Set the notification when the child is near to a dangerous zone
 
     private void showNotification(Context context, String title, String message, Intent intent, int reqCode) {
+
         PendingIntent pendingIntent = PendingIntent.getActivity(context, reqCode, intent, PendingIntent.FLAG_ONE_SHOT);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.map_marker)
@@ -623,7 +611,7 @@ public class RealtimeLocationFragment extends Fragment  implements
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.dangerous_zone_notifications);
-            ;// The user-visible name of the channel.
+            // The user-visible name of the channel.
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
             notificationManager.createNotificationChannel(mChannel);
@@ -632,35 +620,42 @@ public class RealtimeLocationFragment extends Fragment  implements
     }
 
 
+
+
     @Override
     public void onResume() {
         super.onResume();
         mMapView.onResume();
         startUserLocationsRunnable();
+        Log.d(TAG, "onResume: called");
     }
 
     @Override
     public void onStart() {
         super.onStart();
         mMapView.onStart();
+        Log.d(TAG, "onStart: called");
     }
 
     @Override
     public void onStop() {
         super.onStop();
         mMapView.onStop();
+        Log.d(TAG, "onStop: called");
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mMapView.onPause();
+        Log.d(TAG, "onPause: called");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         mMapView.onDestroy();
+        Log.d(TAG, "onDestroy: " + " called onDestroy");
     }
 
     @Override
@@ -668,6 +663,7 @@ public class RealtimeLocationFragment extends Fragment  implements
         super.onLowMemory();
         mMapView.onLowMemory();
         stopLocationUpdates();
+        Log.d(TAG, "onLowMemory: called");
     }
 
     @Override
@@ -685,7 +681,6 @@ public class RealtimeLocationFragment extends Fragment  implements
         mGoogleMap.setOnCircleClickListener(this);
         mGoogleMap.setOnMarkerDragListener(this);
         mGoogleMap.setMyLocationEnabled(true);
-        mGoogleMap.setOnMapClickListener(this);
     }
 
 

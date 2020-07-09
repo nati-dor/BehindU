@@ -10,6 +10,7 @@ import com.example.behindu.services.LocationService;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -23,9 +24,14 @@ public class Common {
         List<Address> addressesList;
         try {
             Geocoder gcd = new Geocoder(ctx, Locale.getDefault());
-            addressesList = gcd.getFromLocation(mLocation.getLatitude(), mLocation.getLongitude(), 1);
-            if (addressesList != null) {
-                address = addressesList.get(0).getAdminArea() + ",\n" + addressesList.get(0).getAddressLine(0);
+            if(mLocation != null) {
+                addressesList = gcd.getFromLocation(mLocation.getLatitude(), mLocation.getLongitude(), 1);
+                if (addressesList != null) {
+                    address = addressesList.get(0).getAdminArea() + ",\n" + addressesList.get(0).getAddressLine(0);
+                }
+            }
+            else{
+                address = "Unknown";
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -34,8 +40,13 @@ public class Common {
     }
 
         public static CharSequence getLocationTitle(LocationService locationService,String title) {
+
+            DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+            Date date = new Date();
+            String currentDate = dateFormat.format(date);
+
         return String.format(title+" %1$s",
-                DateFormat.getDateInstance().format(new Date()));
+                DateFormat.getDateInstance().format(date) +", " +  currentDate);
     }
 
     public static void setRequestLocationUpdates(Context ctx, boolean value) {

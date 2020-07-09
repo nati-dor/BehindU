@@ -31,6 +31,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -238,16 +239,19 @@ public class Database {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     if (task.getResult() != null) {
-                        Log.d(TAG, "onComplete: task:" + task.getResult().toString());
                         UserLocation userLocation = task.getResult().toObject(UserLocation.class);
-                        //Log.d(TAG, "onComplete:details "+userLocation.toString());
                         if (userLocation != null) {
-                            Log.d(TAG, "onComplete: =!null");
-                            //  Log.d(TAG, "onComplete: " +userLocation.getChild().getRoutes().toString());
-                            locationList.onCallbackLocationList(userLocation.getList());
+                            try {
+                                locationList.onCallbackLocationList(userLocation.getList());
+                            } catch (URISyntaxException e) {
+                                e.printStackTrace();
+                            }
                         } else {
-                            Log.d(TAG, "onComplete: ==null");
-                            locationList.onCallbackLocationList(null);
+                            try {
+                                locationList.onCallbackLocationList(null);
+                            } catch (URISyntaxException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }

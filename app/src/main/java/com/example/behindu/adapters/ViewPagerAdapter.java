@@ -1,5 +1,7 @@
 package com.example.behindu.adapters;
 
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -12,6 +14,11 @@ import java.util.List;
 
 public class ViewPagerAdapter extends FragmentPagerAdapter {
 
+    @NonNull
+    @Override
+    public Object instantiateItem(@NonNull ViewGroup container, int position) {
+        return super.instantiateItem(container, position);
+    }
 
     private final List<Fragment> mFragmentList = new ArrayList<>();
     private final List<String> mFragmentListTitles = new ArrayList<>();

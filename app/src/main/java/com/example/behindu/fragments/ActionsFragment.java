@@ -37,7 +37,7 @@ public class ActionsFragment extends Fragment {
 
         checkConnection();
 
-          ImageButton alarmBtn = view.findViewById(R.id.play_sound_btn);
+        ImageButton alarmBtn = view.findViewById(R.id.play_sound_btn);
         alarmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

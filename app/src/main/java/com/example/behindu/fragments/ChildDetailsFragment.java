@@ -122,13 +122,11 @@ public class ChildDetailsFragment extends Fragment  {
         mFollower = follower;
         viewPager = followerActivity.mViewPager;
 
-
         followerActivity.mAdapter.replaceFragment(new ChildDetailsFragment(),getString(R.string.child_details),2);
         mView = mInflater.inflate(R.layout.child_view_follower_page,mContainer,false);
 
         mChildList = follower.getChildList();
         initViewChild(mView);
-
 
         viewPager.getAdapter().notifyDataSetChanged();
 

@@ -38,7 +38,6 @@ import com.example.behindu.model.Follower;
 import com.example.behindu.model.LastLocation;
 import com.example.behindu.model.UserLocation;
 import com.example.behindu.services.LocationService;
-import com.example.behindu.util.GPSBroadcastReceiver;
 import com.example.behindu.util.SaveSharedPreference;
 import com.example.behindu.viewmodel.ChildViewModel;
 import com.google.android.gms.common.ConnectionResult;
@@ -57,6 +56,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -72,6 +72,8 @@ import static com.example.behindu.model.Constants.PERMISSIONS_REQUEST_ENABLE_SMS
 
 public class ChildActivity extends AppCompatActivity implements View.OnClickListener {
 
+
+
     private static final String TAG = "Child Activity" ;
     private ChildViewModel mViewModel = new ChildViewModel();
     private boolean mLocationPermissionGranted = false;
@@ -85,9 +87,11 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     private Child mChild;
     private TextInputLayout mCodeError;
     private HashMap<String,Child> mChildList;
-    private AlarmReceiverTest mBatteryLevelReceiver;
+    private BatteryBroadcastReceiver mBatteryLevelReceiver;
     private MediaPlayer mAlarm;
-    private KAlertDialog mDialog;
+    private  KAlertDialog mDialog;
+    private BroadcastReceiver mGpsReceiver;
+    private static boolean mAlertIsShown;
 
 
     private LocationService mService = null;
@@ -96,10 +100,12 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             LocationService.LocalBinder binder = (LocationService.LocalBinder)service;
-            Log.d(TAG, "onServiceConnected: Arrive");
             mService = binder.getService();
             mBound = true;
+
+
         }
+
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
@@ -119,8 +125,6 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.child_page);
-
-       registerGPSReceiver();
 
         Dexter.withActivity(this)
                 .withPermissions(Arrays.asList(
@@ -145,7 +149,6 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                 }).check();
 
 
-        Log.d(TAG, "onCreate: ChildActivity"+ "Arrive");
 
         getPermissions();
 
@@ -185,22 +188,19 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                 mViewModel.setSound(false);
             }
         });
-
-
     }
 
     private void registerGPSReceiver() {
-        BroadcastReceiver br = new GPSBroadcastReceiver();
+        mGpsReceiver = new GPSBroadcastReceiver();
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         filter.addAction(LocationManager.PROVIDERS_CHANGED_ACTION);
-        this.registerReceiver(br,filter);
+        registerReceiver(mGpsReceiver,filter);
     }
 
-    private void getAlarmReceiver() {
-        mBatteryLevelReceiver = new  AlarmReceiverTest();
+    private void registerBatteryReceiver() {
+        mBatteryLevelReceiver = new BatteryBroadcastReceiver();
         registerReceiver(mBatteryLevelReceiver, new IntentFilter(
                 Intent.ACTION_BATTERY_CHANGED));
-
     }
 
     private void getUserDetails() {
@@ -213,7 +213,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                     @Override
                     public void setLocation(Child child) {
                         mChild = child;
-                        getAlarmReceiver(); // Get the battery status
+                        registerBatteryReceiver(); // Get the battery status
                         mUserLocation.setChild(child);
                         if (child.isConnected()) {
                             mEnterCodeEt.setVisibility(View.GONE);
@@ -251,7 +251,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                     mViewModel.getLocationList(new locationList() {
                         GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
                         @Override
-                        public void onCallbackLocationList(List<LastLocation> lastLocationList) {
+                        public void onCallbackLocationList(List<LastLocation> lastLocationList) throws URISyntaxException {
                             mUserLocation.getChild().setRoutes(geoPoint);
                             if (lastLocationList == null) {
                                 lastLocationList = new ArrayList<>();
@@ -282,10 +282,10 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-    private void requestLocationUpdates() {
+    private void requestLocationUpdates() throws URISyntaxException {
         Intent intent = new Intent(ChildActivity.this,LocationService.class);
         intent.putExtra("UserLocation",mUserLocation);
-        mService.requestLocationUpdates(intent);
+       mService.requestLocationUpdates(intent);
     }
 
 // Making a notification for follower that new location has been added to the location list
@@ -327,7 +327,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         return false;
     }
 
-    private void buildAlertMessageNoGps() {
+    public void buildAlertMessageNoGps() {
 
         mDialog =   new KAlertDialog(this, KAlertDialog.WARNING_TYPE);
                 mDialog.setTitleText(getString(R.string.GPS_off_title))
@@ -339,6 +339,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                     public void onClick(KAlertDialog kAlertDialog) {
                         Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
+
                     }
                 })
                 .setCancelText(getString(R.string.no))
@@ -357,13 +358,13 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if(manager !=null) {
             if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                buildAlertMessageNoGps();
+               // buildAlertMessageNoGps();
                 return false;
             }
             else{
-                    mLocationPermissionGranted = true;
-                    if(mDialog != null)
-                       mDialog.cancel();
+
+                  //  if(mDialog != null)
+                     // mDialog.cancel();
             }
         }
         return true;
@@ -443,12 +444,12 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
                     mLocationPermissionGranted = true;
                     getUserDetails();
                 } else {
-                    buildAlertMessageNoGps();
+                    //buildAlertMessageNoGps();
                     final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                     if(manager !=null) {
                         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                             mLocationPermissionGranted = true;
-                            mDialog.cancel();
+                          //  mDialog.cancel();
                         }
                     }
                 }
@@ -516,7 +517,10 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
             mBound = false;
         }
 
-        unregisterReceiver(mBatteryLevelReceiver); // unregister the battery receiver
+        if(mBatteryLevelReceiver != null)
+        unregisterReceiver(mBatteryLevelReceiver);// unregister the battery receiver
+        if(mGpsReceiver != null)
+        unregisterReceiver(mGpsReceiver); // unregister the GPS receiver
         mViewModel.setStatus(false);
         mViewModel.signOut();
         SaveSharedPreference.clearUserName(this);
@@ -623,7 +627,8 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
         }
         else
             getUserDetails();
-
+        Log.d(TAG, "onResume: Arrive");
+        registerGPSReceiver();
     }
 
     @Override
@@ -633,13 +638,14 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     protected void onStop() {
-        super.onStop();
+
+        EventBus.getDefault().unregister(this);
 
         if(mBound){
             unbindService(mServiceConnection);
             mBound = false;
         }
-        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -674,9 +680,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
-    
-
-    public class AlarmReceiverTest extends BroadcastReceiver {
+    public class BatteryBroadcastReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -695,17 +699,41 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
             mViewModel.setBattery(mChild);
         }
 
-
-
-
     }
+
+
+    public class GPSBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            if (manager != null) {
+                if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    mViewModel.isGPSOn(true);
+                    mLocationPermissionGranted = true;
+                    if (mDialog != null && mAlertIsShown) {
+                        mDialog.cancel();
+                        mAlertIsShown = false;
+                    }
+                } else {
+                    mViewModel.isGPSOn(false);
+                    mLocationPermissionGranted = false;
+                    if(!mAlertIsShown) {
+                        buildAlertMessageNoGps();
+                        mAlertIsShown = true;
+                    }
+                }
+            }
+
+            }
+        }
+
 
     public interface childLocationCallback{
         void setLocation(Child child);
     }
 
     public interface locationList{
-        void onCallbackLocationList(List<LastLocation> geoPointList);
+        void onCallbackLocationList(List<LastLocation> geoPointList) throws URISyntaxException;
     }
 
     public interface followerList{
