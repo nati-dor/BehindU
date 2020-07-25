@@ -5,8 +5,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.BitmapFactory;
 import android.icu.text.DecimalFormat;
 import android.location.Address;
 import android.location.Geocoder;
@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -39,7 +40,9 @@ import com.example.behindu.model.Follower;
 import com.example.behindu.model.PolylineData;
 import com.example.behindu.model.UserLocation;
 import com.example.behindu.util.ClusterManagerRenderer;
+import com.example.behindu.util.SaveSharedPreference;
 import com.example.behindu.view.FollowerActivity;
+import com.example.behindu.view.MainActivity;
 import com.example.behindu.viewmodel.FollowerViewModel;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -89,6 +92,8 @@ import static com.example.behindu.model.Constants.LAT_GEO_POINT;
 import static com.example.behindu.model.Constants.LNG_GEO_POINT;
 import static com.example.behindu.model.Constants.LOCATION_UPDATE_INTERVAL;
 import static com.example.behindu.model.Constants.MAPVIEW_BUNDLE_KEY;
+import static com.example.behindu.model.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
+import static com.example.behindu.model.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
 
 
 public class RealtimeLocationFragment extends Fragment  implements
@@ -131,6 +136,8 @@ public class RealtimeLocationFragment extends Fragment  implements
     private Polyline mSelectedPolyline;
     private Follower mFollower;
     private ClusterMarker mSelectedCluster;
+    private boolean mLocationPermissionGranted;
+    private KAlertDialog mDialog;
 
 
     public RealtimeLocationFragment(UserLocation mLastLocationList,Follower follower) {
@@ -627,35 +634,30 @@ public class RealtimeLocationFragment extends Fragment  implements
         super.onResume();
         mMapView.onResume();
         startUserLocationsRunnable();
-        Log.d(TAG, "onResume: called");
     }
 
     @Override
     public void onStart() {
         super.onStart();
         mMapView.onStart();
-        Log.d(TAG, "onStart: called");
     }
 
     @Override
     public void onStop() {
         super.onStop();
         mMapView.onStop();
-        Log.d(TAG, "onStop: called");
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mMapView.onPause();
-        Log.d(TAG, "onPause: called");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         mMapView.onDestroy();
-        Log.d(TAG, "onDestroy: " + " called onDestroy");
     }
 
     @Override
@@ -663,12 +665,12 @@ public class RealtimeLocationFragment extends Fragment  implements
         super.onLowMemory();
         mMapView.onLowMemory();
         stopLocationUpdates();
-        Log.d(TAG, "onLowMemory: called");
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+      //  checkLocationPermission();
         initMapStyle();
         setCameraView();
         addMapMarker();
@@ -680,10 +682,74 @@ public class RealtimeLocationFragment extends Fragment  implements
         mGoogleMap.setOnPolylineClickListener(this);
         mGoogleMap.setOnCircleClickListener(this);
         mGoogleMap.setOnMarkerDragListener(this);
-        mGoogleMap.setMyLocationEnabled(true);
     }
 
+    private void checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(getContext().getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = false;
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+        else
+            mLocationPermissionGranted = true;
 
+    }
+
+    private void requestLocationPermission() {
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {
+            // If request is cancelled, the result arrays are empty.
+
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                mLocationPermissionGranted = true;
+
+            } else {
+                buildAlertMessageNoGps();
+            }
+        }
+    }
+
+    private void buildAlertMessageNoGps() {
+
+        mDialog =   new KAlertDialog(getContext(), KAlertDialog.WARNING_TYPE);
+        mDialog.setTitleText(getString(R.string.GPS_off_title))
+                .setContentText(getString(R.string.GPS_off_info))
+                .setConfirmText(getString(R.string.settings_answer))
+                .confirmButtonColor(R.color.colorPrimaryDark)
+                .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+                    @Override
+                    public void onClick(KAlertDialog kAlertDialog) {
+                        Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
+
+                    }
+                })
+                .setCancelText(getString(R.string.no))
+                .setCancelClickListener(new KAlertDialog.KAlertClickListener() {
+                    @Override
+                    public void onClick(KAlertDialog kAlertDialog) {
+                        mDialog.cancel();
+                        SaveSharedPreference.clearUserName(getContext());
+                        moveToMainActivity();
+                        getActivity().finish();
+                    }
+                }).show();
+
+    }
+
+    private void moveToMainActivity() {
+        Intent i = new Intent(getContext(), MainActivity.class);
+        startActivity(i);
+        getActivity().finish();
+    }
 
     //  Initial the location button to the left bottom on the screen
     private void initLocationButton() {
@@ -795,15 +861,19 @@ public class RealtimeLocationFragment extends Fragment  implements
                         @Override
                         public void onClick(KAlertDialog kAlertDialog) {
                             kAlertDialog.cancel();
-                            mSelectedMarker = marker;
-                            getFollowerLocation(
-                                    new onCallbackFollowerLocation() {
-                                        @Override
-                                        public void setFollowerLocation(GeoPoint location) {
-                                            mFollowerLocation = location;
-                                            calculateDirections(marker);
-                                        }
-                                    });
+                            checkLocationPermission();
+                            if (mLocationPermissionGranted) {
+                                mGoogleMap.setMyLocationEnabled(true);
+                                mSelectedMarker = marker;
+                                getFollowerLocation(
+                                        new onCallbackFollowerLocation() {
+                                            @Override
+                                            public void setFollowerLocation(GeoPoint location) {
+                                                mFollowerLocation = location;
+                                                calculateDirections(marker);
+                                            }
+                                        });
+                            }
                         }
                     }).setCancelClickListener(new KAlertDialog.KAlertClickListener() {
                 @Override

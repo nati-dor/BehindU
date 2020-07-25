@@ -702,7 +702,7 @@ public class ChildActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
-    public class GPSBroadcastReceiver extends BroadcastReceiver {
+    public  class GPSBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
